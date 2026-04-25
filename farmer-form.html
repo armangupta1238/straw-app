@@ -2,7 +2,7 @@
 
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Straw Collector — Add Farmer</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
@@ -60,46 +60,83 @@
 .card { background:var(--card); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); border:1px solid var(--border); margin-bottom:16px; }
 
 .field { margin-bottom:16px; }
+.field:last-child { margin-bottom:0; }
 .field label { display:block; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin-bottom:6px; }
-.field input, .field select, .field textarea { width:100%; padding:13px 16px; border:1.5px solid var(--border); border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; color:var(--dark); background:#fff; outline:none; transition:border-color .2s,box-shadow .2s; -webkit-appearance:none; }
+.field input, .field select, .field textarea {
+  width:100%; padding:13px 16px; border:1.5px solid var(--border); border-radius:12px;
+  font-family:'DM Sans',sans-serif; font-size:15px; color:var(--dark); background:#fff;
+  outline:none; transition:border-color .2s,box-shadow .2s; -webkit-appearance:none;
+}
 .field input:focus, .field select:focus, .field textarea:focus { border-color:var(--green-lt); box-shadow:0 0 0 3px rgba(82,183,136,0.15); }
 .field textarea { resize:vertical; min-height:80px; }
 .field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 
-.gps-btn { width:100%; padding:13px; border-radius:12px; border:1.5px dashed var(--green-lt); background:rgba(82,183,136,0.06); color:var(--green); font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all .2s; }
-.gps-btn:active { transform:scale(.98); }
+/* Location method tabs */
+.method-tabs { display:flex; gap:8px; margin-bottom:14px; }
+.method-tab {
+  flex:1; padding:11px 8px; border-radius:12px; border:1.5px solid var(--border);
+  background:#fff; color:var(--muted); font-family:'DM Sans',sans-serif; font-size:13px;
+  font-weight:600; cursor:pointer; transition:all .2s; text-align:center;
+}
+.method-tab.active { background:var(--green); color:#fff; border-color:var(--green); }
+
+.gps-btn {
+  width:100%; padding:14px; border-radius:12px; border:1.5px dashed var(--green-lt);
+  background:rgba(82,183,136,0.06); color:var(--green); font-family:'DM Sans',sans-serif;
+  font-size:14px; font-weight:600; cursor:pointer; display:flex; align-items:center;
+  justify-content:center; gap:8px; transition:all .2s;
+}
 .gps-btn.captured { background:rgba(45,106,79,0.08); border-color:var(--green); border-style:solid; }
 .gps-coords { font-size:11px; color:var(--green); margin-top:6px; text-align:center; font-weight:500; }
 
-.distance-display { padding:13px 16px; border-radius:12px; border:1.5px solid var(--border); background:rgba(45,106,79,0.05); font-size:15px; font-weight:600; color:var(--green); min-height:48px; display:flex; align-items:center; }
+.maps-hint {
+  background:#f0f7f4; border-radius:12px; padding:12px 14px;
+  font-size:12px; color:var(--muted); line-height:1.7; margin-bottom:10px;
+}
+.maps-hint strong { color:var(--green); }
 
+.distance-box {
+  padding:13px 16px; border-radius:12px; border:1.5px solid var(--border);
+  background:rgba(45,106,79,0.05); font-size:15px; font-weight:600; color:var(--green);
+  min-height:50px; display:flex; align-items:center;
+}
+.distance-box.success { border-color:var(--green-lt); }
+
+.status-msg { font-size:12px; margin-top:6px; font-weight:500; }
+.status-msg.ok  { color:var(--green); }
+.status-msg.err { color:var(--earth); }
+.status-msg.loading { color:var(--muted); }
+
+/* Season chips */
 .season-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .season-chip { border:1.5px solid var(--border); border-radius:12px; padding:14px 12px; cursor:pointer; transition:all .2s; text-align:center; background:#fff; }
-.season-chip:active { transform:scale(.97); }
 .season-chip.selected { border-color:var(--green); background:rgba(45,106,79,0.07); }
 .chip-icon  { font-size:24px; margin-bottom:4px; }
 .chip-name  { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:var(--dark); }
 .chip-months{ font-size:10px; color:var(--muted); margin-top:2px; }
 .season-chip.selected .chip-name { color:var(--green); }
 
-.summary-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); font-size:14px; }
+/* Review */
+.summary-row { display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid var(--border); font-size:14px; }
 .summary-row:last-child { border-bottom:none; }
 .summary-label { color:var(--muted); font-size:12px; font-weight:500; }
-.summary-value { font-weight:600; color:var(--dark); text-align:right; max-width:60%; }
-
+.summary-value { font-weight:600; color:var(--dark); text-align:right; max-width:60%; font-size:13px; }
 .highlight-box { background:linear-gradient(135deg,var(--green) 0%,#40916c 100%); border-radius:var(--radius); padding:18px 20px; color:#fff; margin-bottom:16px; }
 .hl-label { font-size:11px; opacity:.75; text-transform:uppercase; letter-spacing:.5px; }
 .hl-value { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; margin-top:4px; }
 .hl-sub   { font-size:12px; opacity:.7; margin-top:2px; }
 
-.nav-btns { display:flex; gap:12px; padding:0 24px 32px; position:sticky; bottom:0; background:linear-gradient(to top,var(--cream) 80%,transparent); padding-top:16px; }
-.btn-back { flex:1; padding:15px; border-radius:14px; border:1.5px solid var(--border); background:#fff; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:500; color:var(--muted); cursor:pointer; transition:all .2s; }
-.btn-next { flex:2; padding:15px; border-radius:14px; border:none; background:var(--green); color:#fff; font-family:'Syne',sans-serif; font-size:16px; font-weight:700; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:8px; }
-.btn-next:active  { transform:scale(.97); background:#1f4f37; }
-.btn-back:active  { transform:scale(.97); }
-.btn-next.submit  { background:var(--earth); }
-.btn-next.submit:active { background:#9a5320; }
+/* Estimate pill */
+.estimate-pill { display:inline-flex; align-items:center; gap:6px; background:rgba(244,162,97,0.15); border:1px solid rgba(244,162,97,0.4); border-radius:20px; padding:6px 14px; font-size:13px; font-weight:600; color:var(--earth); margin-top:10px; }
 
+/* Nav */
+.nav-btns { display:flex; gap:12px; padding:16px 24px 32px; position:sticky; bottom:0; background:linear-gradient(to top,var(--cream) 80%,transparent); }
+.btn-back { flex:1; padding:15px; border-radius:14px; border:1.5px solid var(--border); background:#fff; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:500; color:var(--muted); cursor:pointer; }
+.btn-next { flex:2; padding:15px; border-radius:14px; border:none; background:var(--green); color:#fff; font-family:'Syne',sans-serif; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
+.btn-next:disabled { opacity:.6; }
+.btn-next.submit { background:var(--earth); }
+
+/* Success */
 .success-screen { display:none; padding:48px 24px; text-align:center; animation:fadeUp .4s ease; }
 .success-screen.active { display:block; }
 .success-icon { width:80px; height:80px; background:linear-gradient(135deg,var(--green-lt),var(--green)); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:36px; margin:0 auto 20px; box-shadow:0 8px 32px rgba(45,106,79,0.3); }
@@ -107,21 +144,24 @@
 .success-screen p  { color:var(--muted); font-size:14px; line-height:1.6; }
 .btn-add-another { margin-top:32px; width:100%; padding:16px; border-radius:14px; border:none; background:var(--green); color:#fff; font-family:'Syne',sans-serif; font-size:16px; font-weight:700; cursor:pointer; }
 
+/* Toast */
 .toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--dark); color:#fff; padding:10px 20px; border-radius:20px; font-size:13px; font-weight:500; opacity:0; transition:all .3s; z-index:999; white-space:nowrap; }
 .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-
-.estimate-pill { display:inline-flex; align-items:center; gap:6px; background:rgba(244,162,97,0.15); border:1px solid rgba(244,162,97,0.4); border-radius:20px; padding:6px 14px; font-size:13px; font-weight:600; color:var(--earth); margin-top:10px; }
 ```
 
   </style>
 </head>
 <body>
 
+<!-- HEADER -->
+
 <header>
   <div class="header-badge">🌾 Field Agent App</div>
   <h1>Straw Collector</h1>
   <p>Register a new farmer & farm details</p>
 </header>
+
+<!-- PROGRESS -->
 
 <div class="progress-bar">
   <div class="progress-step active" id="p1"></div>
@@ -133,7 +173,7 @@
   <span>Farmer</span><span>Location</span><span>Seasons</span><span>Review</span>
 </div>
 
-<!-- STEP 1: FARMER INFO -->
+<!-- ══ STEP 1: FARMER INFO ══ -->
 
 <div class="section active" id="step1">
   <p class="section-title">Farmer Details</p>
@@ -163,11 +203,12 @@
   </div>
 </div>
 
-<!-- STEP 2: LOCATION -->
+<!-- ══ STEP 2: LOCATION ══ -->
 
 <div class="section" id="step2">
   <p class="section-title">Farm Location</p>
-  <p class="section-sub">Village, district & GPS coordinates</p>
+  <p class="section-sub">Village, district & farm coordinates</p>
+
   <div class="card">
     <div class="field">
       <label>Village Name *</label>
@@ -181,25 +222,54 @@
 
   <div class="card">
     <div class="field">
-      <label>📍 Capture Farm Location</label>
-      <button class="gps-btn" id="gpsBtn" onclick="captureGPS()">
-        <span>📡</span> Capture My Location
-      </button>
-      <div class="gps-coords" id="gpsDisplay"></div>
+      <label>📍 Add Farm Location</label>
+      <div class="method-tabs">
+        <button class="method-tab active" id="tab_gps" onclick="switchTab('gps')">📡 Capture GPS</button>
+        <button class="method-tab" id="tab_link" onclick="switchTab('link')">🔗 Google Maps Link</button>
+      </div>
+
+```
+  <!-- GPS METHOD -->
+  <div id="panel_gps">
+    <button class="gps-btn" id="gpsBtn" onclick="captureGPS()">
+      <span id="gpsBtnIcon">📡</span> <span id="gpsBtnText">Capture My Location</span>
+    </button>
+    <div class="gps-coords" id="gpsDisplay"></div>
+  </div>
+
+  <!-- GOOGLE MAPS LINK METHOD -->
+  <div id="panel_link" style="display:none">
+    <div class="maps-hint">
+      <strong>How to get a Google Maps link:</strong><br/>
+      1. Open Google Maps on your phone<br/>
+      2. Long press on the farm location 📍<br/>
+      3. Tap the <strong>coordinates</strong> shown at the top<br/>
+      4. Tap <strong>Share</strong> → <strong>Copy link</strong><br/>
+      5. Paste the link below 👇
     </div>
-    <div class="field">
-      <label>Road Distance from BPCL Factory</label>
-      <div class="distance-display" id="distance_display">— Press "Capture My Location" above</div>
-      <div style="font-size:11px; color:var(--muted); margin-top:5px;">📍 Via road to BPCL Ethanol Factory, Baulsingha</div>
-    </div>
-    <input type="hidden" id="farm_lat"/>
-    <input type="hidden" id="farm_lng"/>
-    <input type="hidden" id="farm_distance_km"/>
-    <input type="hidden" id="transport_cost"/>
+    <input type="text" id="maps_link" placeholder="Paste Google Maps link here..." oninput="handleMapsLink()"/>
+    <div class="status-msg" id="link_status"></div>
   </div>
 </div>
 
-<!-- STEP 3: HARVEST SEASONS -->
+<!-- DISTANCE RESULT -->
+<div class="field">
+  <label>Road Distance from BPCL Factory, Baulsingha</label>
+  <div class="distance-box" id="distance_display">— Add farm location above first</div>
+  <div class="status-msg" id="dist_status"></div>
+</div>
+
+<!-- Hidden fields -->
+<input type="hidden" id="farm_lat"/>
+<input type="hidden" id="farm_lng"/>
+<input type="hidden" id="farm_distance_km"/>
+<input type="hidden" id="transport_cost"/>
+```
+
+  </div>
+</div>
+
+<!-- ══ STEP 3: HARVEST SEASONS ══ -->
 
 <div class="section" id="step3">
   <p class="section-title">Harvest Seasons</p>
@@ -229,7 +299,7 @@
     </div>
   </div>
   <div class="card" id="customSeasonCard" style="display:none">
-    <p class="section-title" style="font-size:14px; margin-bottom:12px">Custom Season</p>
+    <p style="font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:var(--green); margin-bottom:12px;">Custom Season</p>
     <div class="field">
       <label>Season Name</label>
       <input type="text" id="custom_season_name" placeholder="e.g. Summer Harvest"/>
@@ -239,24 +309,20 @@
         <label>Start Month</label>
         <select id="custom_month_start">
           <option value="">Select</option>
-          <option value="1">January</option><option value="2">February</option>
-          <option value="3">March</option><option value="4">April</option>
-          <option value="5">May</option><option value="6">June</option>
-          <option value="7">July</option><option value="8">August</option>
-          <option value="9">September</option><option value="10">October</option>
-          <option value="11">November</option><option value="12">December</option>
+          <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+          <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+          <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+          <option value="10">October</option><option value="11">November</option><option value="12">December</option>
         </select>
       </div>
       <div class="field">
         <label>End Month</label>
         <select id="custom_month_end">
           <option value="">Select</option>
-          <option value="1">January</option><option value="2">February</option>
-          <option value="3">March</option><option value="4">April</option>
-          <option value="5">May</option><option value="6">June</option>
-          <option value="7">July</option><option value="8">August</option>
-          <option value="9">September</option><option value="10">October</option>
-          <option value="11">November</option><option value="12">December</option>
+          <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+          <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+          <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+          <option value="10">October</option><option value="11">November</option><option value="12">December</option>
         </select>
       </div>
     </div>
@@ -269,7 +335,7 @@
   </div>
 </div>
 
-<!-- STEP 4: REVIEW -->
+<!-- ══ STEP 4: REVIEW ══ -->
 
 <div class="section" id="step4">
   <p class="section-title">Review & Save</p>
@@ -324,11 +390,11 @@
 <div class="success-screen" id="successScreen">
   <div class="success-icon">✓</div>
   <h2>Farmer Saved!</h2>
-  <p>The farmer has been successfully added to the Straw Collector database.</p>
+  <p>Successfully added to the Straw Collector database.</p>
   <button class="btn-add-another" onclick="resetForm()">+ Add Another Farmer</button>
 </div>
 
-<!-- NAV BUTTONS -->
+<!-- NAV -->
 
 <div class="nav-btns" id="navBtns">
   <button class="btn-back" id="backBtn" onclick="prevStep()" style="display:none">← Back</button>
@@ -342,48 +408,47 @@
   let currentStep = 1;
   const totalSteps = 4;
   const selectedSeasons = new Set();
-
   const seasons = {
     kharif: { name:'Kharif', month_start:10, month_end:11 },
     rabi:   { name:'Rabi',   month_start:3,  month_end:4  },
     zaid:   { name:'Zaid',   month_start:6,  month_end:7  },
   };
 
+  // ── TOAST ──
   function showToast(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2500);
+    setTimeout(() => t.classList.remove('show'), 3000);
   }
 
+  // ── PROGRESS ──
   function updateProgress() {
     for (let i = 1; i <= totalSteps; i++) {
       const el = document.getElementById('p' + i);
-      if (i < currentStep)        el.className = 'progress-step done';
-      else if (i === currentStep) el.className = 'progress-step active';
-      else                        el.className = 'progress-step';
+      el.className = 'progress-step' + (i < currentStep ? ' done' : i === currentStep ? ' active' : '');
     }
     document.getElementById('backBtn').style.display = currentStep > 1 ? 'block' : 'none';
     const nb = document.getElementById('nextBtn');
-    if (currentStep === totalSteps) { nb.textContent = '💾 Save Farmer'; nb.className = 'btn-next submit'; }
-    else { nb.textContent = 'Continue →'; nb.className = 'btn-next'; }
+    nb.textContent = currentStep === totalSteps ? '💾 Save Farmer' : 'Continue →';
+    nb.className   = 'btn-next' + (currentStep === totalSteps ? ' submit' : '');
   }
 
   function showStep(n) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById('step' + n).classList.add('active');
-    currentStep = n;
-    updateProgress();
+    currentStep = n; updateProgress();
     window.scrollTo({ top:0, behavior:'smooth' });
   }
 
+  // ── VALIDATE ──
   function validate() {
     if (currentStep === 1) {
       if (!document.getElementById('full_name').value.trim()) { showToast('⚠️ Please enter the farmer\'s name'); return false; }
-      if (!document.getElementById('total_acres').value) { showToast('⚠️ Please enter total acres'); return false; }
+      if (!document.getElementById('total_acres').value)      { showToast('⚠️ Please enter total acres'); return false; }
     }
     if (currentStep === 2) {
       if (!document.getElementById('village_name').value.trim()) { showToast('⚠️ Please enter the village name'); return false; }
-      if (!document.getElementById('district').value.trim()) { showToast('⚠️ Please enter the district'); return false; }
+      if (!document.getElementById('district').value.trim())     { showToast('⚠️ Please enter the district'); return false; }
     }
     if (currentStep === 3 && selectedSeasons.size === 0) { showToast('⚠️ Please select at least one harvest season'); return false; }
     return true;
@@ -395,9 +460,9 @@
     if (currentStep === 3) buildReview();
     showStep(currentStep + 1);
   }
-
   function prevStep() { if (currentStep > 1) showStep(currentStep - 1); }
 
+  // ── ESTIMATE ──
   function updateEstimate() {
     const acres = parseFloat(document.getElementById('total_acres').value) || 0;
     const spa   = parseFloat(document.getElementById('straw_per_acre').value) || 0;
@@ -405,59 +470,128 @@
     if (acres > 0 && spa > 0) {
       document.getElementById('est_val').textContent = (acres * spa).toLocaleString('en-IN');
       pill.style.display = 'block';
-    } else { pill.style.display = 'none'; }
+    } else pill.style.display = 'none';
   }
 
-  // ── GPS + GOOGLE MAPS ROAD DISTANCE ──
-  async function captureGPS() {
-    const btn  = document.getElementById('gpsBtn');
-    const disp = document.getElementById('gpsDisplay');
-    const distDisplay = document.getElementById('distance_display');
+  // ── TAB SWITCH ──
+  function switchTab(tab) {
+    document.getElementById('panel_gps').style.display  = tab === 'gps'  ? 'block' : 'none';
+    document.getElementById('panel_link').style.display = tab === 'link' ? 'block' : 'none';
+    document.getElementById('tab_gps').className  = 'method-tab' + (tab === 'gps'  ? ' active' : '');
+    document.getElementById('tab_link').className = 'method-tab' + (tab === 'link' ? ' active' : '');
+  }
 
-    btn.innerHTML = '<span>⏳</span> Getting location...';
+  // ── DISTANCE FROM BACKEND ──
+  async function getDistance(lat, lng) {
+    const distBox    = document.getElementById('distance_display');
+    const distStatus = document.getElementById('dist_status');
+    distBox.textContent    = '⏳ Calculating road distance...';
+    distStatus.textContent = '';
+    try {
+      const res  = await fetch(`${API}/distance?lat=${lat}&lng=${lng}`);
+      const data = await res.json();
+      if (data.distance_km) {
+        document.getElementById('farm_distance_km').value = data.distance_km;
+        document.getElementById('transport_cost').value   = data.transport_cost;
+        distBox.textContent = `🛣️ ${data.distance_km} km by road`;
+        distBox.classList.add('success');
+        distStatus.textContent = `Via road to BPCL Ethanol Factory, Baulsingha`;
+        distStatus.className   = 'status-msg ok';
+      } else {
+        distBox.textContent = '— Could not calculate distance';
+        distStatus.textContent = 'Google Maps could not find a route';
+        distStatus.className   = 'status-msg err';
+      }
+    } catch(e) {
+      distBox.textContent    = '— Server error';
+      distStatus.textContent = 'Could not reach server';
+      distStatus.className   = 'status-msg err';
+    }
+  }
+
+  // ── GPS CAPTURE ──
+  function captureGPS() {
+    const btnIcon = document.getElementById('gpsBtnIcon');
+    const btnText = document.getElementById('gpsBtnText');
+    const btn     = document.getElementById('gpsBtn');
+    const disp    = document.getElementById('gpsDisplay');
+    btnIcon.textContent = '⏳'; btnText.textContent = 'Getting location...';
     btn.disabled = true;
-
     navigator.geolocation.getCurrentPosition(
       async pos => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
-
         document.getElementById('farm_lat').value = lat.toFixed(6);
         document.getElementById('farm_lng').value = lng.toFixed(6);
         disp.textContent = `📍 ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-
-        // Get real road distance from backend (Google Maps)
-        btn.innerHTML = '<span>🗺️</span> Calculating road distance...';
-        distDisplay.textContent = '⏳ Calculating road distance...';
-
-        try {
-          const res  = await fetch(`${API}/distance?lat=${lat}&lng=${lng}`);
-          const data = await res.json();
-
-          if (data.distance_km) {
-            document.getElementById('farm_distance_km').value = data.distance_km;
-            document.getElementById('transport_cost').value   = data.transport_cost;
-            distDisplay.textContent = `🛣️ ${data.distance_km} km by road from BPCL Baulsingha`;
-          } else {
-            distDisplay.textContent = '— Could not calculate distance';
-          }
-        } catch(e) {
-          distDisplay.textContent = '— Server error, try again';
-        }
-
-        btn.innerHTML = '<span>✅</span> Location Captured!';
-        btn.classList.add('captured');
-        btn.disabled = false;
+        btnIcon.textContent = '✅'; btnText.textContent = 'Location Captured!';
+        btn.classList.add('captured'); btn.disabled = false;
+        await getDistance(lat, lng);
       },
       err => {
-        btn.innerHTML = '<span>📡</span> Capture My Location';
+        btnIcon.textContent = '📡'; btnText.textContent = 'Capture My Location';
         btn.disabled = false;
-        showToast('Could not get location. Please enable GPS and try again.');
+        showToast('Could not get GPS. Please enable location and try again.');
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true, timeout: 15000 }
     );
   }
 
+  // ── GOOGLE MAPS LINK ──
+  function extractCoords(url) {
+    // Try various Google Maps URL formats
+    const patterns = [
+      /@(-?\d+\.\d+),(-?\d+\.\d+)/,           // @lat,lng
+      /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,      // ?q=lat,lng
+      /\/place\/(-?\d+\.\d+),(-?\d+\.\d+)/,   // /place/lat,lng
+      /ll=(-?\d+\.\d+),(-?\d+\.\d+)/,         // ll=lat,lng
+      /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,       // !3d lat !4d lng
+    ];
+    for (const p of patterns) {
+      const m = url.match(p);
+      if (m) return { lat: parseFloat(m[1]), lng: parseFloat(m[2]) };
+    }
+    return null;
+  }
+
+  let linkTimer = null;
+  async function handleMapsLink() {
+    clearTimeout(linkTimer);
+    linkTimer = setTimeout(async () => {
+      const input  = document.getElementById('maps_link').value.trim();
+      const status = document.getElementById('link_status');
+      if (!input) { status.textContent = ''; return; }
+
+      status.textContent = '⏳ Reading link...';
+      status.className   = 'status-msg loading';
+
+      // First try to extract directly
+      let coords = extractCoords(input);
+
+      // If not found, try resolving via backend (for short links like maps.app.goo.gl)
+      if (!coords) {
+        status.textContent = '⏳ Resolving short link...';
+        try {
+          const res  = await fetch(`${API}/distance/resolve?url=${encodeURIComponent(input)}`);
+          const data = await res.json();
+          if (data.resolved) coords = extractCoords(data.resolved);
+        } catch(e) {}
+      }
+
+      if (coords) {
+        document.getElementById('farm_lat').value = coords.lat.toFixed(6);
+        document.getElementById('farm_lng').value = coords.lng.toFixed(6);
+        status.textContent = `✅ Location found: ${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`;
+        status.className   = 'status-msg ok';
+        await getDistance(coords.lat, coords.lng);
+      } else {
+        status.textContent = '⚠️ Could not read coordinates. Make sure it\'s a valid Google Maps link.';
+        status.className   = 'status-msg err';
+      }
+    }, 800);
+  }
+
+  // ── SEASONS ──
   function toggleSeason(key) {
     const chip = document.getElementById('chip_' + key);
     if (selectedSeasons.has(key)) { selectedSeasons.delete(key); chip.classList.remove('selected'); }
@@ -465,44 +599,36 @@
     document.getElementById('customSeasonCard').style.display = selectedSeasons.has('custom') ? 'block' : 'none';
   }
 
+  // ── REVIEW ──
   function buildReview() {
-    const name  = document.getElementById('full_name').value;
-    const phone = document.getElementById('phone').value;
     const acres = document.getElementById('total_acres').value;
     const spa   = document.getElementById('straw_per_acre').value;
     const lat   = document.getElementById('farm_lat').value;
     const lng   = document.getElementById('farm_lng').value;
     const dist  = document.getElementById('farm_distance_km').value;
 
-    document.getElementById('rev_name').textContent    = name || '—';
-    document.getElementById('rev_phone').textContent   = phone || 'No phone';
-    document.getElementById('rev_acres').textContent   = acres ? acres + ' acres' : '—';
-    document.getElementById('rev_straw').textContent   = spa ? spa + ' kg/acre' : '—';
-    document.getElementById('rev_village').textContent = document.getElementById('village_name').value || '—';
-    document.getElementById('rev_district').textContent= document.getElementById('district').value || '—';
-    document.getElementById('rev_distance').textContent= dist ? dist + ' km by road' : 'Not captured';
-    document.getElementById('rev_gps').textContent     = lat && lng ? `${lat}, ${lng}` : 'Not captured';
-
-    const total = acres && spa ? (parseFloat(acres) * parseFloat(spa)).toLocaleString('en-IN') + ' kg' : '—';
-    document.getElementById('rev_total_straw').textContent = total;
-
-    const snames = [...selectedSeasons].map(k => k === 'custom'
-      ? (document.getElementById('custom_season_name').value || 'Custom')
-      : seasons[k]?.name
-    ).join(', ');
-    document.getElementById('rev_seasons').textContent = snames || '—';
+    document.getElementById('rev_name').textContent     = document.getElementById('full_name').value || '—';
+    document.getElementById('rev_phone').textContent    = document.getElementById('phone').value || 'No phone';
+    document.getElementById('rev_acres').textContent    = acres ? acres + ' acres' : '—';
+    document.getElementById('rev_straw').textContent    = spa ? spa + ' kg/acre' : '—';
+    document.getElementById('rev_village').textContent  = document.getElementById('village_name').value || '—';
+    document.getElementById('rev_district').textContent = document.getElementById('district').value || '—';
+    document.getElementById('rev_distance').textContent = dist ? dist + ' km by road' : 'Not captured';
+    document.getElementById('rev_gps').textContent      = lat && lng ? `${lat}, ${lng}` : 'Not captured';
+    document.getElementById('rev_total_straw').textContent = acres && spa
+      ? (parseFloat(acres) * parseFloat(spa)).toLocaleString('en-IN') + ' kg' : '—';
+    document.getElementById('rev_seasons').textContent  = [...selectedSeasons].map(k =>
+      k === 'custom' ? (document.getElementById('custom_season_name').value || 'Custom') : seasons[k]?.name
+    ).join(', ') || '—';
   }
 
+  // ── SUBMIT ──
   async function submitForm() {
     const nextBtn = document.getElementById('nextBtn');
-    nextBtn.textContent = '⏳ Saving...';
-    nextBtn.disabled = true;
-
+    nextBtn.textContent = '⏳ Saving...'; nextBtn.disabled = true;
     try {
-      // 1. Save village
       const villageRes = await fetch(`${API}/villages`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
           village_name: document.getElementById('village_name').value,
           district:     document.getElementById('district').value,
@@ -514,10 +640,8 @@
       });
       const village = await villageRes.json();
 
-      // 2. Save farmer
       const farmerRes = await fetch(`${API}/farmers`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
           full_name:               document.getElementById('full_name').value,
           phone:                   document.getElementById('phone').value || null,
@@ -532,48 +656,37 @@
       });
       const farmer = await farmerRes.json();
 
-      // 3. Save seasons
       for (const key of selectedSeasons) {
-        let sData;
-        if (key === 'custom') {
-          sData = {
+        const acres = parseFloat(document.getElementById('total_acres').value) || 0;
+        const spa   = parseFloat(document.getElementById('straw_per_acre').value) || 0;
+        await fetch(`${API}/seasons`, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(key === 'custom' ? {
             farmer_id:   farmer.farmer_id,
             season_name: document.getElementById('custom_season_name').value || 'Custom',
             month_start: document.getElementById('custom_month_start').value || null,
             month_end:   document.getElementById('custom_month_end').value || null,
             expected_straw_kg: null,
-          };
-        } else {
-          const s = seasons[key];
-          const acres = parseFloat(document.getElementById('total_acres').value) || 0;
-          const spa   = parseFloat(document.getElementById('straw_per_acre').value) || 0;
-          sData = {
+          } : {
             farmer_id:        farmer.farmer_id,
-            season_name:      s.name,
-            month_start:      s.month_start,
-            month_end:        s.month_end,
+            season_name:      seasons[key].name,
+            month_start:      seasons[key].month_start,
+            month_end:        seasons[key].month_end,
             expected_straw_kg: acres && spa ? acres * spa : null,
-          };
-        }
-        await fetch(`${API}/seasons`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(sData)
+          })
         });
       }
 
-      // SUCCESS
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
       document.getElementById('navBtns').style.display = 'none';
       document.getElementById('successScreen').classList.add('active');
-
     } catch(err) {
-      showToast('❌ Error saving. Is the server running?');
-      nextBtn.textContent = '💾 Save Farmer';
-      nextBtn.disabled = false;
+      showToast('❌ Error saving. Please try again.');
+      nextBtn.textContent = '💾 Save Farmer'; nextBtn.disabled = false;
     }
   }
 
+  // ── RESET ──
   function resetForm() {
     document.getElementById('successScreen').classList.remove('active');
     document.getElementById('navBtns').style.display = 'flex';
@@ -581,12 +694,17 @@
     selectedSeasons.clear();
     document.querySelectorAll('.season-chip').forEach(c => c.classList.remove('selected'));
     document.getElementById('customSeasonCard').style.display = 'none';
-    document.getElementById('gpsBtn').innerHTML = '<span>📡</span> Capture My Location';
+    document.getElementById('gpsBtnIcon').textContent = '📡';
+    document.getElementById('gpsBtnText').textContent = 'Capture My Location';
     document.getElementById('gpsBtn').classList.remove('captured');
     document.getElementById('gpsDisplay').textContent = '';
-    document.getElementById('distance_display').textContent = '— Press "Capture My Location" above';
+    document.getElementById('distance_display').textContent = '— Add farm location above first';
+    document.getElementById('distance_display').classList.remove('success');
+    document.getElementById('dist_status').textContent = '';
+    document.getElementById('link_status').textContent = '';
     document.getElementById('estimate_pill').style.display = 'none';
     document.getElementById('nextBtn').disabled = false;
+    switchTab('gps');
     showStep(1);
   }
 
