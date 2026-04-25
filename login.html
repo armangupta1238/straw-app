@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Straw Collector — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green:    #2d6a4f;
+      --green-lt: #52b788;
+      --gold:     #f4a261;
+      --cream:    #fefae0;
+      --earth:    #bc6c25;
+      --dark:     #1b1f16;
+      --muted:    #6b7563;
+      --border:   #d8e2c2;
+      --card:     #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: var(--green);
+      font-family: 'DM Sans', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background-image:
+        radial-gradient(ellipse at 0% 0%, #40916c40 0%, transparent 60%),
+        radial-gradient(ellipse at 100% 100%, #1b4332 0%, transparent 60%);
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+    }
+    .logo-area { text-align: center; margin-bottom: 32px; animation: fadeUp .5s ease; }
+    .logo-icon { font-size: 52px; margin-bottom: 12px; display: block; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3)); }
+    .logo-area h1 { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; color:#fff; }
+    .logo-area p  { font-size:13px; color:rgba(255,255,255,0.6); margin-top:4px; }
+
+```
+.card { background:var(--card); border-radius:24px; padding:32px 28px; width:100%; max-width:380px; box-shadow:0 20px 60px rgba(0,0,0,0.3); animation:fadeUp .5s ease .1s both; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+.card-title { font-family:'Syne',sans-serif; font-size:20px; font-weight:700; color:var(--dark); margin-bottom:4px; }
+.card-sub   { font-size:13px; color:var(--muted); margin-bottom:24px; }
+
+.field { margin-bottom:16px; }
+.field label { display:block; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin-bottom:6px; }
+.field input { width:100%; padding:14px 16px; border:1.5px solid var(--border); border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; color:var(--dark); background:#fff; outline:none; transition:border-color .2s,box-shadow .2s; }
+.field input:focus { border-color:var(--green-lt); box-shadow:0 0 0 3px rgba(82,183,136,0.15); }
+
+.btn-login { width:100%; padding:16px; border-radius:14px; border:none; background:var(--green); color:#fff; font-family:'Syne',sans-serif; font-size:16px; font-weight:700; cursor:pointer; margin-top:8px; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:8px; }
+.btn-login:hover  { background:#1f4f37; transform:translateY(-1px); }
+.btn-login:active { transform:scale(.98); }
+.btn-login:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+
+.error-msg { background:#fde8ea; border:1px solid #f5c2c7; border-radius:10px; padding:10px 14px; font-size:13px; color:#c0392b; margin-top:12px; display:none; text-align:center; }
+.error-msg.show { display:block; }
+
+.footer-text { text-align:center; margin-top:24px; font-size:12px; color:rgba(255,255,255,0.4); animation:fadeUp .5s ease .2s both; }
+```
+
+  </style>
+</head>
+<body>
+  <div class="logo-area">
+    <span class="logo-icon">🌾</span>
+    <h1>Straw Collector</h1>
+    <p>Field Agent Portal</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Welcome back!</div>
+    <div class="card-sub">Sign in to continue</div>
+
+```
+<div class="field">
+  <label>Username</label>
+  <input type="text" id="username" placeholder="Enter your username" autocomplete="username"/>
+</div>
+<div class="field">
+  <label>Password</label>
+  <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter') login()"/>
+</div>
+
+<button class="btn-login" id="loginBtn" onclick="login()">Sign In →</button>
+<div class="error-msg" id="errorMsg">❌ Invalid username or password.</div>
+```
+
+  </div>
+
+  <div class="footer-text">Straw Collector</div>
+
+<script>
+  const API = 'https://straw-app-production.up.railway.app/api';
+  const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+
+  // Check if already logged in and session is still valid
+  function checkAutoLogin() {
+    try {
+      const saved = localStorage.getItem('agent');
+      if (!saved) return false;
+      const agent = JSON.parse(saved);
+      const loginTime = agent.loginTime || 0;
+      if (Date.now() - loginTime < THIRTY_DAYS) {
+        // Still valid — go straight to form
+        window.location.href = 'farmer-form.html';
+        return true;
+      } else {
+        // Expired — clear and show login
+        localStorage.removeItem('agent');
+        return false;
+      }
+    } catch(e) {
+      return false;
+    }
+  }
+
+  checkAutoLogin();
+
+  async function login() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const btn      = document.getElementById('loginBtn');
+    const errMsg   = document.getElementById('errorMsg');
+
+    if (!username || !password) {
+      errMsg.textContent = '⚠️ Please enter both username and password.';
+      errMsg.classList.add('show');
+      return;
+    }
+
+    btn.textContent = '⏳ Signing in...';
+    btn.disabled    = true;
+    errMsg.classList.remove('show');
+
+    try {
+      const res  = await fetch(`${API}/auth/login`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        // Save with timestamp for 30-day auto-login
+        data.loginTime = Date.now();
+        localStorage.setItem('agent', JSON.stringify(data));
+        window.location.href = 'farmer-form.html';
+      } else {
+        errMsg.textContent = '❌ Invalid username or password.';
+        errMsg.classList.add('show');
+        btn.textContent = 'Sign In →';
+        btn.disabled    = false;
+      }
+    } catch(e) {
+      errMsg.textContent = '❌ Cannot connect to server. Try again.';
+      errMsg.classList.add('show');
+      btn.textContent = 'Sign In →';
+      btn.disabled    = false;
+    }
+  }
+</script>
+
+</body>
+</html>
