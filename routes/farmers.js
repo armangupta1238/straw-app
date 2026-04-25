@@ -20,21 +20,23 @@ router.get('/', async (req, res) => {
 // Add a new farmer
 router.post('/', async (req, res) => {
   const { full_name, phone, village_id, total_acres, straw_per_acre_kg,
-          farm_lat, farm_lng, farm_distance_km, transport_cost_per_trip } = req.body;
+          farm_lat, farm_lng, farm_distance_km, transport_cost_per_trip,
+          added_by_user_id, added_by_name } = req.body;
   try {
     const result = await pool.query(
       `INSERT INTO farmers (full_name, phone, village_id, total_acres, straw_per_acre_kg,
-        farm_lat, farm_lng, farm_distance_km, transport_cost_per_trip)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+        farm_lat, farm_lng, farm_distance_km, transport_cost_per_trip,
+        added_by_user_id, added_by_name)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
       [full_name, phone, village_id, total_acres, straw_per_acre_kg,
-       farm_lat, farm_lng, farm_distance_km, transport_cost_per_trip]
+       farm_lat, farm_lng, farm_distance_km, transport_cost_per_trip,
+       added_by_user_id || null, added_by_name || null]
     );
     res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
-
 // Get one farmer by ID
 router.get('/:id', async (req, res) => {
   try {
