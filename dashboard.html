@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Straw Collector — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green:     #2d6a4f;
+      --green-lt:  #52b788;
+      --green-pale:#d8f3dc;
+      --gold:      #f4a261;
+      --gold-pale: #fde8d4;
+      --cream:     #fefae0;
+      --earth:     #bc6c25;
+      --red:       #e63946;
+      --red-pale:  #fde8ea;
+      --blue:      #2196f3;
+      --blue-pale: #e3f2fd;
+      --dark:      #1b1f16;
+      --card:      #ffffff;
+      --muted:     #6b7563;
+      --border:    #e4edd6;
+      --bg:        #f4f7ee;
+      --radius:    16px;
+      --shadow:    0 2px 16px rgba(45,106,79,0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--dark); min-height: 100vh; }
+
+    .sidebar {
+      position: fixed; left: 0; top: 0; bottom: 0; width: 240px;
+      background: var(--green); display: flex; flex-direction: column;
+      z-index: 100; padding: 28px 0 24px;
+    }
+    .sidebar-logo { padding: 0 24px 28px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .logo-badge { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
+    .sidebar-logo h1 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
+    .sidebar-logo p { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 3px; }
+    .nav-section { padding: 20px 16px 8px; font-size: 10px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255,255,255,0.35); }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 11px 16px; margin: 2px 8px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.7); transition: all .2s; text-decoration: none; }
+    .nav-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .nav-item.active { background: rgba(255,255,255,0.15); color: #fff; font-weight: 600; }
+    .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+    .sidebar-bottom { margin-top: auto; padding: 16px 16px 0; border-top: 1px solid rgba(255,255,255,0.1); }
+    .add-farmer-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; border-radius: 12px; background: var(--gold); color: var(--dark); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; border: none; cursor: pointer; text-decoration: none; transition: all .2s; }
+    .add-farmer-btn:hover { background: #e8914a; }
+
+    .main { margin-left: 240px; min-height: 100vh; padding: 32px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+    .topbar-left h2 { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; }
+    .topbar-left p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .search-box { display: flex; align-items: center; gap: 8px; background: #fff; border: 1.5px solid var(--border); border-radius: 12px; padding: 9px 16px; }
+    .search-box input { border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--dark); width: 200px; background: transparent; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); position: relative; overflow: hidden; animation: fadeUp .4s ease both; }
+    .stat-card:nth-child(2){animation-delay:.05s} .stat-card:nth-child(3){animation-delay:.1s} .stat-card:nth-child(4){animation-delay:.15s}
+    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    .stat-card::before { content:''; position:absolute; top:0; right:0; width:80px; height:80px; border-radius:0 16px 0 80px; opacity:.07; }
+    .stat-card.green::before{background:var(--green)} .stat-card.gold::before{background:var(--gold)} .stat-card.blue::before{background:var(--blue)} .stat-card.earth::before{background:var(--earth)}
+    .stat-icon { font-size: 22px; margin-bottom: 12px; display: block; }
+    .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-bottom: 4px; }
+    .stat-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--dark); line-height: 1; }
+    .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .content-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+    .panel { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--border); overflow: hidden; animation: fadeUp .4s ease both; animation-delay:.2s; }
+    .panel-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--border); }
+    .panel-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; }
+    .panel-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+    .panel-action { font-size: 12px; color: var(--green); font-weight: 600; cursor: pointer; background: var(--green-pale); padding: 5px 12px; border-radius: 20px; border: none; text-decoration: none; }
+
+    .filters { display: flex; gap: 8px; padding: 14px 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .filter-select { padding: 7px 12px; border-radius: 8px; border: 1.5px solid var(--border); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--dark); background: #fff; outline: none; cursor: pointer; }
+    .filter-select:focus { border-color: var(--green-lt); }
+
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th { padding: 10px 16px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); background: #fafbf8; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #fafbf8; }
+    tbody td { padding: 13px 16px; vertical-align: middle; }
+    .farmer-name { font-weight: 600; font-size: 14px; }
+    .farmer-phone { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; margin: 2px; }
+    .badge-green{background:var(--green-pale);color:var(--green)} .badge-gold{background:var(--gold-pale);color:var(--earth)} .badge-blue{background:var(--blue-pale);color:var(--blue)} .badge-red{background:var(--red-pale);color:var(--red)}
+
+    .right-col { display: flex; flex-direction: column; gap: 20px; }
+    .season-item { display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-bottom: 1px solid var(--border); }
+    .season-item:last-child { border-bottom: none; }
+    .season-dot { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .season-dot.kharif{background:#fff8e1} .season-dot.rabi{background:#e8f4fd} .season-dot.zaid{background:#e8f5e9}
+    .season-info { flex: 1; }
+    .season-name { font-weight: 600; font-size: 13px; }
+    .season-detail { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .season-count { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--green); }
+
+    .pickup-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid var(--border); }
+    .pickup-item:last-child { border-bottom: none; }
+    .pickup-date-box { width: 40px; text-align: center; flex-shrink: 0; }
+    .pd-day { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--green); line-height: 1; }
+    .pd-mon { font-size: 10px; font-weight: 600; text-transform: uppercase; color: var(--muted); }
+    .pickup-info { flex: 1; }
+    .pickup-farmer { font-weight: 600; font-size: 13px; }
+    .pickup-detail { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .pickup-kg { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--earth); text-align: right; }
+    .pickup-kg span { display: block; font-size: 10px; color: var(--muted); font-weight: 400; font-family: 'DM Sans', sans-serif; }
+
+    .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); }
+    .empty-icon { font-size: 36px; margin-bottom: 10px; }
+
+    .map-area { background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); min-height: 220px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; color: var(--green); font-size: 13px; font-weight: 500; position: relative; overflow: hidden; }
+    .map-area::before { content:''; position:absolute; inset:0; background-image:radial-gradient(circle, rgba(45,106,79,0.15) 1px, transparent 1px); background-size:24px 24px; }
+    .map-pin { font-size: 32px; position: relative; z-index: 1; animation: bounce 2s ease-in-out infinite; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    .map-label { position: relative; z-index: 1; }
+
+    .loading { display: flex; align-items: center; justify-content: center; padding: 40px; color: var(--muted); font-size: 13px; gap: 8px; }
+    .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+
+    .pagination { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-top: 1px solid var(--border); font-size: 13px; color: var(--muted); }
+    .page-btns { display: flex; gap: 6px; }
+    .page-btn { width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid var(--border); background: #fff; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: 'DM Sans', sans-serif; color: var(--dark); transition: all .15s; }
+    .page-btn:hover { border-color: var(--green); color: var(--green); }
+    .page-btn.active { background: var(--green); color: #fff; border-color: var(--green); }
+
+    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--dark); color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 13px; opacity: 0; transform: translateY(10px); transition: all .3s; z-index: 999; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-badge">🌾 Control Panel</div>
+    <h1>Straw Collector</h1>
+    <p>Saraipali Factory</p>
+  </div>
+  <div class="nav-section">Main</div>
+  <a class="nav-item active" onclick="showSection('dashboard')"><span class="nav-icon">📊</span><span>Dashboard</span></a>
+  <a class="nav-item" onclick="showSection('farmers')"><span class="nav-icon">👨‍🌾</span><span>All Farmers</span></a>
+  <a class="nav-item" onclick="showSection('seasons')"><span class="nav-icon">🌾</span><span>Harvest Seasons</span></a>
+  <a class="nav-item" onclick="showSection('pickups')"><span class="nav-icon">🚛</span><span>Pickups</span></a>
+  <a class="nav-item" onclick="showSection('map')"><span class="nav-icon">🗺️</span><span>Farm Map</span></a>
+  <div class="sidebar-bottom">
+    <a href="farmer-form.html" class="add-farmer-btn"><span>+</span><span>Add Farmer</span></a>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h2 id="pageTitle">Dashboard</h2>
+      <p id="pageSubtitle">Overview of your straw collection network</p>
+    </div>
+    <div class="topbar-right">
+      <div class="search-box">
+        <span>🔍</span>
+        <input type="text" id="globalSearch" placeholder="Search farmers..." oninput="filterFarmers()"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="section-dashboard">
+    <div class="stats-grid">
+      <div class="stat-card green"><span class="stat-icon">👨‍🌾</span><div class="stat-label">Total Farmers</div><div class="stat-value" id="stat-farmers">—</div><div class="stat-sub">Registered</div></div>
+      <div class="stat-card gold"><span class="stat-icon">🌾</span><div class="stat-label">Total Acres</div><div class="stat-value" id="stat-acres">—</div><div class="stat-sub">Across all farmers</div></div>
+      <div class="stat-card blue"><span class="stat-icon">📦</span><div class="stat-label">Est. Total Straw</div><div class="stat-value" id="stat-straw">—</div><div class="stat-sub">Tonnes available</div></div>
+      <div class="stat-card earth"><span class="stat-icon">🚛</span><div class="stat-label">Transport Cost</div><div class="stat-value" id="stat-transport">—</div><div class="stat-sub">Total estimated</div></div>
+    </div>
+    <div class="content-grid">
+      <div class="panel">
+        <div class="panel-header">
+          <div><div class="panel-title">Recent Farmers</div><div class="panel-sub">Latest registrations</div></div>
+          <button class="panel-action" onclick="showSection('farmers')">View All</button>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Farmer</th><th>Village</th><th>Acres</th><th>Distance</th><th>Season</th></tr></thead>
+          <tbody id="recentFarmersBody"><tr><td colspan="5"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
+        </table></div>
+      </div>
+      <div class="right-col">
+        <div class="panel">
+          <div class="panel-header"><div><div class="panel-title">Harvest Seasons</div><div class="panel-sub">Farmers per season</div></div></div>
+          <div id="seasonsSummary"><div class="loading"><div class="spinner"></div> Loading...</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <div><div class="panel-title">Recent Pickups</div><div class="panel-sub">Last collections</div></div>
+            <button class="panel-action" onclick="showSection('pickups')">View All</button>
+          </div>
+          <div id="recentPickups"><div class="loading"><div class="spinner"></div> Loading...</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FARMERS -->
+  <div id="section-farmers" style="display:none">
+    <div class="panel">
+      <div class="panel-header">
+        <div><div class="panel-title">All Farmers</div><div class="panel-sub" id="farmersCount">Loading...</div></div>
+        <a href="farmer-form.html" class="panel-action">+ Add New</a>
+      </div>
+      <div class="filters">
+        <select class="filter-select" id="filterDistrict" onchange="filterFarmers()"><option value="">All Districts</option></select>
+        <select class="filter-select" id="filterVillage" onchange="filterFarmers()"><option value="">All Villages</option></select>
+        <select class="filter-select" id="filterSeason" onchange="filterFarmers()">
+          <option value="">All Seasons</option>
+          <option value="Kharif">Kharif</option>
+          <option value="Rabi">Rabi</option>
+          <option value="Zaid">Zaid</option>
+        </select>
+        <select class="filter-select" id="filterDistance" onchange="filterFarmers()">
+          <option value="">Any Distance</option>
+          <option value="0-30">0–30 km</option>
+          <option value="30-60">30–60 km</option>
+          <option value="60-100">60–100 km</option>
+          <option value="100+">100+ km</option>
+        </select>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Farmer</th><th>Village</th><th>District</th><th>Acres</th><th>Straw/Acre</th><th>Est. Straw</th><th>Distance</th><th>Transport</th><th>Seasons</th></tr></thead>
+        <tbody id="allFarmersBody"><tr><td colspan="9"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
+      </table></div>
+      <div class="pagination">
+        <span id="paginationInfo">—</span>
+        <div class="page-btns" id="pageButtons"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEASONS -->
+  <div id="section-seasons" style="display:none">
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">Harvest Seasons</div></div>
+      <div id="allSeasonsContent"><div class="loading"><div class="spinner"></div> Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- PICKUPS -->
+  <div id="section-pickups" style="display:none">
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">Pickup History</div></div>
+      <div id="allPickupsContent"><div class="loading"><div class="spinner"></div> Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- MAP -->
+  <div id="section-map" style="display:none">
+    <div class="panel">
+      <div class="panel-header"><div><div class="panel-title">Farm Locations</div><div class="panel-sub">GPS coordinates of registered farms</div></div></div>
+      <div class="map-area"><div class="map-pin">📍</div><div class="map-label" id="mapLabel">Loading...</div></div>
+      <div style="padding:20px"><table>
+        <thead><tr><th>Farmer</th><th>Village</th><th>Latitude</th><th>Longitude</th><th>Distance</th></tr></thead>
+        <tbody id="mapTableBody"><tr><td colspan="5"><div class="loading"><div class="spinner"></div></div></td></tr></tbody>
+      </table></div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const API = 'http://localhost:3000/api';
+  let allFarmers = [], allSeasons = [], allPickups = [];
+  let currentPage = 1;
+  const perPage = 10;
+  let lastFiltered = null;
+
+  const sections = ['dashboard','farmers','seasons','pickups','map'];
+  const titles = {
+    dashboard:['Dashboard','Overview of your straw collection network'],
+    farmers:  ['All Farmers','Complete farmer registry'],
+    seasons:  ['Harvest Seasons','Upcoming and active harvest seasons'],
+    pickups:  ['Pickup History','All straw collection records'],
+    map:      ['Farm Map','GPS locations of all registered farms'],
+  };
+
+  function showSection(name) {
+    sections.forEach(s => document.getElementById('section-'+s).style.display = s===name?'block':'none');
+    document.querySelectorAll('.nav-item').forEach((el,i) => el.classList.toggle('active', sections[i]===name));
+    document.getElementById('pageTitle').textContent    = titles[name][0];
+    document.getElementById('pageSubtitle').textContent = titles[name][1];
+    if (name==='map')     renderMapTable();
+    if (name==='seasons') renderAllSeasons();
+    if (name==='pickups') renderAllPickups();
+    if (name==='farmers') { populateFilters(); renderAllFarmers(); }
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 3000);
+  }
+
+  async function loadAll() {
+    try {
+      const [fr, pr] = await Promise.all([fetch(`${API}/farmers`), fetch(`${API}/pickups`)]);
+      allFarmers = await fr.json();
+      allPickups = await pr.json();
+      if (allFarmers.length > 0) {
+        const results = await Promise.all(allFarmers.map(f =>
+          fetch(`${API}/seasons/${f.farmer_id}`).then(r=>r.json()).then(s=>s.map(x=>({...x,farmer_name:f.full_name,village_name:f.village_name})))
+        ));
+        allSeasons = results.flat();
+      }
+      renderStats(); renderRecentFarmers(); renderSeasonsSummary(); renderRecentPickups();
+    } catch(e) { showToast('⚠️ Cannot connect to server. Is it running?'); }
+  }
+
+  function renderStats() {
+    const fa = allFarmers.length;
+    const ac = allFarmers.reduce((s,f)=>s+parseFloat(f.total_acres||0),0);
+    const st = allFarmers.reduce((s,f)=>s+(parseFloat(f.total_acres||0)*parseFloat(f.straw_per_acre_kg||0)),0);
+    const tr = allFarmers.reduce((s,f)=>s+parseFloat(f.transport_cost_per_trip||0),0);
+    document.getElementById('stat-farmers').textContent   = fa.toLocaleString('en-IN');
+    document.getElementById('stat-acres').textContent     = ac.toLocaleString('en-IN',{maximumFractionDigits:1});
+    document.getElementById('stat-straw').textContent     = (st/1000).toLocaleString('en-IN',{maximumFractionDigits:1})+'T';
+    document.getElementById('stat-transport').textContent = '₹'+(tr/1000).toLocaleString('en-IN',{maximumFractionDigits:1})+'K';
+  }
+
+  function seasonBadges(farmer) {
+    const s = allSeasons.filter(x=>x.farmer_id===farmer.farmer_id);
+    if (!s.length) return '<span class="badge badge-red">None</span>';
+    return s.map(x=>{
+      const c = x.season_name==='Kharif'?'badge-gold':x.season_name==='Rabi'?'badge-blue':'badge-green';
+      return `<span class="badge ${c}">${x.season_name}</span>`;
+    }).join('');
+  }
+
+  function renderRecentFarmers() {
+    const tbody = document.getElementById('recentFarmersBody');
+    const recent = allFarmers.slice(0,8);
+    if (!recent.length) { tbody.innerHTML=`<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">👨‍🌾</div><p>No farmers yet. <a href="farmer-form.html" style="color:var(--green)">Add your first farmer →</a></p></div></td></tr>`; return; }
+    tbody.innerHTML = recent.map(f=>`<tr>
+      <td><div class="farmer-name">${f.full_name}</div><div class="farmer-phone">${f.phone||'—'}</div></td>
+      <td>${f.village_name||'—'}</td>
+      <td>${parseFloat(f.total_acres).toLocaleString('en-IN')} ac</td>
+      <td>${f.farm_distance_km?f.farm_distance_km+' km':'—'}</td>
+      <td>${seasonBadges(f)}</td>
+    </tr>`).join('');
+  }
+
+  function renderSeasonsSummary() {
+    const counts = { kharif: allSeasons.filter(s=>s.season_name==='Kharif').length, rabi: allSeasons.filter(s=>s.season_name==='Rabi').length, zaid: allSeasons.filter(s=>s.season_name==='Zaid').length };
+    document.getElementById('seasonsSummary').innerHTML = [
+      {key:'kharif',icon:'☀️',name:'Kharif',months:'Oct – Nov',count:counts.kharif},
+      {key:'rabi',  icon:'❄️',name:'Rabi',  months:'Mar – Apr',count:counts.rabi},
+      {key:'zaid',  icon:'🌿',name:'Zaid',  months:'Jun – Jul',count:counts.zaid},
+    ].map(s=>`<div class="season-item">
+      <div class="season-dot ${s.key}">${s.icon}</div>
+      <div class="season-info"><div class="season-name">${s.name}</div><div class="season-detail">${s.months}</div></div>
+      <div class="season-count">${s.count}</div>
+    </div>`).join('') || `<div class="empty-state"><div class="empty-icon">📅</div><p>No seasons yet</p></div>`;
+  }
+
+  function renderRecentPickups() {
+    const el = document.getElementById('recentPickups');
+    const recent = allPickups.slice(0,5);
+    if (!recent.length) { el.innerHTML=`<div class="empty-state"><div class="empty-icon">🚛</div><p>No pickups recorded yet</p></div>`; return; }
+    el.innerHTML = recent.map(p=>{
+      const d=new Date(p.pickup_date);
+      return `<div class="pickup-item">
+        <div class="pickup-date-box"><div class="pd-day">${d.getDate()}</div><div class="pd-mon">${d.toLocaleString('en-IN',{month:'short'})}</div></div>
+        <div class="pickup-info"><div class="pickup-farmer">${p.full_name||'—'}</div><div class="pickup-detail">${p.village_name||''} · ${p.vehicle_no||'No vehicle'}</div></div>
+        <div class="pickup-kg">${p.straw_qty_kg?(p.straw_qty_kg/1000).toFixed(1)+'T':'—'}<span>₹${p.transport_cost?parseFloat(p.transport_cost).toLocaleString('en-IN'):'—'}</span></div>
+      </div>`;
+    }).join('');
+  }
+
+  function populateFilters() {
+    const dSel = document.getElementById('filterDistrict');
+    const vSel = document.getElementById('filterVillage');
+    if (dSel.options.length > 1) return;
+    [...new Set(allFarmers.map(f=>f.district).filter(Boolean))].sort().forEach(d=>{ dSel.innerHTML+=`<option value="${d}">${d}</option>`; });
+    [...new Set(allFarmers.map(f=>f.village_name).filter(Boolean))].sort().forEach(v=>{ vSel.innerHTML+=`<option value="${v}">${v}</option>`; });
+  }
+
+  function filterFarmers() {
+    const search   = (document.getElementById('globalSearch').value||'').toLowerCase();
+    const district = (document.getElementById('filterDistrict')?.value)||'';
+    const village  = (document.getElementById('filterVillage')?.value)||'';
+    const season   = (document.getElementById('filterSeason')?.value)||'';
+    const distance = (document.getElementById('filterDistance')?.value)||'';
+    lastFiltered = allFarmers.filter(f=>{
+      if (search && !f.full_name.toLowerCase().includes(search) && !(f.village_name||'').toLowerCase().includes(search) && !(f.district||'').toLowerCase().includes(search)) return false;
+      if (district && f.district!==district) return false;
+      if (village  && f.village_name!==village) return false;
+      if (season && !allSeasons.some(s=>s.farmer_id===f.farmer_id&&s.season_name===season)) return false;
+      if (distance) {
+        const km=parseFloat(f.farm_distance_km||0);
+        if (distance==='0-30'&&!(km>=0&&km<30)) return false;
+        if (distance==='30-60'&&!(km>=30&&km<60)) return false;
+        if (distance==='60-100'&&!(km>=60&&km<100)) return false;
+        if (distance==='100+'&&!(km>=100)) return false;
+      }
+      return true;
+    });
+    currentPage = 1;
+    renderAllFarmers(lastFiltered);
+  }
+
+  function renderAllFarmers(farmers) {
+    if (!farmers) farmers = allFarmers;
+    const total = farmers.length;
+    const slice = farmers.slice((currentPage-1)*perPage, currentPage*perPage);
+    document.getElementById('farmersCount').textContent = `${total} farmer${total!==1?'s':''} found`;
+    document.getElementById('paginationInfo').textContent = total ? `Showing ${(currentPage-1)*perPage+1}–${Math.min(currentPage*perPage,total)} of ${total}` : 'No results';
+    const tbody = document.getElementById('allFarmersBody');
+    if (!slice.length) { tbody.innerHTML=`<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">🔍</div><p>No farmers match your filters</p></div></td></tr>`; }
+    else tbody.innerHTML = slice.map(f=>{
+      const est = f.total_acres&&f.straw_per_acre_kg ? (parseFloat(f.total_acres)*parseFloat(f.straw_per_acre_kg)/1000).toFixed(1)+'T' : '—';
+      return `<tr>
+        <td><div class="farmer-name">${f.full_name}</div><div class="farmer-phone">${f.phone||'—'}</div></td>
+        <td>${f.village_name||'—'}</td><td>${f.district||'—'}</td>
+        <td>${parseFloat(f.total_acres).toLocaleString('en-IN')} ac</td>
+        <td>${f.straw_per_acre_kg?f.straw_per_acre_kg+' kg':'—'}</td>
+        <td><strong>${est}</strong></td>
+        <td>${f.farm_distance_km?f.farm_distance_km+' km':'—'}</td>
+        <td>${f.transport_cost_per_trip?'₹'+parseFloat(f.transport_cost_per_trip).toLocaleString('en-IN'):'—'}</td>
+        <td>${seasonBadges(f)}</td>
+      </tr>`;
+    }).join('');
+    const pages=Math.ceil(total/perPage);
+    const pb=document.getElementById('pageButtons');
+    pb.innerHTML='';
+    for(let i=1;i<=Math.min(pages,5);i++) {
+      const btn=document.createElement('button');
+      btn.className='page-btn'+(i===currentPage?' active':'');
+      btn.textContent=i;
+      btn.onclick=()=>{ currentPage=i; renderAllFarmers(lastFiltered||allFarmers); };
+      pb.appendChild(btn);
+    }
+  }
+
+  function renderAllSeasons() {
+    const el=document.getElementById('allSeasonsContent');
+    const months=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    if (!allSeasons.length) { el.innerHTML=`<div class="empty-state"><div class="empty-icon">📅</div><p>No seasons recorded yet</p></div>`; return; }
+    el.innerHTML=`<table style="width:100%"><thead><tr><th>Farmer</th><th>Village</th><th>Season</th><th>Period</th><th>Est. Straw</th></tr></thead><tbody>${
+      allSeasons.map(s=>{
+        const c=s.season_name==='Kharif'?'badge-gold':s.season_name==='Rabi'?'badge-blue':'badge-green';
+        return `<tr><td><div class="farmer-name">${s.farmer_name}</div></td><td>${s.village_name||'—'}</td><td><span class="badge ${c}">${s.season_name}</span></td><td>${s.month_start?months[s.month_start]:'—'} – ${s.month_end?months[s.month_end]:'—'}</td><td>${s.expected_straw_kg?(parseFloat(s.expected_straw_kg)/1000).toFixed(1)+' T':'—'}</td></tr>`;
+      }).join('')
+    }</tbody></table>`;
+  }
+
+  function renderAllPickups() {
+    const el=document.getElementById('allPickupsContent');
+    if (!allPickups.length) { el.innerHTML=`<div class="empty-state"><div class="empty-icon">🚛</div><p>No pickups recorded yet</p></div>`; return; }
+    el.innerHTML=`<table style="width:100%"><thead><tr><th>Date</th><th>Farmer</th><th>Village</th><th>Straw (kg)</th><th>Transport</th><th>Vehicle</th><th>Agent</th></tr></thead><tbody>${
+      allPickups.map(p=>`<tr>
+        <td>${new Date(p.pickup_date).toLocaleDateString('en-IN')}</td>
+        <td><div class="farmer-name">${p.full_name||'—'}</div></td>
+        <td>${p.village_name||'—'}</td>
+        <td>${p.straw_qty_kg?parseFloat(p.straw_qty_kg).toLocaleString('en-IN'):'—'}</td>
+        <td>${p.transport_cost?'₹'+parseFloat(p.transport_cost).toLocaleString('en-IN'):'—'}</td>
+        <td>${p.vehicle_no||'—'}</td><td>${p.agent_name||'—'}</td>
+      </tr>`).join('')
+    }</tbody></table>`;
+  }
+
+  function renderMapTable() {
+    const withGPS=allFarmers.filter(f=>f.farm_lat&&f.farm_lng);
+    document.getElementById('mapLabel').textContent = withGPS.length ? `${withGPS.length} farm${withGPS.length!==1?'s':''} with GPS coordinates` : 'No GPS data yet — capture location when adding farmers';
+    const tbody=document.getElementById('mapTableBody');
+    if (!withGPS.length) { tbody.innerHTML=`<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📍</div><p>No GPS coordinates yet</p></div></td></tr>`; return; }
+    tbody.innerHTML=withGPS.map(f=>`<tr>
+      <td><div class="farmer-name">${f.full_name}</div></td>
+      <td>${f.village_name||'—'}</td>
+      <td>${parseFloat(f.farm_lat).toFixed(6)}</td>
+      <td>${parseFloat(f.farm_lng).toFixed(6)}</td>
+      <td>${f.farm_distance_km?f.farm_distance_km+' km':'—'}</td>
+    </tr>`).join('');
+  }
+
+  loadAll();
+</script>
+</body>
+</html>
