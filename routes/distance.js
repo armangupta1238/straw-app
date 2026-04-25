@@ -1,20 +1,37 @@
 const express = require('express');
 const router = express.Router();
+const https = require('https');
 
 const FACTORY_LAT = 21.419798;
 const FACTORY_LNG = 83.585250;
 
-// Resolve short Google Maps link
+// Resolve short Google Maps link by following redirects
 router.get('/resolve', async (req, res) => {
   const { url } = req.query;
   if (!url) return res.status(400).json({ error: 'Missing URL' });
+
   try {
-    const response = await fetch(url, { redirect: 'follow' });
-    res.json({ resolved: response.url });
+    const resolved = await followRedirects(url);
+    res.json({ resolved });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
+function followRedirects(url, maxRedirects = 5) {
+  return new Promise((resolve, reject) => {
+    const request = https.get(url, (response) => {
+      if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
+        if (maxRedirects === 0) return reject(new Error('Too many redirects'));
+        followRedirects(response.headers.location, maxRedirects - 1).then(resolve).catch(reject);
+      } else {
+        resolve(response.headers['x-final-url'] || url);
+      }
+    });
+    request.on('error', reject);
+    request.setTimeout(5000, () => { request.destroy(); reject(new Error('Timeout')); });
+  });
+}
 
 // Calculate road distance
 router.get('/', async (req, res) => {
