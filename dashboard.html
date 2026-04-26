@@ -33,258 +33,54 @@
 
     /* ──────── SIDEBAR ──────── */
     .sidebar {
-      position: fixed;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 240px;
+      position: fixed; left: 0; top: 0; bottom: 0; width: 240px;
       background: linear-gradient(180deg, #1e1b3a 0%, #2d1b69 100%);
-      display: flex;
-      flex-direction: column;
-      z-index: 100;
-      padding: 28px 0 24px 0;
+      display: flex; flex-direction: column; z-index: 100; padding: 28px 0 24px 0;
     }
-    .sidebar-logo {
-      padding: 0 24px 28px 24px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    .logo-badge {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.7);
-      margin-bottom: 6px;
-    }
-    .sidebar-logo h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: 20px;
-      font-weight: 800;
-      color: #ffffff;
-    }
-    .sidebar-logo p {
-      font-size: 11px;
-      color: rgba(255,255,255,0.6);
-      margin-top: 3px;
-    }
-    .nav-section {
-      padding: 20px 16px 8px 16px;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.5);
-    }
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 11px 16px;
-      margin: 2px 8px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 500;
-      color: rgba(255,255,255,0.85);
-      transition: background 0.2s, color 0.2s;
-      text-decoration: none;
-    }
-    .nav-item:hover {
-      background: rgba(255,255,255,0.1);
-      color: #ffffff;
-    }
-    .nav-item.active {
-      background: rgba(167,139,250,0.25);
-      color: #ffffff;
-      font-weight: 600;
-    }
-    .nav-icon {
-      font-size: 16px;
-      width: 20px;
-      text-align: center;
-    }
-    .sidebar-bottom {
-      margin-top: auto;
-      padding: 16px 16px 0 16px;
-      border-top: 1px solid rgba(255,255,255,0.1);
-    }
-    .add-farmer-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      padding: 12px;
-      border-radius: 12px;
-      background: var(--accent);
-      color: #1e1b3a;
-      font-family: 'Syne', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background 0.2s;
-    }
+    .sidebar-logo { padding: 0 24px 28px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .logo-badge { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.7); margin-bottom: 6px; }
+    .sidebar-logo h1 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: #ffffff; }
+    .sidebar-logo p { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+    .nav-section { padding: 20px 16px 8px 16px; font-size: 10px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 11px 16px; margin: 2px 8px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.85); transition: background 0.2s, color 0.2s; text-decoration: none; }
+    .nav-item:hover { background: rgba(255,255,255,0.1); color: #ffffff; }
+    .nav-item.active { background: rgba(167,139,250,0.25); color: #ffffff; font-weight: 600; }
+    .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+    .sidebar-bottom { margin-top: auto; padding: 16px 16px 0 16px; border-top: 1px solid rgba(255,255,255,0.1); }
+    .add-farmer-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; border-radius: 12px; background: var(--accent); color: #1e1b3a; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; border: none; cursor: pointer; text-decoration: none; transition: background 0.2s; }
     .add-farmer-btn:hover { background: #d97706; }
 
     /* ──────── MAIN ──────── */
-    .main {
-      margin-left: 240px;
-      min-height: 100vh;
-      padding: 32px;
-    }
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 28px;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .topbar-left h2 {
-      font-family: 'Syne', sans-serif;
-      font-size: 24px;
-      font-weight: 800;
-    }
-    .topbar-left p {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-    .search-box {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: #fff;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 9px 16px;
-    }
-    .search-box input {
-      border: none;
-      outline: none;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      color: var(--dark);
-      width: 200px;
-      background: transparent;
-    }
+    .main { margin-left: 240px; min-height: 100vh; padding: 32px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; gap: 16px; flex-wrap: wrap; }
+    .topbar-left h2 { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; }
+    .topbar-left p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .search-box { display: flex; align-items: center; gap: 8px; background: #fff; border: 1.5px solid var(--border); border-radius: 12px; padding: 9px 16px; }
+    .search-box input { border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--dark); width: 200px; background: transparent; }
 
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    .stat-card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 20px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      position: relative;
-      overflow: hidden;
-    }
-    .stat-card::before {
-      content:'';
-      position:absolute;
-      top:0; right:0;
-      width:80px; height:80px;
-      border-radius:0 16px 0 80px;
-      opacity:.1;
-    }
-    .stat-card.purple::before{background:var(--primary)}
-    .stat-card.amber::before{background:var(--accent)}
-    .stat-card.blue::before{background:var(--blue)}
-    .stat-card.teal::before{background:var(--teal)}
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .stat-card::before { content:''; position:absolute; top:0; right:0; width:80px; height:80px; border-radius:0 16px 0 80px; opacity:.1; }
+    .stat-card.purple::before{background:var(--primary)} .stat-card.amber::before{background:var(--accent)} .stat-card.blue::before{background:var(--blue)} .stat-card.teal::before{background:var(--teal)}
     .stat-icon { font-size: 22px; margin-bottom: 12px; display: block; }
-    .stat-label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-    .stat-value {
-      font-family: 'Syne', sans-serif;
-      font-size: 28px;
-      font-weight: 800;
-      color: var(--dark);
-      line-height: 1;
-    }
+    .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-bottom: 4px; }
+    .stat-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--dark); line-height: 1; }
     .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-    .content-grid {
-      display: grid;
-      grid-template-columns: 1fr 340px;
-      gap: 20px;
-    }
-    .panel {
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      overflow: hidden;
-    }
-    .panel-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--border);
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+    .content-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+    .panel { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--border); overflow: hidden; }
+    .panel-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--border); gap: 12px; flex-wrap: wrap; }
     .panel-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; }
     .panel-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
-    .panel-action {
-      font-size: 12px;
-      color: var(--primary);
-      font-weight: 600;
-      cursor: pointer;
-      background: var(--primary-pale);
-      padding: 5px 12px;
-      border-radius: 20px;
-      border: none;
-      text-decoration: none;
-    }
+    .panel-action { font-size: 12px; color: var(--primary); font-weight: 600; cursor: pointer; background: var(--primary-pale); padding: 5px 12px; border-radius: 20px; border: none; text-decoration: none; }
 
-    .filters {
-      display: flex;
-      gap: 8px;
-      padding: 14px 20px;
-      border-bottom: 1px solid var(--border);
-      flex-wrap: wrap;
-    }
-    .filter-select {
-      padding: 7px 12px;
-      border-radius: 8px;
-      border: 1.5px solid var(--border);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      color: var(--dark);
-      background: #fff;
-      outline: none;
-      cursor: pointer;
-    }
+    .filters { display: flex; gap: 8px; padding: 14px 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .filter-select { padding: 7px 12px; border-radius: 8px; border: 1.5px solid var(--border); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--dark); background: #fff; outline: none; cursor: pointer; }
     .filter-select:focus { border-color: var(--primary-lt); }
 
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    thead th {
-      padding: 10px 16px;
-      text-align: left;
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .6px;
-      color: var(--muted);
-      background: #fafafe;
-      border-bottom: 1px solid var(--border);
-      white-space: nowrap;
-    }
+    thead th { padding: 10px 16px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); background: #fafafe; border-bottom: 1px solid var(--border); white-space: nowrap; }
     tbody tr { border-bottom: 1px solid var(--border); }
     tbody tr:last-child { border-bottom: none; }
     tbody tr:hover { background: #fafafe; }
@@ -292,14 +88,7 @@
     .farmer-name { font-weight: 600; font-size: 14px; }
     .farmer-phone { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
-    .badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 600;
-      margin: 2px;
-    }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; margin: 2px; }
     .badge-purple{background:var(--primary-pale);color:var(--primary)}
     .badge-amber{background:var(--accent-pale);color:var(--earth)}
     .badge-blue{background:var(--blue-pale);color:var(--blue)}
@@ -307,295 +96,112 @@
     .badge-red{background:var(--red-pale);color:var(--red)}
 
     .right-col { display: flex; flex-direction: column; gap: 20px; }
-
-    .season-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 13px 20px;
-      border-bottom: 1px solid var(--border);
-    }
+    .season-item { display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-bottom: 1px solid var(--border); }
     .season-item:last-child { border-bottom: none; }
-    .season-dot {
-      width: 36px; height: 36px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      flex-shrink: 0;
-    }
-    .season-dot.kharif{background:#fef3c7}
-    .season-dot.rabi{background:#e0f2fe}
-    .season-dot.zaid{background:#ccfbf1}
+    .season-dot { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .season-dot.kharif{background:#fef3c7} .season-dot.rabi{background:#e0f2fe} .season-dot.zaid{background:#ccfbf1}
     .season-info { flex: 1; }
     .season-name { font-weight: 600; font-size: 13px; }
     .season-detail { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .season-count {
-      font-family: 'Syne', sans-serif;
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--primary);
-    }
+    .season-count { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--primary); }
 
-    .pickup-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 20px;
-      border-bottom: 1px solid var(--border);
-    }
+    .pickup-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid var(--border); }
     .pickup-item:last-child { border-bottom: none; }
     .pickup-date-box { width: 40px; text-align: center; flex-shrink: 0; }
-    .pd-day {
-      font-family: 'Syne', sans-serif;
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--primary);
-      line-height: 1;
-    }
-    .pd-mon {
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
+    .pd-day { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--primary); line-height: 1; }
+    .pd-mon { font-size: 10px; font-weight: 600; text-transform: uppercase; color: var(--muted); }
     .pickup-info { flex: 1; }
     .pickup-farmer { font-weight: 600; font-size: 13px; }
     .pickup-detail { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .pickup-kg {
-      font-family: 'Syne', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--earth);
-      text-align: right;
-    }
-    .pickup-kg span {
-      display: block;
-      font-size: 10px;
-      color: var(--muted);
-      font-weight: 400;
-      font-family: 'DM Sans', sans-serif;
-    }
+    .pickup-kg { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--earth); text-align: right; }
+    .pickup-kg span { display: block; font-size: 10px; color: var(--muted); font-weight: 400; font-family: 'DM Sans', sans-serif; }
 
     .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); }
     .empty-icon { font-size: 36px; margin-bottom: 10px; }
 
-    .map-area {
-      background: linear-gradient(135deg, #ede9fe 0%, #c4b5fd 100%);
-      min-height: 220px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 8px;
-      color: var(--primary);
-      font-size: 13px;
-      font-weight: 500;
-    }
+    .map-area { background: linear-gradient(135deg, #ede9fe 0%, #c4b5fd 100%); min-height: 220px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; color: var(--primary); font-size: 13px; font-weight: 500; }
     .map-pin { font-size: 32px; }
 
-    .loading {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 40px;
-      color: var(--muted);
-      font-size: 13px;
-      gap: 8px;
-    }
-    .spinner {
-      width: 18px; height: 18px;
-      border: 2px solid var(--border);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-    }
+    .loading { display: flex; align-items: center; justify-content: center; padding: 40px; color: var(--muted); font-size: 13px; gap: 8px; }
+    .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .pagination {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 20px;
-      border-top: 1px solid var(--border);
-      font-size: 13px;
-      color: var(--muted);
-    }
+    .pagination { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-top: 1px solid var(--border); font-size: 13px; color: var(--muted); }
     .page-btns { display: flex; gap: 6px; }
-    .page-btn {
-      width: 32px; height: 32px;
-      border-radius: 8px;
-      border: 1.5px solid var(--border);
-      background: #fff;
-      font-size: 13px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--dark);
-    }
+    .page-btn { width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid var(--border); background: #fff; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--dark); }
     .page-btn:hover { border-color: var(--primary); color: var(--primary); }
     .page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 
-    .toast {
-      position: fixed;
-      bottom: 24px; right: 24px;
-      background: var(--dark);
-      color: #fff;
-      padding: 12px 20px;
-      border-radius: 12px;
-      font-size: 13px;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: all .3s;
-      z-index: 999;
-    }
+    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--dark); color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 13px; opacity: 0; transform: translateY(10px); transition: all .3s; z-index: 999; }
     .toast.show { opacity: 1; transform: translateY(0); }
 
+    /* ──────── ACTION BUTTONS ──────── */
+    .btn-edit { padding: 5px 10px; border-radius: 7px; border: 1.5px solid var(--primary-pale); background: var(--primary-pale); font-size: 12px; cursor: pointer; color: var(--primary); font-weight: 600; }
+    .btn-edit:hover { background: var(--primary); color: #fff; }
+    .btn-del { padding: 5px 10px; border-radius: 7px; border: 1.5px solid var(--red-pale); background: var(--red-pale); font-size: 12px; cursor: pointer; color: var(--red); font-weight: 600; }
+    .btn-del:hover { background: var(--red); color: #fff; }
+
+    /* ──────── EDIT MODAL ──────── */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(30,27,58,0.55); z-index: 500; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: #fff; border-radius: 20px; padding: 32px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 80px rgba(109,40,217,0.2); }
+    .modal h2 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--dark); margin-bottom: 4px; }
+    .modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .modal-fld { display: flex; flex-direction: column; gap: 5px; }
+    .modal-fld.full { grid-column: 1 / -1; }
+    .modal-fld label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .6px; color: var(--primary); }
+    .modal-fld input { padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--dark); background: #fff; outline: none; }
+    .modal-fld input:focus { border-color: var(--primary-lt); box-shadow: 0 0 0 3px rgba(167,139,250,0.15); }
+    .modal-btns { display: flex; gap: 10px; margin-top: 24px; }
+    .modal-save { flex: 2; padding: 13px; border-radius: 12px; border: none; background: var(--primary); color: #fff; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; }
+    .modal-save:hover { background: #5b21b6; }
+    .modal-cancel { flex: 1; padding: 13px; border-radius: 12px; border: 1.5px solid var(--border); background: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: var(--muted); cursor: pointer; }
+
     /* ──────── AGENTS ──────── */
-    .ag-stats {
-      display: grid;
-      grid-template-columns: repeat(3,1fr);
-      gap: 16px;
-      padding: 20px;
-      border-bottom: 1px solid var(--border);
-    }
-    .ag-stat-box {
-      background: var(--bg);
-      border-radius: 12px;
-      padding: 16px;
-      text-align: center;
-    }
-    .ag-stat-num {
-      font-family: 'Syne', sans-serif;
-      font-size: 26px;
-      font-weight: 800;
-      color: var(--primary);
-    }
-    .ag-stat-txt {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 4px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-    }
-    .ag-form {
-      padding: 20px;
-      border-bottom: 1px solid var(--border);
-      background: #fafafe;
-    }
-    .ag-form h3 {
-      font-family: 'Syne', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 14px;
-    }
-    .ag-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr auto;
-      gap: 10px;
-      align-items: end;
-    }
+    .ag-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; padding: 20px; border-bottom: 1px solid var(--border); }
+    .ag-stat-box { background: var(--bg); border-radius: 12px; padding: 16px; text-align: center; }
+    .ag-stat-num { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--primary); }
+    .ag-stat-txt { font-size: 11px; color: var(--muted); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+    .ag-form { padding: 20px; border-bottom: 1px solid var(--border); background: #fafafe; }
+    .ag-form h3 { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+    .ag-grid { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: end; }
     .ag-fld { display: flex; flex-direction: column; gap: 5px; }
-    .ag-fld label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .8px;
-      color: var(--primary);
-    }
-    .ag-input {
-      padding: 10px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      color: var(--dark);
-      background: #fff;
-      outline: none;
-    }
+    .ag-fld label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; color: var(--primary); }
+    .ag-input { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--dark); background: #fff; outline: none; }
     .ag-input:focus { border-color: var(--primary-lt); }
-    .ag-add-btn {
-      padding: 10px 20px;
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-family: 'Syne', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      height: 42px;
-    }
+    .ag-add-btn { padding: 10px 20px; background: var(--primary); color: #fff; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; height: 42px; }
     .ag-add-btn:hover { background: #5b21b6; }
-    .ag-card {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-      flex-wrap: wrap;
-    }
+    .ag-card { border-bottom: 1px solid var(--border); }
     .ag-card:last-child { border-bottom: none; }
-    .ag-card:hover { background: #fafafe; }
-    .ag-avatar {
-      width: 44px; height: 44px;
-      border-radius: 12px;
-      background: var(--primary-pale);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
-    }
+    .ag-card-top { display: flex; align-items: center; gap: 16px; padding: 16px 20px; flex-wrap: wrap; cursor: pointer; }
+    .ag-card-top:hover { background: #fafafe; }
+    .ag-avatar { width: 44px; height: 44px; border-radius: 12px; background: var(--primary-pale); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
     .ag-info { flex: 1; min-width: 200px; }
     .ag-name { font-weight: 700; font-size: 14px; }
     .ag-uname { font-size: 12px; color: var(--muted); margin-top: 2px; }
     .ag-meta { display: flex; gap: 16px; margin-top: 6px; }
     .ag-meta-i { display: flex; flex-direction: column; align-items: center; }
-    .ag-meta-v {
-      font-family: 'Syne', sans-serif;
-      font-size: 16px;
-      font-weight: 800;
-      color: var(--primary);
-    }
-    .ag-meta-l {
-      font-size: 10px;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
+    .ag-meta-v { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--primary); }
+    .ag-meta-l { font-size: 10px; color: var(--muted); text-transform: uppercase; }
     .ag-acts { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    .ag-status {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 20px;
-    }
+    .ag-status { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
     .ag-status.on { background: var(--teal-pale); color: var(--teal); }
     .ag-status.off { background: var(--red-pale); color: var(--red); }
-    .ag-tog {
-      padding: 6px 12px;
-      border-radius: 8px;
-      border: 1.5px solid var(--border);
-      background: #fff;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      color: var(--dark);
-    }
+    .ag-tog { padding: 6px 12px; border-radius: 8px; border: 1.5px solid var(--border); background: #fff; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--dark); }
     .ag-tog:hover { border-color: var(--primary); color: var(--primary); }
-    .ag-del {
-      padding: 6px 10px;
-      border-radius: 8px;
-      border: 1.5px solid var(--red-pale);
-      background: var(--red-pale);
-      font-size: 12px;
-      cursor: pointer;
-      color: var(--red);
-    }
+    .ag-del { padding: 6px 10px; border-radius: 8px; border: 1.5px solid var(--red-pale); background: var(--red-pale); font-size: 12px; cursor: pointer; color: var(--red); }
     .ag-del:hover { background: var(--red); color: #fff; }
+
+    /* Agent farmer list */
+    .ag-farmers { display: none; background: #fafafe; border-top: 1px solid var(--border); padding: 12px 20px 16px 80px; }
+    .ag-farmers.open { display: block; }
+    .ag-farmers-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin-bottom: 10px; }
+    .ag-farmer-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .ag-farmer-row:last-child { border-bottom: none; }
+    .ag-farmer-name { font-weight: 600; }
+    .ag-farmer-detail { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .ag-expand-icon { font-size: 11px; color: var(--muted); margin-left: auto; padding-left: 12px; }
 
     /* ──────── RESPONSIVE ──────── */
     @media (max-width: 1100px) {
@@ -603,34 +209,11 @@
       .content-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 768px) {
-      .sidebar {
-        position: relative;
-        width: 100%;
-        height: auto;
-        flex-direction: row;
-        flex-wrap: wrap;
-        padding: 16px;
-        gap: 6px;
-      }
-      .sidebar-logo {
-        width: 100%;
-        padding: 0 0 16px 0;
-        margin-bottom: 8px;
-      }
+      .sidebar { position: relative; width: 100%; height: auto; flex-direction: row; flex-wrap: wrap; padding: 16px; gap: 6px; }
+      .sidebar-logo { width: 100%; padding: 0 0 16px 0; margin-bottom: 8px; }
       .nav-section { display: none; }
-      .nav-item {
-        flex: 1 1 auto;
-        margin: 0;
-        padding: 8px 12px;
-        font-size: 12px;
-        justify-content: center;
-        background: rgba(255,255,255,0.05);
-      }
-      .sidebar-bottom {
-        width: 100%;
-        margin-top: 12px;
-        padding: 12px 0 0 0;
-      }
+      .nav-item { flex: 1 1 auto; margin: 0; padding: 8px 12px; font-size: 12px; justify-content: center; background: rgba(255,255,255,0.05); }
+      .sidebar-bottom { width: 100%; margin-top: 12px; padding: 12px 0 0 0; }
       .main { margin-left: 0; padding: 16px; }
       .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
       .stat-card { padding: 14px; }
@@ -638,6 +221,8 @@
       .ag-grid { grid-template-columns: 1fr; }
       .ag-add-btn { width: 100%; }
       .search-box input { width: 140px; }
+      .modal { padding: 20px; margin: 16px; }
+      .modal-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -647,7 +232,7 @@
   <div class="sidebar-logo">
     <div class="logo-badge">🌾 Control Panel</div>
     <h1>Straw Collector</h1>
-    <p>Saraipali Factory</p>
+    <p>Saraipali Operations</p>
   </div>
   <div class="nav-section">Main</div>
   <a class="nav-item active" onclick="showSection('dashboard')"><span class="nav-icon">📊</span><span>Dashboard</span></a>
@@ -675,6 +260,7 @@
     </div>
   </div>
 
+  <!-- DASHBOARD -->
   <div id="section-dashboard">
     <div class="stats-grid">
       <div class="stat-card purple"><span class="stat-icon">👨‍🌾</span><div class="stat-label">Total Farmers</div><div class="stat-value" id="stat-farmers">—</div><div class="stat-sub">Registered</div></div>
@@ -709,6 +295,7 @@
     </div>
   </div>
 
+  <!-- FARMERS -->
   <div id="section-farmers" style="display:none">
     <div class="panel">
       <div class="panel-header">
@@ -733,8 +320,8 @@
         </select>
       </div>
       <div class="table-wrap"><table>
-        <thead><tr><th>Farmer</th><th>Village</th><th>District</th><th>Acres</th><th>Straw/Acre</th><th>Est. Straw</th><th>Distance</th><th>Transport</th><th>Seasons</th></tr></thead>
-        <tbody id="allFarmersBody"><tr><td colspan="9"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
+        <thead><tr><th>Farmer</th><th>Village</th><th>District</th><th>Acres</th><th>Straw/Acre</th><th>Est. Straw</th><th>Distance</th><th>Transport</th><th>Seasons</th><th>Added By</th><th>Actions</th></tr></thead>
+        <tbody id="allFarmersBody"><tr><td colspan="11"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
       </table></div>
       <div class="pagination">
         <span id="paginationInfo">—</span>
@@ -743,6 +330,7 @@
     </div>
   </div>
 
+  <!-- AGENTS -->
   <div id="section-agents" style="display:none">
     <div class="panel">
       <div class="panel-header">
@@ -766,6 +354,7 @@
     </div>
   </div>
 
+  <!-- SEASONS -->
   <div id="section-seasons" style="display:none">
     <div class="panel">
       <div class="panel-header"><div class="panel-title">Harvest Seasons</div></div>
@@ -773,6 +362,7 @@
     </div>
   </div>
 
+  <!-- PICKUPS -->
   <div id="section-pickups" style="display:none">
     <div class="panel">
       <div class="panel-header"><div class="panel-title">Pickup History</div></div>
@@ -780,6 +370,7 @@
     </div>
   </div>
 
+  <!-- MAP -->
   <div id="section-map" style="display:none">
     <div class="panel">
       <div class="panel-header"><div><div class="panel-title">Farm Locations</div><div class="panel-sub">GPS coordinates of registered farms</div></div></div>
@@ -792,6 +383,28 @@
   </div>
 </main>
 
+<!-- EDIT FARMER MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <h2>Edit Farmer</h2>
+    <p class="modal-sub">Update farmer details. Changes save instantly to the database.</p>
+    <div class="modal-grid">
+      <div class="modal-fld full"><label>Full Name</label><input type="text" id="edit_full_name" placeholder="Full name"/></div>
+      <div class="modal-fld"><label>Phone</label><input type="text" id="edit_phone" placeholder="Mobile number"/></div>
+      <div class="modal-fld"><label>Total Acres</label><input type="number" id="edit_total_acres" placeholder="e.g. 5.5" step="0.1"/></div>
+      <div class="modal-fld"><label>Straw/Acre (kg)</label><input type="number" id="edit_straw_per_acre" placeholder="e.g. 1200"/></div>
+      <div class="modal-fld"><label>Distance (km)</label><input type="number" id="edit_distance" placeholder="e.g. 24.5" step="0.1"/></div>
+      <div class="modal-fld"><label>Transport Cost (₹)</label><input type="number" id="edit_transport" placeholder="e.g. 1800"/></div>
+      <div class="modal-fld"><label>Village</label><input type="text" id="edit_village" placeholder="Village name"/></div>
+      <div class="modal-fld"><label>District</label><input type="text" id="edit_district" placeholder="District name"/></div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-save" id="modalSaveBtn" onclick="saveFarmer()">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -800,6 +413,7 @@
   let currentPage = 1;
   const perPage = 10;
   let lastFiltered = null;
+  let editingFarmerId = null;
 
   const sections = ['dashboard','farmers','agents','seasons','pickups','map'];
   const titles = {
@@ -887,7 +501,7 @@
       <div class="season-dot ${s.key}">${s.icon}</div>
       <div class="season-info"><div class="season-name">${s.name}</div><div class="season-detail">${s.months}</div></div>
       <div class="season-count">${s.count}</div>
-    </div>`).join('') || `<div class="empty-state"><div class="empty-icon">📅</div><p>No seasons yet</p></div>`;
+    </div>`).join('');
   }
 
   function renderRecentPickups() {
@@ -943,7 +557,7 @@
     document.getElementById('farmersCount').textContent = `${total} farmer${total!==1?'s':''} found`;
     document.getElementById('paginationInfo').textContent = total ? `Showing ${(currentPage-1)*perPage+1}–${Math.min(currentPage*perPage,total)} of ${total}` : 'No results';
     const tbody = document.getElementById('allFarmersBody');
-    if (!slice.length) { tbody.innerHTML=`<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">🔍</div><p>No farmers match your filters</p></div></td></tr>`; }
+    if (!slice.length) { tbody.innerHTML=`<tr><td colspan="11"><div class="empty-state"><div class="empty-icon">🔍</div><p>No farmers match your filters</p></div></td></tr>`; }
     else tbody.innerHTML = slice.map(f=>{
       const est = f.total_acres&&f.straw_per_acre_kg ? (parseFloat(f.total_acres)*parseFloat(f.straw_per_acre_kg)/1000).toFixed(1)+'T' : '—';
       return `<tr>
@@ -955,6 +569,11 @@
         <td>${f.farm_distance_km?f.farm_distance_km+' km':'—'}</td>
         <td>${f.transport_cost_per_trip?'₹'+parseFloat(f.transport_cost_per_trip).toLocaleString('en-IN'):'—'}</td>
         <td>${seasonBadges(f)}</td>
+        <td><span class="badge badge-purple">${f.added_by_name||'—'}</span></td>
+        <td style="white-space:nowrap">
+          <button class="btn-edit" onclick="openEditModal(${f.farmer_id})">✏️ Edit</button>
+          <button class="btn-del" onclick="deleteFarmer(${f.farmer_id},'${f.full_name.replace(/'/g,"\\'")}')">🗑</button>
+        </td>
       </tr>`;
     }).join('');
     const pages=Math.ceil(total/perPage);
@@ -969,6 +588,80 @@
     }
   }
 
+  // ── DELETE FARMER ──
+  async function deleteFarmer(id, name) {
+    try {
+      await fetch(`${API}/farmers/${id}`, { method: 'DELETE' });
+      allFarmers = allFarmers.filter(f => f.farmer_id !== id);
+      allSeasons = allSeasons.filter(s => s.farmer_id !== id);
+      showToast(`🗑 "${name}" deleted`);
+      renderAllFarmers(lastFiltered ? lastFiltered.filter(f=>f.farmer_id!==id) : allFarmers);
+      renderStats();
+    } catch(e) { showToast('❌ Could not delete farmer'); }
+  }
+
+  // ── EDIT FARMER MODAL ──
+  function openEditModal(id) {
+    const f = allFarmers.find(x => x.farmer_id === id);
+    if (!f) return;
+    editingFarmerId = id;
+    document.getElementById('edit_full_name').value      = f.full_name || '';
+    document.getElementById('edit_phone').value          = f.phone || '';
+    document.getElementById('edit_total_acres').value    = f.total_acres || '';
+    document.getElementById('edit_straw_per_acre').value = f.straw_per_acre_kg || '';
+    document.getElementById('edit_distance').value       = f.farm_distance_km || '';
+    document.getElementById('edit_transport').value      = f.transport_cost_per_trip || '';
+    document.getElementById('edit_village').value        = f.village_name || '';
+    document.getElementById('edit_district').value       = f.district || '';
+    document.getElementById('editModal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('editModal').classList.remove('open');
+    editingFarmerId = null;
+  }
+
+  async function saveFarmer() {
+    if (!editingFarmerId) return;
+    const btn = document.getElementById('modalSaveBtn');
+    btn.textContent = '⏳ Saving...'; btn.disabled = true;
+    try {
+      const body = {
+        full_name:               document.getElementById('edit_full_name').value.trim(),
+        phone:                   document.getElementById('edit_phone').value.trim(),
+        total_acres:             document.getElementById('edit_total_acres').value,
+        straw_per_acre_kg:       document.getElementById('edit_straw_per_acre').value,
+        farm_distance_km:        document.getElementById('edit_distance').value,
+        transport_cost_per_trip: document.getElementById('edit_transport').value,
+        village_name:            document.getElementById('edit_village').value.trim(),
+        district:                document.getElementById('edit_district').value.trim(),
+      };
+      const res  = await fetch(`${API}/farmers/${editingFarmerId}`, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+      const data = await res.json();
+      if (data.farmer_id) {
+        // Update local array
+        const idx = allFarmers.findIndex(f => f.farmer_id === editingFarmerId);
+        if (idx !== -1) {
+          allFarmers[idx] = { ...allFarmers[idx], ...body,
+            village_name: body.village_name,
+            district:     body.district,
+          };
+        }
+        showToast(`✅ "${body.full_name}" updated!`);
+        closeModal();
+        renderAllFarmers(lastFiltered || allFarmers);
+        renderStats();
+      } else { showToast('❌ Could not save changes'); }
+    } catch(e) { showToast('❌ Server error'); }
+    btn.textContent = '💾 Save Changes'; btn.disabled = false;
+  }
+
+  // Close modal on overlay click
+  document.getElementById('editModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // ── AGENTS ──
   async function loadAgents() {
     try {
       const res = await fetch(`${API}/auth/agents`);
@@ -987,25 +680,48 @@
     document.getElementById('agStatFarmers').textContent= farmers;
     const el = document.getElementById('agentsList');
     if (!allAgents.length) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">🧑‍💼</div><p>No agents yet. Add your first agent above!</p></div>`; return; }
-    el.innerHTML = allAgents.map(a=>`
-      <div class="ag-card">
-        <div class="ag-avatar">🧑‍💼</div>
-        <div class="ag-info">
-          <div class="ag-name">${a.full_name}</div>
-          <div class="ag-uname">@${a.username}</div>
-          <div class="ag-meta">
-            <div class="ag-meta-i"><div class="ag-meta-v">${a.farmers_added||0}</div><div class="ag-meta-l">Farmers</div></div>
-            <div class="ag-meta-i"><div class="ag-meta-v">${parseFloat(a.total_acres||0).toFixed(0)}</div><div class="ag-meta-l">Acres</div></div>
-            <div class="ag-meta-i"><div class="ag-meta-v">${parseFloat(a.total_straw_tons||0).toFixed(1)}T</div><div class="ag-meta-l">Straw</div></div>
+    el.innerHTML = allAgents.map(a => {
+      const agentFarmers = allFarmers.filter(f => f.added_by_user_id === a.user_id);
+      const farmersHtml = agentFarmers.length ? agentFarmers.map(f=>`
+        <div class="ag-farmer-row">
+          <div>
+            <div class="ag-farmer-name">${f.full_name}</div>
+            <div class="ag-farmer-detail">${f.village_name||'—'} · ${f.total_acres} ac · ${f.farm_distance_km?f.farm_distance_km+' km':'no GPS'}</div>
           </div>
-        </div>
-        <div class="ag-acts">
-          <span class="ag-status ${a.is_active?'on':'off'}">${a.is_active?'✅ Active':'❌ Inactive'}</span>
-          <button class="ag-tog" onclick="toggleAgent(${a.user_id})">${a.is_active?'Deactivate':'Activate'}</button>
-          <button class="ag-del" onclick="deleteAgent(${a.user_id},'${a.full_name}')">🗑</button>
-        </div>
-      </div>
-    `).join('');
+          <span class="badge badge-purple">${seasonBadges(f)}</span>
+        </div>`).join('') :
+        `<div style="font-size:12px;color:var(--muted);padding:8px 0;">No farmers added yet</div>`;
+      return `
+        <div class="ag-card">
+          <div class="ag-card-top" onclick="toggleAgentFarmers(${a.user_id})">
+            <div class="ag-avatar">🧑‍💼</div>
+            <div class="ag-info">
+              <div class="ag-name">${a.full_name}</div>
+              <div class="ag-uname">@${a.username}</div>
+              <div class="ag-meta">
+                <div class="ag-meta-i"><div class="ag-meta-v">${a.farmers_added||0}</div><div class="ag-meta-l">Farmers</div></div>
+                <div class="ag-meta-i"><div class="ag-meta-v">${parseFloat(a.total_acres||0).toFixed(0)}</div><div class="ag-meta-l">Acres</div></div>
+                <div class="ag-meta-i"><div class="ag-meta-v">${parseFloat(a.total_straw_tons||0).toFixed(1)}T</div><div class="ag-meta-l">Straw</div></div>
+              </div>
+            </div>
+            <div class="ag-acts">
+              <span class="ag-status ${a.is_active?'on':'off'}">${a.is_active?'✅ Active':'❌ Inactive'}</span>
+              <button class="ag-tog" onclick="event.stopPropagation();toggleAgent(${a.user_id})">${a.is_active?'Deactivate':'Activate'}</button>
+              <button class="ag-del" onclick="event.stopPropagation();deleteAgent(${a.user_id},'${a.full_name.replace(/'/g,"\\'")}')">🗑</button>
+            </div>
+            <span class="ag-expand-icon">▼ ${agentFarmers.length} farmer${agentFarmers.length!==1?'s':''}</span>
+          </div>
+          <div class="ag-farmers" id="agFarmers_${a.user_id}">
+            <div class="ag-farmers-title">Farmers registered by ${a.full_name}</div>
+            ${farmersHtml}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function toggleAgentFarmers(id) {
+    const el = document.getElementById('agFarmers_' + id);
+    if (el) el.classList.toggle('open');
   }
 
   async function addAgent() {
@@ -1034,8 +750,11 @@
   }
 
   async function deleteAgent(id, name) {
-    if (!confirm(`Delete agent "${name}"? This cannot be undone.`)) return;
-    try { await fetch(`${API}/auth/agents/${id}`, { method:'DELETE' }); showToast(`🗑 Agent "${name}" deleted`); loadAgents(); } catch(e) { showToast('❌ Could not delete agent'); }
+    try {
+      await fetch(`${API}/auth/agents/${id}`, { method:'DELETE' });
+      showToast(`🗑 Agent "${name}" deleted`);
+      loadAgents();
+    } catch(e) { showToast('❌ Could not delete agent'); }
   }
 
   function renderAllSeasons() {
