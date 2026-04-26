@@ -26,18 +26,22 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Get all agents (for dashboard)
+// Get all agents with full stats
 router.get('/agents', async (req, res) => {
   try {
-    const result = await pool.query(
-      `SELECT u.user_id, u.full_name, u.username, u.role, u.is_active, u.created_at,
-        COUNT(f.farmer_id) as farmers_added
-       FROM users u
-       LEFT JOIN farmers f ON f.added_by_user_id = u.user_id
-       WHERE u.role = 'agent'
-       GROUP BY u.user_id
-       ORDER BY u.created_at DESC`
-    );
+    const result = await pool.query(`
+      SELECT
+        u.user_id, u.full_name, u.username, u.role, u.is_active, u.created_at,
+        COUNT(DISTINCT f.farmer_id) as farmers_added,
+        COALESCE(SUM(f.total_acres), 0) as total_acres,
+        COALESCE(SUM(p.straw_qty_kg) / 1000, 0) as total_straw_tons
+      FROM users u
+      LEFT JOIN farmers f ON f.added_by_user_id = u.user_id
+      LEFT JOIN pickups p ON p.farmer_id = f.farmer_id
+      WHERE u.role = 'agent'
+      GROUP BY u.user_id
+      ORDER BY u.created_at DESC
+    `);
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
