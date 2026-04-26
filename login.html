@@ -4,144 +4,420 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Straw Collector — Login</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <title>Straw Collector — Agent Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 ```
+:root {
+  --wheat: #e8c97a;
+  --wheat-light: #f5e4a8;
+  --earth: #3b2a14;
+  --earth-mid: #5c4020;
+  --green-deep: #1c3d28;
+  --green-mid: #2e6642;
+  --green-light: #4a8c60;
+  --cream: #faf6ec;
+  --muted: #a89070;
+}
+
+html, body {
+  height: 100%;
+}
+
 body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--earth);
+  display: flex;
+  align-items: stretch;
   min-height: 100vh;
-  font-family: 'DM Sans', sans-serif;
-  background: #1a4731;
+  overflow: hidden;
+}
+
+/* ── LEFT PANEL ── */
+.left {
+  flex: 1;
+  background: var(--green-deep);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 56px 52px;
+  overflow: hidden;
+}
+
+/* Grain overlay */
+.left::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+  background-size: 180px;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Big decorative straw field */
+.field-art {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.stalk {
+  position: absolute;
+  bottom: 0;
+  width: 3px;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(to top, var(--earth-mid), var(--green-mid) 60%, var(--wheat) 100%);
+  transform-origin: bottom center;
+  animation: sway 4s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+.stalk::after {
+  content: '🌾';
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 22px;
+  filter: saturate(0.6) brightness(1.1);
+}
+
+@keyframes sway {
+  0%, 100% { transform: rotate(-2deg); }
+  50%       { transform: rotate(2deg); }
+}
+
+/* circle glow */
+.glow {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(74,140,96,0.25) 0%, transparent 70%);
+  top: -100px;
+  left: -120px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.left-content {
+  position: relative;
+  z-index: 1;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(232,201,122,0.12);
+  border: 1px solid rgba(232,201,122,0.3);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--wheat);
+  margin-bottom: 28px;
+}
+
+.badge span { font-size: 14px; }
+
+.left h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(42px, 5vw, 64px);
+  font-weight: 900;
+  color: var(--cream);
+  line-height: 1.05;
+  letter-spacing: -1px;
+  margin-bottom: 20px;
+}
+
+.left h1 em {
+  font-style: normal;
+  color: var(--wheat);
+}
+
+.left p {
+  font-size: 15px;
+  font-weight: 300;
+  color: rgba(250,246,236,0.55);
+  max-width: 340px;
+  line-height: 1.7;
+  margin-bottom: 40px;
+}
+
+.stats {
+  display: flex;
+  gap: 32px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--wheat);
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: rgba(250,246,236,0.35);
+}
+
+/* ── RIGHT PANEL ── */
+.right {
+  width: 480px;
+  flex-shrink: 0;
+  background: var(--cream);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 32px 20px;
+  padding: 56px 52px;
+  position: relative;
 }
 
-/* Top logo area */
-.top {
-  text-align: center;
-  margin-bottom: 28px;
-}
-.top .icon {
-  font-size: 56px;
-  display: block;
-  margin-bottom: 10px;
-}
-.top h1 {
-  font-family: 'Syne', sans-serif;
-  font-size: 30px;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: -0.5px;
-}
-.top p {
-  font-size: 14px;
-  color: rgba(255,255,255,0.55);
-  margin-top: 4px;
+.right::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent, var(--wheat), transparent);
+  opacity: 0.6;
 }
 
-/* White card */
-.card {
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 36px 32px;
+.form-wrap {
   width: 100%;
-  max-width: 360px;
-  box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+  max-width: 340px;
+  animation: fadeUp 0.6s ease both;
 }
 
-.card h2 {
-  font-family: 'Syne', sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-  color: #1a1f16;
-  margin-bottom: 6px;
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.card p {
-  font-size: 13px;
-  color: #7a8270;
-  margin-bottom: 28px;
+
+.logo-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.logo-icon {
+  width: 44px;
+  height: 44px;
+  background: var(--green-deep);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--earth);
+  line-height: 1.1;
+}
+
+.logo-sub {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.form-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--earth);
+  margin-bottom: 8px;
+}
+
+.form-sub {
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--muted);
+  margin-bottom: 36px;
 }
 
 /* Fields */
 .field {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
+
 .field label {
   display: block;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: #2d6a4f;
+  color: var(--green-deep);
   margin-bottom: 8px;
 }
+
+.input-wrap {
+  position: relative;
+}
+
+.input-wrap svg {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+  pointer-events: none;
+  transition: color 0.2s;
+}
+
 .field input {
-  display: block;
   width: 100%;
-  padding: 14px 16px;
-  font-family: 'DM Sans', sans-serif;
+  padding: 14px 16px 14px 44px;
+  font-family: 'Outfit', sans-serif;
   font-size: 15px;
-  color: #1a1f16;
-  background: #f4f8f5;
-  border: 2px solid #d4e6da;
+  font-weight: 400;
+  color: var(--earth);
+  background: #ffffff;
+  border: 1.5px solid #ddd5c4;
   border-radius: 12px;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
-.field input::placeholder {
-  color: #b0bdb5;
-}
+
+.field input::placeholder { color: #c4b89e; }
+
 .field input:focus {
-  border-color: #52b788;
-  box-shadow: 0 0 0 4px rgba(82,183,136,0.15);
-  background: #ffffff;
+  border-color: var(--green-mid);
+  box-shadow: 0 0 0 4px rgba(46,102,66,0.1);
+}
+
+.field input:focus + svg,
+.input-wrap:focus-within svg {
+  color: var(--green-mid);
+}
+
+/* Reorder so icon sits on top */
+.input-wrap input { order: 1; }
+.input-wrap svg   { order: 2; }
+
+/* Password input needs extra right padding for the eye button */
+#password { padding-right: 52px; }
+
+/* show-password toggle */
+.toggle-pw {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #eee8dc;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--earth-mid);
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+  line-height: 1;
+}
+.toggle-pw:hover {
+  background: var(--green-deep);
+  color: var(--wheat-light);
 }
 
 /* Button */
 .btn {
-  display: block;
   width: 100%;
   padding: 16px;
   margin-top: 8px;
-  font-family: 'Syne', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  color: #ffffff;
-  background: #2d6a4f;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--cream);
+  background: var(--green-deep);
   border: none;
-  border-radius: 14px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  letter-spacing: 0.3px;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
 }
-.btn:hover   { background: #1f4f39; }
-.btn:active  { transform: scale(0.98); }
-.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, transparent 60%);
+}
+
+.btn:hover {
+  background: var(--green-mid);
+  box-shadow: 0 8px 24px rgba(28,61,40,0.3);
+}
+
+.btn:active { transform: scale(0.985); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
 /* Error */
 .error {
   display: none;
-  margin-top: 14px;
+  margin-top: 16px;
   padding: 12px 16px;
-  background: #fde8ea;
-  border: 1px solid #f5c2c7;
+  background: #fdf0f0;
+  border: 1px solid #f0c8c8;
   border-radius: 10px;
   font-size: 13px;
-  color: #c0392b;
+  color: #b03030;
   text-align: center;
 }
 .error.show { display: block; }
 
-/* Footer */
-.footer {
-  margin-top: 24px;
+.footer-note {
+  margin-top: 32px;
   font-size: 12px;
-  color: rgba(255,255,255,0.3);
+  font-weight: 400;
+  color: #bbb0a0;
   text-align: center;
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 820px) {
+  body { flex-direction: column; overflow: auto; }
+  .left { min-height: 260px; padding: 40px 28px 36px; flex: none; }
+  .right { width: 100%; padding: 40px 28px; }
+  .left h1 { font-size: 36px; }
+  .stats { display: none; }
 }
 ```
 
@@ -149,45 +425,95 @@ body {
 </head>
 <body>
 
-  <!-- LOGO -->
+  <!-- LEFT PANEL -->
 
-  <div class="top">
-    <span class="icon">🌾</span>
-    <h1>Straw Collector</h1>
-    <p>Field Agent Portal</p>
-  </div>
-
-  <!-- WHITE CARD -->
-
-  <div class="card">
-    <h2>Welcome back!</h2>
-    <p>Sign in to continue</p>
+  <div class="left">
+    <div class="glow"></div>
 
 ```
-<div class="field">
-  <label>Username</label>
-  <input type="text" id="username" placeholder="Enter your username" autocomplete="username"/>
+<!-- Animated stalks -->
+<div class="field-art" id="fieldArt"></div>
+
+<div class="left-content">
+  <div class="badge"><span>🌾</span> Field Agent Portal</div>
+  <h1>Harvest.<br/><em>Track.</em><br/>Collect.</h1>
+  <p>Your all-in-one platform for managing straw collection routes, farmer records, and field operations across your region.</p>
+  <div class="stats">
+    <div class="stat-item">
+      <span class="stat-num">240+</span>
+      <span class="stat-label">Farmers</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">18</span>
+      <span class="stat-label">Active Agents</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">5 T</span>
+      <span class="stat-label">Collected</span>
+    </div>
+  </div>
 </div>
-
-<div class="field">
-  <label>Password</label>
-  <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter') login()"/>
-</div>
-
-<button class="btn" id="loginBtn" onclick="login()">Sign In →</button>
-
-<div class="error" id="errorMsg">❌ Invalid username or password.</div>
 ```
 
   </div>
 
-  <div class="footer">Straw Collector © 2025</div>
+  <!-- RIGHT PANEL -->
+
+  <div class="right">
+    <div class="form-wrap">
+
+```
+  <div class="logo-row">
+    <div class="logo-icon">🌾</div>
+    <div class="logo-text">
+      <span class="logo-name">Straw Collector</span>
+      <span class="logo-sub">Agent Portal</span>
+    </div>
+  </div>
+
+  <div class="form-title">Welcome back</div>
+  <div class="form-sub">Sign in to your agent account</div>
+
+  <div class="field">
+    <label>Username</label>
+    <div class="input-wrap">
+      <input type="text" id="username" placeholder="Enter your username" autocomplete="username"/>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Password</label>
+    <div class="input-wrap">
+      <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter') login()"/>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+      </svg>
+      <button class="toggle-pw" type="button" id="togglePw" aria-label="Toggle password visibility">
+        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <button class="btn" id="loginBtn" onclick="login()">Sign In →</button>
+  <div class="error" id="errorMsg"></div>
+
+  <div class="footer-note">Straw Collector © 2025 · For authorized field agents only</div>
+</div>
+```
+
+  </div>
 
 <script>
   const API = 'https://straw-app-production.up.railway.app/api';
   const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
 
-  // Auto-login check
+  // Auto-login
   try {
     const saved = localStorage.getItem('agent');
     if (saved) {
@@ -200,19 +526,46 @@ body {
     }
   } catch(e) {}
 
+  // Generate stalks
+  const art = document.getElementById('fieldArt');
+  for (let i = 0; i < 22; i++) {
+    const s = document.createElement('div');
+    s.className = 'stalk';
+    const h = 120 + Math.random() * 180;
+    s.style.cssText = `
+      left: ${2 + i * 4.5 + Math.random() * 3}%;
+      height: ${h}px;
+      animation-delay: ${Math.random() * 4}s;
+      animation-duration: ${3 + Math.random() * 3}s;
+      opacity: ${0.3 + Math.random() * 0.4};
+    `;
+    art.appendChild(s);
+  }
+
+  const pwInput  = document.getElementById('password');
+  const togglePw = document.getElementById('togglePw');
+  const EYE_ON  = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+  const EYE_OFF = `<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>`;
+
+  togglePw.addEventListener('click', () => {
+    const isText = pwInput.type === 'text';
+    pwInput.type = isText ? 'password' : 'text';
+    document.getElementById('eyeIcon').innerHTML = isText ? EYE_ON : EYE_OFF;
+  });
+
   async function login() {
     const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value.trim();
+    const password = pwInput.value.trim();
     const btn      = document.getElementById('loginBtn');
     const err      = document.getElementById('errorMsg');
 
     if (!username || !password) {
-      err.textContent = '⚠️ Please enter username and password.';
+      err.textContent = '⚠️ Please enter your username and password.';
       err.classList.add('show');
       return;
     }
 
-    btn.textContent = '⏳ Signing in...';
+    btn.textContent = 'Signing in…';
     btn.disabled    = true;
     err.classList.remove('show');
 
@@ -227,6 +580,7 @@ body {
       if (data.success) {
         data.loginTime = Date.now();
         localStorage.setItem('agent', JSON.stringify(data));
+        btn.textContent = '✓ Redirecting…';
         window.location.href = 'farmer-form.html';
       } else {
         err.textContent = '❌ Invalid username or password.';
@@ -235,7 +589,7 @@ body {
         btn.disabled    = false;
       }
     } catch(e) {
-      err.textContent = '❌ Cannot connect to server. Try again.';
+      err.textContent = '❌ Cannot connect to server. Please try again.';
       err.classList.add('show');
       btn.textContent = 'Sign In →';
       btn.disabled    = false;
