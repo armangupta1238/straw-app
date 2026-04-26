@@ -405,6 +405,28 @@
 
 <script>
   const API = 'https://straw-app-production.up.railway.app/api';
+  // ── LOGIN GATE ──
+  // Bounce to login.html if there's no valid agent session.
+  // Sessions expire after 30 days.
+  (function checkAuth() {
+    const raw = localStorage.getItem('agent');
+    if (!raw) {
+      window.location.href = 'login.html';
+      return;
+    }
+    try {
+      const session = JSON.parse(raw);
+      const ageMs = Date.now() - (session.loginTime || 0);
+      const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+      if (!session.user_id || !session.full_name || ageMs > THIRTY_DAYS) {
+        localStorage.removeItem('agent');
+        window.location.href = 'login.html';
+      }
+    } catch (e) {
+      localStorage.removeItem('agent');
+      window.location.href = 'login.html';
+    }
+  })();
   let currentStep = 1;
   const totalSteps = 4;
   const selectedSeasons = new Set();
@@ -627,6 +649,8 @@
     const nextBtn = document.getElementById('nextBtn');
     nextBtn.textContent = '⏳ Saving...'; nextBtn.disabled = true;
     try {
+      // Read the logged-in agent so we can stamp the farmer with who added them
+      const agent = JSON.parse(localStorage.getItem('agent'));
       const villageRes = await fetch(`${API}/villages`, {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
@@ -652,8 +676,9 @@
           farm_lng:                document.getElementById('farm_lng').value || null,
           farm_distance_km:        document.getElementById('farm_distance_km').value || null,
           transport_cost_per_trip: document.getElementById('transport_cost').value || null,
+          added_by_user_id:        agent.user_id,
+          added_by_name:           agent.full_name,
         })
-      });
       const farmer = await farmerRes.json();
 
       for (const key of selectedSeasons) {

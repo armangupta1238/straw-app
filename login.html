@@ -579,7 +579,7 @@ body {
 
       if (data.success) {
         data.loginTime = Date.now();
-        localStorage.setItem('agent', JSON.stringify(data));
+        localStorage.setItem('agent', JSON.stringify({ ...data, loginTime: Date.now() }));
         btn.textContent = '✓ Redirecting…';
         window.location.href = 'farmer-form.html';
       } else {
