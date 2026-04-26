@@ -133,39 +133,39 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
 .toast { position: fixed; bottom: 24px; right: 24px; background: var(--dark); color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 13px; opacity: 0; transform: translateY(10px); transition: all .3s; z-index: 999; }
 .toast.show { opacity: 1; transform: translateY(0); }
 
-.agents-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; padding: 20px; border-bottom: 1px solid var(--border); }
-.agent-stat { background: var(--bg); border-radius: 12px; padding: 16px; text-align: center; }
-.agent-stat-val { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--green); }
-.agent-stat-lbl { font-size: 11px; color: var(--muted); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
-.add-agent-form { padding: 20px; border-bottom: 1px solid var(--border); background: #fafbf8; }
-.add-agent-form h3 { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 14px; color: var(--dark); }
-.agent-form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: end; }
-.agent-input-wrap { display: flex; flex-direction: column; gap: 5px; }
-.agent-input-wrap label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; color: var(--green); }
-.agent-input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--dark); background: #fff; outline: none; transition: border-color .2s; }
-.agent-input:focus { border-color: var(--green-lt); }
-.agent-add-btn { padding: 10px 20px; background: var(--green); color: #fff; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: background .2s; white-space: nowrap; height: 42px; }
-.agent-add-btn:hover { background: #235c42; }
-.agent-add-btn:disabled { opacity: .5; cursor: not-allowed; }
-.agent-card { display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-bottom: 1px solid var(--border); transition: background .15s; }
-.agent-card:last-child { border-bottom: none; }
-.agent-card:hover { background: #fafbf8; }
-.agent-avatar { width: 44px; height: 44px; border-radius: 12px; background: var(--green-pale); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-.agent-info { flex: 1; }
-.agent-name { font-weight: 700; font-size: 14px; }
-.agent-username { font-size: 12px; color: var(--muted); margin-top: 2px; }
-.agent-meta { display: flex; gap: 16px; margin-top: 6px; }
-.agent-meta-item { display: flex; flex-direction: column; align-items: center; }
-.agent-meta-val { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--green); }
-.agent-meta-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
-.agent-actions { display: flex; gap: 8px; align-items: center; }
-.agent-status { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
-.agent-status.active { background: var(--green-pale); color: var(--green); }
-.agent-status.inactive { background: var(--red-pale); color: var(--red); }
-.agent-toggle-btn { padding: 6px 12px; border-radius: 8px; border: 1.5px solid var(--border); background: #fff; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--dark); transition: all .2s; font-family: 'DM Sans', sans-serif; }
-.agent-toggle-btn:hover { border-color: var(--green); color: var(--green); }
-.agent-delete-btn { padding: 6px 10px; border-radius: 8px; border: 1.5px solid var(--red-pale); background: var(--red-pale); font-size: 12px; cursor: pointer; color: var(--red); transition: all .2s; }
-.agent-delete-btn:hover { background: var(--red); color: #fff; border-color: var(--red); }
+/* Agents */
+.ag-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; padding: 20px; border-bottom: 1px solid var(--border); }
+.ag-stat-box { background: var(--bg); border-radius: 12px; padding: 16px; text-align: center; }
+.ag-stat-num { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--green); }
+.ag-stat-txt { font-size: 11px; color: var(--muted); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+.ag-form { padding: 20px; border-bottom: 1px solid var(--border); background: #fafbf8; }
+.ag-form h3 { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+.ag-grid { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: end; }
+.ag-fld { display: flex; flex-direction: column; gap: 5px; }
+.ag-fld label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; color: var(--green); }
+.ag-input { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--dark); background: #fff; outline: none; }
+.ag-input:focus { border-color: var(--green-lt); }
+.ag-add-btn { padding: 10px 20px; background: var(--green); color: #fff; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; height: 42px; }
+.ag-add-btn:hover { background: #235c42; }
+.ag-card { display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.ag-card:last-child { border-bottom: none; }
+.ag-card:hover { background: #fafbf8; }
+.ag-avatar { width: 44px; height: 44px; border-radius: 12px; background: var(--green-pale); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.ag-info { flex: 1; }
+.ag-name { font-weight: 700; font-size: 14px; }
+.ag-uname { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.ag-meta { display: flex; gap: 16px; margin-top: 6px; }
+.ag-meta-i { display: flex; flex-direction: column; align-items: center; }
+.ag-meta-v { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--green); }
+.ag-meta-l { font-size: 10px; color: var(--muted); text-transform: uppercase; }
+.ag-acts { display: flex; gap: 8px; align-items: center; }
+.ag-status { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+.ag-status.on { background: var(--green-pale); color: var(--green); }
+.ag-status.off { background: var(--red-pale); color: var(--red); }
+.ag-tog { padding: 6px 12px; border-radius: 8px; border: 1.5px solid var(--border); background: #fff; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--dark); }
+.ag-tog:hover { border-color: var(--green); color: var(--green); }
+.ag-del { padding: 6px 10px; border-radius: 8px; border: 1.5px solid var(--red-pale); background: var(--red-pale); font-size: 12px; cursor: pointer; color: var(--red); }
+.ag-del:hover { background: var(--red); color: #fff; }
 ```
 
   </style>
@@ -179,12 +179,12 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
     <p>Saraipali Factory</p>
   </div>
   <div class="nav-section">Main</div>
-  <a class="nav-item active" data-section="dashboard" onclick="showSection('dashboard')"><span class="nav-icon">📊</span><span>Dashboard</span></a>
-  <a class="nav-item" data-section="farmers" onclick="showSection('farmers')"><span class="nav-icon">👨‍🌾</span><span>All Farmers</span></a>
-  <a class="nav-item" data-section="agents" onclick="showSection('agents')"><span class="nav-icon">🧑‍💼</span><span>Field Agents</span></a>
-  <a class="nav-item" data-section="seasons" onclick="showSection('seasons')"><span class="nav-icon">🌾</span><span>Harvest Seasons</span></a>
-  <a class="nav-item" data-section="pickups" onclick="showSection('pickups')"><span class="nav-icon">🚛</span><span>Pickups</span></a>
-  <a class="nav-item" data-section="map" onclick="showSection('map')"><span class="nav-icon">🗺️</span><span>Farm Map</span></a>
+  <a class="nav-item active" onclick="showSection('dashboard')"><span class="nav-icon">📊</span><span>Dashboard</span></a>
+  <a class="nav-item" onclick="showSection('farmers')"><span class="nav-icon">👨‍🌾</span><span>All Farmers</span></a>
+  <a class="nav-item" onclick="showSection('agents')"><span class="nav-icon">🧑‍💼</span><span>Field Agents</span></a>
+  <a class="nav-item" onclick="showSection('seasons')"><span class="nav-icon">🌾</span><span>Harvest Seasons</span></a>
+  <a class="nav-item" onclick="showSection('pickups')"><span class="nav-icon">🚛</span><span>Pickups</span></a>
+  <a class="nav-item" onclick="showSection('map')"><span class="nav-icon">🗺️</span><span>Farm Map</span></a>
   <div class="sidebar-bottom">
     <a href="farmer-form.html" class="add-farmer-btn"><span>+</span><span>Add Farmer</span></a>
   </div>
@@ -277,34 +277,25 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
     </div>
   </div>
 
-  <!-- FIELD AGENTS -->
+  <!-- AGENTS -->
 
   <div id="section-agents" style="display:none">
     <div class="panel">
       <div class="panel-header">
         <div><div class="panel-title">Field Agents</div><div class="panel-sub" id="agentsCount">Loading...</div></div>
       </div>
-      <div class="agents-stats">
-        <div class="agent-stat"><div class="agent-stat-val" id="agentStatTotal">—</div><div class="agent-stat-lbl">Total Agents</div></div>
-        <div class="agent-stat"><div class="agent-stat-val" id="agentStatActive">—</div><div class="agent-stat-lbl">Active</div></div>
-        <div class="agent-stat"><div class="agent-stat-val" id="agentStatFarmers">—</div><div class="agent-stat-lbl">Farmers Added</div></div>
+      <div class="ag-stats">
+        <div class="ag-stat-box"><div class="ag-stat-num" id="agStatTotal">—</div><div class="ag-stat-txt">Total Agents</div></div>
+        <div class="ag-stat-box"><div class="ag-stat-num" id="agStatActive">—</div><div class="ag-stat-txt">Active</div></div>
+        <div class="ag-stat-box"><div class="ag-stat-num" id="agStatFarmers">—</div><div class="ag-stat-txt">Farmers Added</div></div>
       </div>
-      <div class="add-agent-form">
+      <div class="ag-form">
         <h3>➕ Add New Agent</h3>
-        <div class="agent-form-grid">
-          <div class="agent-input-wrap">
-            <label>Full Name</label>
-            <input class="agent-input" type="text" id="newAgentName" placeholder="e.g. Rahul Kumar"/>
-          </div>
-          <div class="agent-input-wrap">
-            <label>Username</label>
-            <input class="agent-input" type="text" id="newAgentUsername" placeholder="e.g. rahul_agent"/>
-          </div>
-          <div class="agent-input-wrap">
-            <label>Password</label>
-            <input class="agent-input" type="text" id="newAgentPassword" placeholder="e.g. straw2025"/>
-          </div>
-          <button class="agent-add-btn" id="addAgentBtn" onclick="addAgent()">Add Agent</button>
+        <div class="ag-grid">
+          <div class="ag-fld"><label>Full Name</label><input class="ag-input" type="text" id="newAgentName" placeholder="e.g. Rahul Kumar"/></div>
+          <div class="ag-fld"><label>Username</label><input class="ag-input" type="text" id="newAgentUsername" placeholder="e.g. rahul_agent"/></div>
+          <div class="ag-fld"><label>Password</label><input class="ag-input" type="text" id="newAgentPassword" placeholder="e.g. straw2025"/></div>
+          <button class="ag-add-btn" id="addAgentBtn" onclick="addAgent()">Add Agent</button>
         </div>
       </div>
       <div id="agentsList"><div class="loading"><div class="spinner"></div> Loading agents...</div></div>
@@ -352,6 +343,7 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
   const perPage = 10;
   let lastFiltered = null;
 
+  const sections = ['dashboard','farmers','agents','seasons','pickups','map'];
   const titles = {
     dashboard:['Dashboard','Overview of your straw collection network'],
     farmers:  ['All Farmers','Complete farmer registry'],
@@ -362,12 +354,8 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
   };
 
   function showSection(name) {
-    ['dashboard','farmers','agents','seasons','pickups','map'].forEach(s => {
-      document.getElementById('section-'+s).style.display = s===name?'block':'none';
-    });
-    document.querySelectorAll('.nav-item').forEach(el => {
-      el.classList.toggle('active', el.dataset.section === name);
-    });
+    sections.forEach(s => document.getElementById('section-'+s).style.display = s===name?'block':'none');
+    document.querySelectorAll('.nav-item').forEach((el,i) => el.classList.toggle('active', sections[i]===name));
     document.getElementById('pageTitle').textContent    = titles[name][0];
     document.getElementById('pageSubtitle').textContent = titles[name][1];
     if (name==='map')     renderMapTable();
@@ -541,32 +529,28 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
     const total   = allAgents.length;
     const active  = allAgents.filter(a=>a.is_active).length;
     const farmers = allAgents.reduce((s,a)=>s+parseInt(a.farmers_added||0),0);
-    document.getElementById('agentsCount').textContent      = `${total} agent${total!==1?'s':''} registered`;
-    document.getElementById('agentStatTotal').textContent   = total;
-    document.getElementById('agentStatActive').textContent  = active;
-    document.getElementById('agentStatFarmers').textContent = farmers;
-
+    document.getElementById('agentsCount').textContent  = `${total} agent${total!==1?'s':''} registered`;
+    document.getElementById('agStatTotal').textContent  = total;
+    document.getElementById('agStatActive').textContent = active;
+    document.getElementById('agStatFarmers').textContent= farmers;
     const el = document.getElementById('agentsList');
-    if (!allAgents.length) {
-      el.innerHTML = `<div class="empty-state"><div class="empty-icon">🧑‍💼</div><p>No agents yet. Add your first agent above!</p></div>`;
-      return;
-    }
+    if (!allAgents.length) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">🧑‍💼</div><p>No agents yet. Add your first agent above!</p></div>`; return; }
     el.innerHTML = allAgents.map(a=>`
-      <div class="agent-card">
-        <div class="agent-avatar">🧑‍💼</div>
-        <div class="agent-info">
-          <div class="agent-name">${a.full_name}</div>
-          <div class="agent-username">@${a.username}</div>
-          <div class="agent-meta">
-            <div class="agent-meta-item"><div class="agent-meta-val">${a.farmers_added||0}</div><div class="agent-meta-lbl">Farmers</div></div>
-            <div class="agent-meta-item"><div class="agent-meta-val">${parseFloat(a.total_acres||0).toFixed(0)}</div><div class="agent-meta-lbl">Acres</div></div>
-            <div class="agent-meta-item"><div class="agent-meta-val">${parseFloat(a.total_straw_tons||0).toFixed(1)}T</div><div class="agent-meta-lbl">Straw</div></div>
+      <div class="ag-card">
+        <div class="ag-avatar">🧑‍💼</div>
+        <div class="ag-info">
+          <div class="ag-name">${a.full_name}</div>
+          <div class="ag-uname">@${a.username}</div>
+          <div class="ag-meta">
+            <div class="ag-meta-i"><div class="ag-meta-v">${a.farmers_added||0}</div><div class="ag-meta-l">Farmers</div></div>
+            <div class="ag-meta-i"><div class="ag-meta-v">${parseFloat(a.total_acres||0).toFixed(0)}</div><div class="ag-meta-l">Acres</div></div>
+            <div class="ag-meta-i"><div class="ag-meta-v">${parseFloat(a.total_straw_tons||0).toFixed(1)}T</div><div class="ag-meta-l">Straw</div></div>
           </div>
         </div>
-        <div class="agent-actions">
-          <span class="agent-status ${a.is_active?'active':'inactive'}">${a.is_active?'✅ Active':'❌ Inactive'}</span>
-          <button class="agent-toggle-btn" onclick="toggleAgent(${a.user_id})">${a.is_active?'Deactivate':'Activate'}</button>
-          <button class="agent-delete-btn" onclick="deleteAgent(${a.user_id},'${a.full_name}')">🗑</button>
+        <div class="ag-acts">
+          <span class="ag-status ${a.is_active?'on':'off'}">${a.is_active?'✅ Active':'❌ Inactive'}</span>
+          <button class="ag-tog" onclick="toggleAgent(${a.user_id})">${a.is_active?'Deactivate':'Activate'}</button>
+          <button class="ag-del" onclick="deleteAgent(${a.user_id},'${a.full_name}')">🗑</button>
         </div>
       </div>
     `).join('');
@@ -580,11 +564,7 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
     const btn = document.getElementById('addAgentBtn');
     btn.disabled = true; btn.textContent = 'Adding...';
     try {
-      const res  = await fetch(`${API}/auth/agents`, {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({full_name:name, username, password})
-      });
+      const res  = await fetch(`${API}/auth/agents`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({full_name:name, username, password}) });
       const data = await res.json();
       if (data.user_id) {
         showToast(`✅ Agent "${name}" created!`);
@@ -592,27 +572,18 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
         document.getElementById('newAgentUsername').value = '';
         document.getElementById('newAgentPassword').value = '';
         loadAgents();
-      } else {
-        showToast('❌ ' + (data.error||'Could not create agent'));
-      }
+      } else { showToast('❌ ' + (data.error||'Could not create agent')); }
     } catch(e) { showToast('❌ Server error'); }
     btn.disabled = false; btn.textContent = 'Add Agent';
   }
 
   async function toggleAgent(id) {
-    try {
-      await fetch(`${API}/auth/agents/${id}`, { method:'PATCH' });
-      loadAgents();
-    } catch(e) { showToast('❌ Could not update agent'); }
+    try { await fetch(`${API}/auth/agents/${id}`, { method:'PATCH' }); loadAgents(); } catch(e) { showToast('❌ Could not update agent'); }
   }
 
   async function deleteAgent(id, name) {
     if (!confirm(`Delete agent "${name}"? This cannot be undone.`)) return;
-    try {
-      await fetch(`${API}/auth/agents/${id}`, { method:'DELETE' });
-      showToast(`🗑 Agent "${name}" deleted`);
-      loadAgents();
-    } catch(e) { showToast('❌ Could not delete agent'); }
+    try { await fetch(`${API}/auth/agents/${id}`, { method:'DELETE' }); showToast(`🗑 Agent "${name}" deleted`); loadAgents(); } catch(e) { showToast('❌ Could not delete agent'); }
   }
 
   function renderAllSeasons() {
