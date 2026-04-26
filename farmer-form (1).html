@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Straw Collector — Add Farmer</title>
+
+  <!-- ══ AUTH GATE — runs before anything else on the page ══ -->
+  <script>
+    if (!localStorage.getItem('agent')) {
+      window.location.replace('login.html');
+    }
+  </script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green:    #2d6a4f;
+      --green-lt: #52b788;
+      --gold:     #f4a261;
+      --cream:    #fefae0;
+      --earth:    #bc6c25;
+      --dark:     #1b1f16;
+      --card:     #ffffff;
+      --muted:    #6b7563;
+      --border:   #d8e2c2;
+      --radius:   16px;
+      --shadow:   0 4px 24px rgba(45,106,79,0.10);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--dark);
+      min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse at 20% 0%, #b7e4c720 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 100%, #f4a26120 0%, transparent 60%);
+    }
+    header {
+      background: var(--green);
+      color: #fff;
+      padding: 28px 24px 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before { content:''; position:absolute; right:-40px; top:-40px; width:180px; height:180px; border-radius:50%; background:rgba(255,255,255,0.06); }
+    header::after  { content:''; position:absolute; right:30px; bottom:-60px; width:120px; height:120px; border-radius:50%; background:rgba(255,255,255,0.04); }
+    .header-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.15); border-radius:20px; padding:4px 12px; font-size:11px; font-weight:500; letter-spacing:.5px; text-transform:uppercase; margin-bottom:10px; }
+    header h1 { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; line-height:1.15; position:relative; z-index:1; }
+    header p  { font-size:13px; opacity:.75; margin-top:4px; position:relative; z-index:1; }
+
+    .progress-bar { display:flex; gap:6px; padding:18px 24px 0; }
+    .progress-step { flex:1; height:4px; border-radius:4px; background:var(--border); transition:background .3s; }
+    .progress-step.active { background:var(--green-lt); }
+    .progress-step.done   { background:var(--green); }
+    .step-labels { display:flex; justify-content:space-between; padding:6px 24px 0; font-size:10px; color:var(--muted); font-weight:500; text-transform:uppercase; letter-spacing:.4px; }
+
+    .section { display:none; padding:20px 24px; animation:fadeUp .35s ease; }
+    .section.active { display:block; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+
+    .section-title { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; color:var(--green); margin-bottom:4px; }
+    .section-sub   { font-size:12px; color:var(--muted); margin-bottom:20px; }
+
+    .card { background:var(--card); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); border:1px solid var(--border); margin-bottom:16px; }
+
+    .field { margin-bottom:16px; }
+    .field:last-child { margin-bottom:0; }
+    .field label { display:block; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin-bottom:6px; }
+    .field input, .field select, .field textarea {
+      width:100%; padding:13px 16px; border:1.5px solid var(--border); border-radius:12px;
+      font-family:'DM Sans',sans-serif; font-size:15px; color:var(--dark); background:#fff;
+      outline:none; transition:border-color .2s,box-shadow .2s; -webkit-appearance:none;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color:var(--green-lt); box-shadow:0 0 0 3px rgba(82,183,136,0.15); }
+    .field textarea { resize:vertical; min-height:80px; }
+    .field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+    /* Location method tabs */
+    .method-tabs { display:flex; gap:8px; margin-bottom:14px; }
+    .method-tab {
+      flex:1; padding:11px 8px; border-radius:12px; border:1.5px solid var(--border);
+      background:#fff; color:var(--muted); font-family:'DM Sans',sans-serif; font-size:13px;
+      font-weight:600; cursor:pointer; transition:all .2s; text-align:center;
+    }
+    .method-tab.active { background:var(--green); color:#fff; border-color:var(--green); }
+
+    .gps-btn {
+      width:100%; padding:14px; border-radius:12px; border:1.5px dashed var(--green-lt);
+      background:rgba(82,183,136,0.06); color:var(--green); font-family:'DM Sans',sans-serif;
+      font-size:14px; font-weight:600; cursor:pointer; display:flex; align-items:center;
+      justify-content:center; gap:8px; transition:all .2s;
+    }
+    .gps-btn.captured { background:rgba(45,106,79,0.08); border-color:var(--green); border-style:solid; }
+    .gps-coords { font-size:11px; color:var(--green); margin-top:6px; text-align:center; font-weight:500; }
+
+    .maps-hint {
+      background:#f0f7f4; border-radius:12px; padding:12px 14px;
+      font-size:12px; color:var(--muted); line-height:1.7; margin-bottom:10px;
+    }
+    .maps-hint strong { color:var(--green); }
+
+    .distance-box {
+      padding:13px 16px; border-radius:12px; border:1.5px solid var(--border);
+      background:rgba(45,106,79,0.05); font-size:15px; font-weight:600; color:var(--green);
+      min-height:50px; display:flex; align-items:center;
+    }
+    .distance-box.success { border-color:var(--green-lt); }
+
+    .status-msg { font-size:12px; margin-top:6px; font-weight:500; }
+    .status-msg.ok  { color:var(--green); }
+    .status-msg.err { color:var(--earth); }
+    .status-msg.loading { color:var(--muted); }
+
+    /* Season chips */
+    .season-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .season-chip { border:1.5px solid var(--border); border-radius:12px; padding:14px 12px; cursor:pointer; transition:all .2s; text-align:center; background:#fff; }
+    .season-chip.selected { border-color:var(--green); background:rgba(45,106,79,0.07); }
+    .chip-icon  { font-size:24px; margin-bottom:4px; }
+    .chip-name  { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:var(--dark); }
+    .chip-months{ font-size:10px; color:var(--muted); margin-top:2px; }
+    .season-chip.selected .chip-name { color:var(--green); }
+
+    /* Review */
+    .summary-row { display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid var(--border); font-size:14px; }
+    .summary-row:last-child { border-bottom:none; }
+    .summary-label { color:var(--muted); font-size:12px; font-weight:500; }
+    .summary-value { font-weight:600; color:var(--dark); text-align:right; max-width:60%; font-size:13px; }
+    .highlight-box { background:linear-gradient(135deg,var(--green) 0%,#40916c 100%); border-radius:var(--radius); padding:18px 20px; color:#fff; margin-bottom:16px; }
+    .hl-label { font-size:11px; opacity:.75; text-transform:uppercase; letter-spacing:.5px; }
+    .hl-value { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; margin-top:4px; }
+    .hl-sub   { font-size:12px; opacity:.7; margin-top:2px; }
+
+    /* Estimate pill */
+    .estimate-pill { display:inline-flex; align-items:center; gap:6px; background:rgba(244,162,97,0.15); border:1px solid rgba(244,162,97,0.4); border-radius:20px; padding:6px 14px; font-size:13px; font-weight:600; color:var(--earth); margin-top:10px; }
+
+    /* Nav */
+    .nav-btns { display:flex; gap:12px; padding:16px 24px 32px; position:sticky; bottom:0; background:linear-gradient(to top,var(--cream) 80%,transparent); }
+    .btn-back { flex:1; padding:15px; border-radius:14px; border:1.5px solid var(--border); background:#fff; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:500; color:var(--muted); cursor:pointer; }
+    .btn-next { flex:2; padding:15px; border-radius:14px; border:none; background:var(--green); color:#fff; font-family:'Syne',sans-serif; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
+    .btn-next:disabled { opacity:.6; }
+    .btn-next.submit { background:var(--earth); }
+
+    /* Success */
+    .success-screen { display:none; padding:48px 24px; text-align:center; animation:fadeUp .4s ease; }
+    .success-screen.active { display:block; }
+    .success-icon { width:80px; height:80px; background:linear-gradient(135deg,var(--green-lt),var(--green)); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:36px; margin:0 auto 20px; box-shadow:0 8px 32px rgba(45,106,79,0.3); }
+    .success-screen h2 { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:var(--green); margin-bottom:8px; }
+    .success-screen p  { color:var(--muted); font-size:14px; line-height:1.6; }
+    .btn-add-another { margin-top:32px; width:100%; padding:16px; border-radius:14px; border:none; background:var(--green); color:#fff; font-family:'Syne',sans-serif; font-size:16px; font-weight:700; cursor:pointer; }
+
+    /* Toast */
+    .toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--dark); color:#fff; padding:10px 20px; border-radius:20px; font-size:13px; font-weight:500; opacity:0; transition:all .3s; z-index:999; white-space:nowrap; }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-badge">🌾 Field Agent App</div>
+  <h1>Straw Collector</h1>
+  <p>Register a new farmer & farm details</p>
+</header>
+
+<!-- PROGRESS -->
+<div class="progress-bar">
+  <div class="progress-step active" id="p1"></div>
+  <div class="progress-step" id="p2"></div>
+  <div class="progress-step" id="p3"></div>
+  <div class="progress-step" id="p4"></div>
+</div>
+<div class="step-labels">
+  <span>Farmer</span><span>Location</span><span>Seasons</span><span>Review</span>
+</div>
+
+<!-- ══ STEP 1: FARMER INFO ══ -->
+<div class="section active" id="step1">
+  <p class="section-title">Farmer Details</p>
+  <p class="section-sub">Basic information about the farmer</p>
+  <div class="card">
+    <div class="field">
+      <label>Full Name *</label>
+      <input type="text" id="full_name" placeholder="e.g. Ramesh Kumar Sahu"/>
+    </div>
+    <div class="field">
+      <label>Mobile Number</label>
+      <input type="tel" id="phone" placeholder="10-digit mobile number"/>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Total Acres *</label>
+        <input type="number" id="total_acres" placeholder="e.g. 5.5" step="0.1" min="0" oninput="updateEstimate()"/>
+      </div>
+      <div class="field">
+        <label>Straw/Acre (kg)</label>
+        <input type="number" id="straw_per_acre" placeholder="e.g. 1200" oninput="updateEstimate()"/>
+      </div>
+    </div>
+    <div id="estimate_pill" style="display:none">
+      <div class="estimate-pill">🌾 Est. Total Straw: <span id="est_val">0</span> kg</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ STEP 2: LOCATION ══ -->
+<div class="section" id="step2">
+  <p class="section-title">Farm Location</p>
+  <p class="section-sub">Village, district & farm coordinates</p>
+
+  <div class="card">
+    <div class="field">
+      <label>Village Name *</label>
+      <input type="text" id="village_name" placeholder="e.g. Bagbahra"/>
+    </div>
+    <div class="field">
+      <label>District *</label>
+      <input type="text" id="district" placeholder="e.g. Mahasamund"/>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="field">
+      <label>📍 Add Farm Location</label>
+      <div class="method-tabs">
+        <button class="method-tab active" id="tab_gps" onclick="switchTab('gps')">📡 Capture GPS</button>
+        <button class="method-tab" id="tab_link" onclick="switchTab('link')">🔗 Google Maps Link</button>
+      </div>
+
+      <!-- GPS METHOD -->
+      <div id="panel_gps">
+        <button class="gps-btn" id="gpsBtn" onclick="captureGPS()">
+          <span id="gpsBtnIcon">📡</span> <span id="gpsBtnText">Capture My Location</span>
+        </button>
+        <div class="gps-coords" id="gpsDisplay"></div>
+      </div>
+
+      <!-- GOOGLE MAPS LINK METHOD -->
+      <div id="panel_link" style="display:none">
+        <div class="maps-hint">
+          <strong>How to get a Google Maps link:</strong><br/>
+          1. Open Google Maps on your phone<br/>
+          2. Long press on the farm location 📍<br/>
+          3. Tap the <strong>coordinates</strong> shown at the top<br/>
+          4. Tap <strong>Share</strong> → <strong>Copy link</strong><br/>
+          5. Paste the link below 👇
+        </div>
+        <input type="text" id="maps_link" placeholder="Paste Google Maps link here..." oninput="handleMapsLink()"/>
+        <div class="status-msg" id="link_status"></div>
+      </div>
+    </div>
+
+    <!-- DISTANCE RESULT -->
+    <div class="field">
+      <label>Road Distance from BPCL Factory, Baulsingha</label>
+      <div class="distance-box" id="distance_display">— Add farm location above first</div>
+      <div class="status-msg" id="dist_status"></div>
+    </div>
+
+    <!-- Hidden fields -->
+    <input type="hidden" id="farm_lat"/>
+    <input type="hidden" id="farm_lng"/>
+    <input type="hidden" id="farm_distance_km"/>
+    <input type="hidden" id="transport_cost"/>
+  </div>
+</div>
+
+<!-- ══ STEP 3: HARVEST SEASONS ══ -->
+<div class="section" id="step3">
+  <p class="section-title">Harvest Seasons</p>
+  <p class="section-sub">Which seasons does this farmer harvest paddy?</p>
+  <div class="card">
+    <div class="season-grid">
+      <div class="season-chip" id="chip_kharif" onclick="toggleSeason('kharif')">
+        <div class="chip-icon">☀️</div>
+        <div class="chip-name">Kharif</div>
+        <div class="chip-months">Oct – Nov</div>
+      </div>
+      <div class="season-chip" id="chip_rabi" onclick="toggleSeason('rabi')">
+        <div class="chip-icon">❄️</div>
+        <div class="chip-name">Rabi</div>
+        <div class="chip-months">Mar – Apr</div>
+      </div>
+      <div class="season-chip" id="chip_zaid" onclick="toggleSeason('zaid')">
+        <div class="chip-icon">🌿</div>
+        <div class="chip-name">Zaid</div>
+        <div class="chip-months">Jun – Jul</div>
+      </div>
+      <div class="season-chip" id="chip_custom" onclick="toggleSeason('custom')">
+        <div class="chip-icon">📅</div>
+        <div class="chip-name">Custom</div>
+        <div class="chip-months">Set manually</div>
+      </div>
+    </div>
+  </div>
+  <div class="card" id="customSeasonCard" style="display:none">
+    <p style="font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:var(--green); margin-bottom:12px;">Custom Season</p>
+    <div class="field">
+      <label>Season Name</label>
+      <input type="text" id="custom_season_name" placeholder="e.g. Summer Harvest"/>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Start Month</label>
+        <select id="custom_month_start">
+          <option value="">Select</option>
+          <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+          <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+          <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+          <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>End Month</label>
+        <select id="custom_month_end">
+          <option value="">Select</option>
+          <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+          <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+          <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+          <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="field">
+      <label>Additional Notes</label>
+      <textarea id="notes" placeholder="Any special notes about this farmer or farm..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ══ STEP 4: REVIEW ══ -->
+<div class="section" id="step4">
+  <p class="section-title">Review & Save</p>
+  <p class="section-sub">Confirm all details before saving</p>
+  <div class="highlight-box">
+    <div class="hl-label">Farmer</div>
+    <div class="hl-value" id="rev_name">—</div>
+    <div class="hl-sub"  id="rev_phone">—</div>
+  </div>
+  <div class="card">
+    <div class="summary-row">
+      <span class="summary-label">Total Acres</span>
+      <span class="summary-value" id="rev_acres">—</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-label">Straw per Acre</span>
+      <span class="summary-value" id="rev_straw">—</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-label">Est. Total Straw</span>
+      <span class="summary-value" id="rev_total_straw">—</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="summary-row">
+      <span class="summary-label">Village</span>
+      <span class="summary-value" id="rev_village">—</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-label">District</span>
+      <span class="summary-value" id="rev_district">—</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-label">Road Distance</span>
+      <span class="summary-value" id="rev_distance">—</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-label">GPS Coordinates</span>
+      <span class="summary-value" id="rev_gps">Not captured</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="summary-row">
+      <span class="summary-label">Harvest Seasons</span>
+      <span class="summary-value" id="rev_seasons">—</span>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div class="success-screen" id="successScreen">
+  <div class="success-icon">✓</div>
+  <h2>Farmer Saved!</h2>
+  <p>Successfully added to the Straw Collector database.</p>
+  <button class="btn-add-another" onclick="resetForm()">+ Add Another Farmer</button>
+</div>
+
+<!-- NAV -->
+<div class="nav-btns" id="navBtns">
+  <button class="btn-back" id="backBtn" onclick="prevStep()" style="display:none">← Back</button>
+  <button class="btn-next" id="nextBtn" onclick="nextStep()">Continue →</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const API = 'https://straw-app-production.up.railway.app/api';
+
+  let currentStep = 1;
+  const totalSteps = 4;
+  const selectedSeasons = new Set();
+  const seasons = {
+    kharif: { name:'Kharif', month_start:10, month_end:11 },
+    rabi:   { name:'Rabi',   month_start:3,  month_end:4  },
+    zaid:   { name:'Zaid',   month_start:6,  month_end:7  },
+  };
+
+  // ── TOAST ──
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ── PROGRESS ──
+  function updateProgress() {
+    for (let i = 1; i <= totalSteps; i++) {
+      const el = document.getElementById('p' + i);
+      el.className = 'progress-step' + (i < currentStep ? ' done' : i === currentStep ? ' active' : '');
+    }
+    document.getElementById('backBtn').style.display = currentStep > 1 ? 'block' : 'none';
+    const nb = document.getElementById('nextBtn');
+    nb.textContent = currentStep === totalSteps ? '💾 Save Farmer' : 'Continue →';
+    nb.className   = 'btn-next' + (currentStep === totalSteps ? ' submit' : '');
+  }
+
+  function showStep(n) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + n).classList.add('active');
+    currentStep = n; updateProgress();
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }
+
+  // ── VALIDATE ──
+  function validate() {
+    if (currentStep === 1) {
+      if (!document.getElementById('full_name').value.trim()) { showToast('⚠️ Please enter the farmer\'s name'); return false; }
+      if (!document.getElementById('total_acres').value)      { showToast('⚠️ Please enter total acres'); return false; }
+    }
+    if (currentStep === 2) {
+      if (!document.getElementById('village_name').value.trim()) { showToast('⚠️ Please enter the village name'); return false; }
+      if (!document.getElementById('district').value.trim())     { showToast('⚠️ Please enter the district'); return false; }
+    }
+    if (currentStep === 3 && selectedSeasons.size === 0) { showToast('⚠️ Please select at least one harvest season'); return false; }
+    return true;
+  }
+
+  function nextStep() {
+    if (!validate()) return;
+    if (currentStep === totalSteps) { submitForm(); return; }
+    if (currentStep === 3) buildReview();
+    showStep(currentStep + 1);
+  }
+  function prevStep() { if (currentStep > 1) showStep(currentStep - 1); }
+
+  // ── ESTIMATE ──
+  function updateEstimate() {
+    const acres = parseFloat(document.getElementById('total_acres').value) || 0;
+    const spa   = parseFloat(document.getElementById('straw_per_acre').value) || 0;
+    const pill  = document.getElementById('estimate_pill');
+    if (acres > 0 && spa > 0) {
+      document.getElementById('est_val').textContent = (acres * spa).toLocaleString('en-IN');
+      pill.style.display = 'block';
+    } else pill.style.display = 'none';
+  }
+
+  // ── TAB SWITCH ──
+  function switchTab(tab) {
+    document.getElementById('panel_gps').style.display  = tab === 'gps'  ? 'block' : 'none';
+    document.getElementById('panel_link').style.display = tab === 'link' ? 'block' : 'none';
+    document.getElementById('tab_gps').className  = 'method-tab' + (tab === 'gps'  ? ' active' : '');
+    document.getElementById('tab_link').className = 'method-tab' + (tab === 'link' ? ' active' : '');
+  }
+
+  // ── DISTANCE FROM BACKEND ──
+  async function getDistance(lat, lng) {
+    const distBox    = document.getElementById('distance_display');
+    const distStatus = document.getElementById('dist_status');
+    distBox.textContent    = '⏳ Calculating road distance...';
+    distStatus.textContent = '';
+    try {
+      const res  = await fetch(`${API}/distance?lat=${lat}&lng=${lng}`);
+      const data = await res.json();
+      if (data.distance_km) {
+        document.getElementById('farm_distance_km').value = data.distance_km;
+        document.getElementById('transport_cost').value   = data.transport_cost;
+        distBox.textContent = `🛣️ ${data.distance_km} km by road`;
+        distBox.classList.add('success');
+        distStatus.textContent = `Via road to BPCL Ethanol Factory, Baulsingha`;
+        distStatus.className   = 'status-msg ok';
+      } else {
+        distBox.textContent = '— Could not calculate distance';
+        distStatus.textContent = 'Google Maps could not find a route';
+        distStatus.className   = 'status-msg err';
+      }
+    } catch(e) {
+      distBox.textContent    = '— Server error';
+      distStatus.textContent = 'Could not reach server';
+      distStatus.className   = 'status-msg err';
+    }
+  }
+
+  // ── GPS CAPTURE ──
+  function captureGPS() {
+    const btnIcon = document.getElementById('gpsBtnIcon');
+    const btnText = document.getElementById('gpsBtnText');
+    const btn     = document.getElementById('gpsBtn');
+    const disp    = document.getElementById('gpsDisplay');
+    btnIcon.textContent = '⏳'; btnText.textContent = 'Getting location...';
+    btn.disabled = true;
+    navigator.geolocation.getCurrentPosition(
+      async pos => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        document.getElementById('farm_lat').value = lat.toFixed(6);
+        document.getElementById('farm_lng').value = lng.toFixed(6);
+        disp.textContent = `📍 ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+        btnIcon.textContent = '✅'; btnText.textContent = 'Location Captured!';
+        btn.classList.add('captured'); btn.disabled = false;
+        await getDistance(lat, lng);
+      },
+      err => {
+        btnIcon.textContent = '📡'; btnText.textContent = 'Capture My Location';
+        btn.disabled = false;
+        showToast('Could not get GPS. Please enable location and try again.');
+      },
+      { enableHighAccuracy: true, timeout: 15000 }
+    );
+  }
+
+  // ── GOOGLE MAPS LINK ──
+  function extractCoords(url) {
+    // Try various Google Maps URL formats
+    const patterns = [
+      /@(-?\d+\.\d+),(-?\d+\.\d+)/,           // @lat,lng
+      /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,      // ?q=lat,lng
+      /\/place\/(-?\d+\.\d+),(-?\d+\.\d+)/,   // /place/lat,lng
+      /ll=(-?\d+\.\d+),(-?\d+\.\d+)/,         // ll=lat,lng
+      /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,       // !3d lat !4d lng
+    ];
+    for (const p of patterns) {
+      const m = url.match(p);
+      if (m) return { lat: parseFloat(m[1]), lng: parseFloat(m[2]) };
+    }
+    return null;
+  }
+
+  let linkTimer = null;
+  async function handleMapsLink() {
+    clearTimeout(linkTimer);
+    linkTimer = setTimeout(async () => {
+      const input  = document.getElementById('maps_link').value.trim();
+      const status = document.getElementById('link_status');
+      if (!input) { status.textContent = ''; return; }
+
+      status.textContent = '⏳ Reading link...';
+      status.className   = 'status-msg loading';
+
+      // First try to extract directly
+      let coords = extractCoords(input);
+
+      // If not found, try resolving via backend (for short links like maps.app.goo.gl)
+      if (!coords) {
+        status.textContent = '⏳ Resolving short link...';
+        try {
+          const res  = await fetch(`${API}/distance/resolve?url=${encodeURIComponent(input)}`);
+          const data = await res.json();
+          if (data.resolved) coords = extractCoords(data.resolved);
+        } catch(e) {}
+      }
+
+      if (coords) {
+        document.getElementById('farm_lat').value = coords.lat.toFixed(6);
+        document.getElementById('farm_lng').value = coords.lng.toFixed(6);
+        status.textContent = `✅ Location found: ${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`;
+        status.className   = 'status-msg ok';
+        await getDistance(coords.lat, coords.lng);
+      } else {
+        status.textContent = '⚠️ Could not read coordinates. Make sure it\'s a valid Google Maps link.';
+        status.className   = 'status-msg err';
+      }
+    }, 800);
+  }
+
+  // ── SEASONS ──
+  function toggleSeason(key) {
+    const chip = document.getElementById('chip_' + key);
+    if (selectedSeasons.has(key)) { selectedSeasons.delete(key); chip.classList.remove('selected'); }
+    else { selectedSeasons.add(key); chip.classList.add('selected'); }
+    document.getElementById('customSeasonCard').style.display = selectedSeasons.has('custom') ? 'block' : 'none';
+  }
+
+  // ── REVIEW ──
+  function buildReview() {
+    const acres = document.getElementById('total_acres').value;
+    const spa   = document.getElementById('straw_per_acre').value;
+    const lat   = document.getElementById('farm_lat').value;
+    const lng   = document.getElementById('farm_lng').value;
+    const dist  = document.getElementById('farm_distance_km').value;
+
+    document.getElementById('rev_name').textContent     = document.getElementById('full_name').value || '—';
+    document.getElementById('rev_phone').textContent    = document.getElementById('phone').value || 'No phone';
+    document.getElementById('rev_acres').textContent    = acres ? acres + ' acres' : '—';
+    document.getElementById('rev_straw').textContent    = spa ? spa + ' kg/acre' : '—';
+    document.getElementById('rev_village').textContent  = document.getElementById('village_name').value || '—';
+    document.getElementById('rev_district').textContent = document.getElementById('district').value || '—';
+    document.getElementById('rev_distance').textContent = dist ? dist + ' km by road' : 'Not captured';
+    document.getElementById('rev_gps').textContent      = lat && lng ? `${lat}, ${lng}` : 'Not captured';
+    document.getElementById('rev_total_straw').textContent = acres && spa
+      ? (parseFloat(acres) * parseFloat(spa)).toLocaleString('en-IN') + ' kg' : '—';
+    document.getElementById('rev_seasons').textContent  = [...selectedSeasons].map(k =>
+      k === 'custom' ? (document.getElementById('custom_season_name').value || 'Custom') : seasons[k]?.name
+    ).join(', ') || '—';
+  }
+
+  // ── SUBMIT ──
+  async function submitForm() {
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.textContent = '⏳ Saving...'; nextBtn.disabled = true;
+    try {
+      // Read the logged-in agent so we can stamp the farmer with who added them
+      const agent = JSON.parse(localStorage.getItem('agent'));
+
+      const villageRes = await fetch(`${API}/villages`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          village_name: document.getElementById('village_name').value,
+          district:     document.getElementById('district').value,
+          distance_km:  document.getElementById('farm_distance_km').value || null,
+          transport_cost_per_ton: null,
+          village_lat:  document.getElementById('farm_lat').value || null,
+          village_lng:  document.getElementById('farm_lng').value || null,
+        })
+      });
+      const village = await villageRes.json();
+
+      const farmerRes = await fetch(`${API}/farmers`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          full_name:               document.getElementById('full_name').value,
+          phone:                   document.getElementById('phone').value || null,
+          village_id:              village.village_id,
+          total_acres:             document.getElementById('total_acres').value,
+          straw_per_acre_kg:       document.getElementById('straw_per_acre').value || null,
+          farm_lat:                document.getElementById('farm_lat').value || null,
+          farm_lng:                document.getElementById('farm_lng').value || null,
+          farm_distance_km:        document.getElementById('farm_distance_km').value || null,
+          transport_cost_per_trip: document.getElementById('transport_cost').value || null,
+          added_by_user_id:        agent.user_id,
+          added_by_name:           agent.full_name,
+        })
+      });
+      const farmer = await farmerRes.json();
+
+      for (const key of selectedSeasons) {
+        const acres = parseFloat(document.getElementById('total_acres').value) || 0;
+        const spa   = parseFloat(document.getElementById('straw_per_acre').value) || 0;
+        await fetch(`${API}/seasons`, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(key === 'custom' ? {
+            farmer_id:   farmer.farmer_id,
+            season_name: document.getElementById('custom_season_name').value || 'Custom',
+            month_start: document.getElementById('custom_month_start').value || null,
+            month_end:   document.getElementById('custom_month_end').value || null,
+            expected_straw_kg: null,
+          } : {
+            farmer_id:        farmer.farmer_id,
+            season_name:      seasons[key].name,
+            month_start:      seasons[key].month_start,
+            month_end:        seasons[key].month_end,
+            expected_straw_kg: acres && spa ? acres * spa : null,
+          })
+        });
+      }
+
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById('navBtns').style.display = 'none';
+      document.getElementById('successScreen').classList.add('active');
+    } catch(err) {
+      showToast('❌ Error saving. Please try again.');
+      nextBtn.textContent = '💾 Save Farmer'; nextBtn.disabled = false;
+    }
+  }
+
+  // ── RESET ──
+  function resetForm() {
+    document.getElementById('successScreen').classList.remove('active');
+    document.getElementById('navBtns').style.display = 'flex';
+    document.querySelectorAll('input, textarea, select').forEach(el => el.value = '');
+    selectedSeasons.clear();
+    document.querySelectorAll('.season-chip').forEach(c => c.classList.remove('selected'));
+    document.getElementById('customSeasonCard').style.display = 'none';
+    document.getElementById('gpsBtnIcon').textContent = '📡';
+    document.getElementById('gpsBtnText').textContent = 'Capture My Location';
+    document.getElementById('gpsBtn').classList.remove('captured');
+    document.getElementById('gpsDisplay').textContent = '';
+    document.getElementById('distance_display').textContent = '— Add farm location above first';
+    document.getElementById('distance_display').classList.remove('success');
+    document.getElementById('dist_status').textContent = '';
+    document.getElementById('link_status').textContent = '';
+    document.getElementById('estimate_pill').style.display = 'none';
+    document.getElementById('nextBtn').disabled = false;
+    switchTab('gps');
+    showStep(1);
+  }
+
+  updateProgress();
+</script>
+
+</body>
+</html>
