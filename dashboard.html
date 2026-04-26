@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -29,107 +30,147 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--dark); min-height: 100vh; }
 
-    .sidebar {
-      position: fixed; left: 0; top: 0; bottom: 0; width: 240px;
-      background: var(--green); display: flex; flex-direction: column;
-      z-index: 100; padding: 28px 0 24px;
-    }
-    .sidebar-logo { padding: 0 24px 28px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    .logo-badge { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
-    .sidebar-logo h1 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
-    .sidebar-logo p { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 3px; }
-    .nav-section { padding: 20px 16px 8px; font-size: 10px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255,255,255,0.35); }
-    .nav-item { display: flex; align-items: center; gap: 10px; padding: 11px 16px; margin: 2px 8px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.7); transition: all .2s; text-decoration: none; }
-    .nav-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
-    .nav-item.active { background: rgba(255,255,255,0.15); color: #fff; font-weight: 600; }
-    .nav-icon { font-size: 16px; width: 20px; text-align: center; }
-    .sidebar-bottom { margin-top: auto; padding: 16px 16px 0; border-top: 1px solid rgba(255,255,255,0.1); }
-    .add-farmer-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; border-radius: 12px; background: var(--gold); color: var(--dark); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; border: none; cursor: pointer; text-decoration: none; transition: all .2s; }
-    .add-farmer-btn:hover { background: #e8914a; }
+```
+.sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0; width: 240px;
+  background: var(--green); display: flex; flex-direction: column;
+  z-index: 100; padding: 28px 0 24px;
+}
+.sidebar-logo { padding: 0 24px 28px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.logo-badge { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
+.sidebar-logo h1 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
+.sidebar-logo p { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 3px; }
+.nav-section { padding: 20px 16px 8px; font-size: 10px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255,255,255,0.35); }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 11px 16px; margin: 2px 8px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.7); transition: all .2s; text-decoration: none; }
+.nav-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.nav-item.active { background: rgba(255,255,255,0.15); color: #fff; font-weight: 600; }
+.nav-icon { font-size: 16px; width: 20px; text-align: center; }
+.sidebar-bottom { margin-top: auto; padding: 16px 16px 0; border-top: 1px solid rgba(255,255,255,0.1); }
+.add-farmer-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; border-radius: 12px; background: var(--gold); color: var(--dark); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; border: none; cursor: pointer; text-decoration: none; transition: all .2s; }
+.add-farmer-btn:hover { background: #e8914a; }
 
-    .main { margin-left: 240px; min-height: 100vh; padding: 32px; }
-    .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
-    .topbar-left h2 { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; }
-    .topbar-left p { font-size: 13px; color: var(--muted); margin-top: 2px; }
-    .search-box { display: flex; align-items: center; gap: 8px; background: #fff; border: 1.5px solid var(--border); border-radius: 12px; padding: 9px 16px; }
-    .search-box input { border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--dark); width: 200px; background: transparent; }
+.main { margin-left: 240px; min-height: 100vh; padding: 32px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+.topbar-left h2 { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; }
+.topbar-left p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.search-box { display: flex; align-items: center; gap: 8px; background: #fff; border: 1.5px solid var(--border); border-radius: 12px; padding: 9px 16px; }
+.search-box input { border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--dark); width: 200px; background: transparent; }
 
-    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-    .stat-card { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); position: relative; overflow: hidden; animation: fadeUp .4s ease both; }
-    .stat-card:nth-child(2){animation-delay:.05s} .stat-card:nth-child(3){animation-delay:.1s} .stat-card:nth-child(4){animation-delay:.15s}
-    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-    .stat-card::before { content:''; position:absolute; top:0; right:0; width:80px; height:80px; border-radius:0 16px 0 80px; opacity:.07; }
-    .stat-card.green::before{background:var(--green)} .stat-card.gold::before{background:var(--gold)} .stat-card.blue::before{background:var(--blue)} .stat-card.earth::before{background:var(--earth)}
-    .stat-icon { font-size: 22px; margin-bottom: 12px; display: block; }
-    .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-bottom: 4px; }
-    .stat-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--dark); line-height: 1; }
-    .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); position: relative; overflow: hidden; animation: fadeUp .4s ease both; }
+.stat-card:nth-child(2){animation-delay:.05s} .stat-card:nth-child(3){animation-delay:.1s} .stat-card:nth-child(4){animation-delay:.15s}
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.stat-card::before { content:''; position:absolute; top:0; right:0; width:80px; height:80px; border-radius:0 16px 0 80px; opacity:.07; }
+.stat-card.green::before{background:var(--green)} .stat-card.gold::before{background:var(--gold)} .stat-card.blue::before{background:var(--blue)} .stat-card.earth::before{background:var(--earth)}
+.stat-icon { font-size: 22px; margin-bottom: 12px; display: block; }
+.stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-bottom: 4px; }
+.stat-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--dark); line-height: 1; }
+.stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-    .content-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
-    .panel { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--border); overflow: hidden; animation: fadeUp .4s ease both; animation-delay:.2s; }
-    .panel-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--border); }
-    .panel-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; }
-    .panel-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
-    .panel-action { font-size: 12px; color: var(--green); font-weight: 600; cursor: pointer; background: var(--green-pale); padding: 5px 12px; border-radius: 20px; border: none; text-decoration: none; }
+.content-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+.panel { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--border); overflow: hidden; animation: fadeUp .4s ease both; animation-delay:.2s; }
+.panel-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--border); }
+.panel-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; }
+.panel-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+.panel-action { font-size: 12px; color: var(--green); font-weight: 600; cursor: pointer; background: var(--green-pale); padding: 5px 12px; border-radius: 20px; border: none; text-decoration: none; }
 
-    .filters { display: flex; gap: 8px; padding: 14px 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
-    .filter-select { padding: 7px 12px; border-radius: 8px; border: 1.5px solid var(--border); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--dark); background: #fff; outline: none; cursor: pointer; }
-    .filter-select:focus { border-color: var(--green-lt); }
+.filters { display: flex; gap: 8px; padding: 14px 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.filter-select { padding: 7px 12px; border-radius: 8px; border: 1.5px solid var(--border); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--dark); background: #fff; outline: none; cursor: pointer; }
+.filter-select:focus { border-color: var(--green-lt); }
 
-    .table-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    thead th { padding: 10px 16px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); background: #fafbf8; border-bottom: 1px solid var(--border); white-space: nowrap; }
-    tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
-    tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: #fafbf8; }
-    tbody td { padding: 13px 16px; vertical-align: middle; }
-    .farmer-name { font-weight: 600; font-size: 14px; }
-    .farmer-phone { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; margin: 2px; }
-    .badge-green{background:var(--green-pale);color:var(--green)} .badge-gold{background:var(--gold-pale);color:var(--earth)} .badge-blue{background:var(--blue-pale);color:var(--blue)} .badge-red{background:var(--red-pale);color:var(--red)}
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th { padding: 10px 16px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); background: #fafbf8; border-bottom: 1px solid var(--border); white-space: nowrap; }
+tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #fafbf8; }
+tbody td { padding: 13px 16px; vertical-align: middle; }
+.farmer-name { font-weight: 600; font-size: 14px; }
+.farmer-phone { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; margin: 2px; }
+.badge-green{background:var(--green-pale);color:var(--green)} .badge-gold{background:var(--gold-pale);color:var(--earth)} .badge-blue{background:var(--blue-pale);color:var(--blue)} .badge-red{background:var(--red-pale);color:var(--red)}
 
-    .right-col { display: flex; flex-direction: column; gap: 20px; }
-    .season-item { display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-bottom: 1px solid var(--border); }
-    .season-item:last-child { border-bottom: none; }
-    .season-dot { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-    .season-dot.kharif{background:#fff8e1} .season-dot.rabi{background:#e8f4fd} .season-dot.zaid{background:#e8f5e9}
-    .season-info { flex: 1; }
-    .season-name { font-weight: 600; font-size: 13px; }
-    .season-detail { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .season-count { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--green); }
+.right-col { display: flex; flex-direction: column; gap: 20px; }
+.season-item { display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-bottom: 1px solid var(--border); }
+.season-item:last-child { border-bottom: none; }
+.season-dot { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.season-dot.kharif{background:#fff8e1} .season-dot.rabi{background:#e8f4fd} .season-dot.zaid{background:#e8f5e9}
+.season-info { flex: 1; }
+.season-name { font-weight: 600; font-size: 13px; }
+.season-detail { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.season-count { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--green); }
 
-    .pickup-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid var(--border); }
-    .pickup-item:last-child { border-bottom: none; }
-    .pickup-date-box { width: 40px; text-align: center; flex-shrink: 0; }
-    .pd-day { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--green); line-height: 1; }
-    .pd-mon { font-size: 10px; font-weight: 600; text-transform: uppercase; color: var(--muted); }
-    .pickup-info { flex: 1; }
-    .pickup-farmer { font-weight: 600; font-size: 13px; }
-    .pickup-detail { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .pickup-kg { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--earth); text-align: right; }
-    .pickup-kg span { display: block; font-size: 10px; color: var(--muted); font-weight: 400; font-family: 'DM Sans', sans-serif; }
+.pickup-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid var(--border); }
+.pickup-item:last-child { border-bottom: none; }
+.pickup-date-box { width: 40px; text-align: center; flex-shrink: 0; }
+.pd-day { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--green); line-height: 1; }
+.pd-mon { font-size: 10px; font-weight: 600; text-transform: uppercase; color: var(--muted); }
+.pickup-info { flex: 1; }
+.pickup-farmer { font-weight: 600; font-size: 13px; }
+.pickup-detail { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.pickup-kg { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--earth); text-align: right; }
+.pickup-kg span { display: block; font-size: 10px; color: var(--muted); font-weight: 400; font-family: 'DM Sans', sans-serif; }
 
-    .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); }
-    .empty-icon { font-size: 36px; margin-bottom: 10px; }
+.empty-state { text-align: center; padding: 40px 20px; color: var(--muted); }
+.empty-icon { font-size: 36px; margin-bottom: 10px; }
 
-    .map-area { background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); min-height: 220px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; color: var(--green); font-size: 13px; font-weight: 500; position: relative; overflow: hidden; }
-    .map-area::before { content:''; position:absolute; inset:0; background-image:radial-gradient(circle, rgba(45,106,79,0.15) 1px, transparent 1px); background-size:24px 24px; }
-    .map-pin { font-size: 32px; position: relative; z-index: 1; animation: bounce 2s ease-in-out infinite; }
-    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
-    .map-label { position: relative; z-index: 1; }
+.map-area { background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); min-height: 220px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; color: var(--green); font-size: 13px; font-weight: 500; position: relative; overflow: hidden; }
+.map-area::before { content:''; position:absolute; inset:0; background-image:radial-gradient(circle, rgba(45,106,79,0.15) 1px, transparent 1px); background-size:24px 24px; }
+.map-pin { font-size: 32px; position: relative; z-index: 1; animation: bounce 2s ease-in-out infinite; }
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+.map-label { position: relative; z-index: 1; }
 
-    .loading { display: flex; align-items: center; justify-content: center; padding: 40px; color: var(--muted); font-size: 13px; gap: 8px; }
-    .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin .7s linear infinite; }
-    @keyframes spin { to{transform:rotate(360deg)} }
+.loading { display: flex; align-items: center; justify-content: center; padding: 40px; color: var(--muted); font-size: 13px; gap: 8px; }
+.spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
 
-    .pagination { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-top: 1px solid var(--border); font-size: 13px; color: var(--muted); }
-    .page-btns { display: flex; gap: 6px; }
-    .page-btn { width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid var(--border); background: #fff; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: 'DM Sans', sans-serif; color: var(--dark); transition: all .15s; }
-    .page-btn:hover { border-color: var(--green); color: var(--green); }
-    .page-btn.active { background: var(--green); color: #fff; border-color: var(--green); }
+.pagination { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-top: 1px solid var(--border); font-size: 13px; color: var(--muted); }
+.page-btns { display: flex; gap: 6px; }
+.page-btn { width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid var(--border); background: #fff; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: 'DM Sans', sans-serif; color: var(--dark); transition: all .15s; }
+.page-btn:hover { border-color: var(--green); color: var(--green); }
+.page-btn.active { background: var(--green); color: #fff; border-color: var(--green); }
 
-    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--dark); color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 13px; opacity: 0; transform: translateY(10px); transition: all .3s; z-index: 999; }
-    .toast.show { opacity: 1; transform: translateY(0); }
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--dark); color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 13px; opacity: 0; transform: translateY(10px); transition: all .3s; z-index: 999; }
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ── AGENTS SECTION ── */
+.agents-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; padding: 20px; border-bottom: 1px solid var(--border); }
+.agent-stat { background: var(--bg); border-radius: 12px; padding: 16px; text-align: center; }
+.agent-stat-val { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--green); }
+.agent-stat-lbl { font-size: 11px; color: var(--muted); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+
+.add-agent-form { padding: 20px; border-bottom: 1px solid var(--border); background: #fafbf8; }
+.add-agent-form h3 { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 14px; color: var(--dark); }
+.agent-form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: end; }
+.agent-input-wrap { display: flex; flex-direction: column; gap: 5px; }
+.agent-input-wrap label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; color: var(--green); }
+.agent-input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--dark); background: #fff; outline: none; transition: border-color .2s; }
+.agent-input:focus { border-color: var(--green-lt); }
+.agent-add-btn { padding: 10px 20px; background: var(--green); color: #fff; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: background .2s; white-space: nowrap; height: 42px; }
+.agent-add-btn:hover { background: #235c42; }
+.agent-add-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.agent-card { display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-bottom: 1px solid var(--border); transition: background .15s; }
+.agent-card:last-child { border-bottom: none; }
+.agent-card:hover { background: #fafbf8; }
+.agent-avatar { width: 44px; height: 44px; border-radius: 12px; background: var(--green-pale); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.agent-info { flex: 1; }
+.agent-name { font-weight: 700; font-size: 14px; }
+.agent-username { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.agent-meta { display: flex; gap: 16px; margin-top: 6px; }
+.agent-meta-item { display: flex; flex-direction: column; align-items: center; }
+.agent-meta-val { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--green); }
+.agent-meta-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+.agent-actions { display: flex; gap: 8px; align-items: center; }
+.agent-status { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+.agent-status.active { background: var(--green-pale); color: var(--green); }
+.agent-status.inactive { background: var(--red-pale); color: var(--red); }
+.agent-toggle-btn { padding: 6px 12px; border-radius: 8px; border: 1.5px solid var(--border); background: #fff; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--dark); transition: all .2s; font-family: 'DM Sans', sans-serif; }
+.agent-toggle-btn:hover { border-color: var(--green); color: var(--green); }
+.agent-delete-btn { padding: 6px 10px; border-radius: 8px; border: 1.5px solid var(--red-pale); background: var(--red-pale); font-size: 12px; cursor: pointer; color: var(--red); transition: all .2s; }
+.agent-delete-btn:hover { background: var(--red); color: #fff; border-color: var(--red); }
+```
+
   </style>
 </head>
 <body>
@@ -143,6 +184,7 @@
   <div class="nav-section">Main</div>
   <a class="nav-item active" onclick="showSection('dashboard')"><span class="nav-icon">📊</span><span>Dashboard</span></a>
   <a class="nav-item" onclick="showSection('farmers')"><span class="nav-icon">👨‍🌾</span><span>All Farmers</span></a>
+  <a class="nav-item" onclick="showSection('agents')"><span class="nav-icon">🧑‍💼</span><span>Field Agents</span></a>
   <a class="nav-item" onclick="showSection('seasons')"><span class="nav-icon">🌾</span><span>Harvest Seasons</span></a>
   <a class="nav-item" onclick="showSection('pickups')"><span class="nav-icon">🚛</span><span>Pickups</span></a>
   <a class="nav-item" onclick="showSection('map')"><span class="nav-icon">🗺️</span><span>Farm Map</span></a>
@@ -166,6 +208,7 @@
   </div>
 
   <!-- DASHBOARD -->
+
   <div id="section-dashboard">
     <div class="stats-grid">
       <div class="stat-card green"><span class="stat-icon">👨‍🌾</span><div class="stat-label">Total Farmers</div><div class="stat-value" id="stat-farmers">—</div><div class="stat-sub">Registered</div></div>
@@ -180,8 +223,8 @@
           <button class="panel-action" onclick="showSection('farmers')">View All</button>
         </div>
         <div class="table-wrap"><table>
-          <thead><tr><th>Farmer</th><th>Village</th><th>Acres</th><th>Distance</th><th>Season</th></tr></thead>
-          <tbody id="recentFarmersBody"><tr><td colspan="5"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
+          <thead><tr><th>Farmer</th><th>Village</th><th>Acres</th><th>Distance</th><th>Season</th><th>Added By</th></tr></thead>
+          <tbody id="recentFarmersBody"><tr><td colspan="6"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
         </table></div>
       </div>
       <div class="right-col">
@@ -201,6 +244,7 @@
   </div>
 
   <!-- FARMERS -->
+
   <div id="section-farmers" style="display:none">
     <div class="panel">
       <div class="panel-header">
@@ -223,10 +267,11 @@
           <option value="60-100">60–100 km</option>
           <option value="100+">100+ km</option>
         </select>
+        <select class="filter-select" id="filterAgent" onchange="filterFarmers()"><option value="">All Agents</option></select>
       </div>
       <div class="table-wrap"><table>
-        <thead><tr><th>Farmer</th><th>Village</th><th>District</th><th>Acres</th><th>Straw/Acre</th><th>Est. Straw</th><th>Distance</th><th>Transport</th><th>Seasons</th></tr></thead>
-        <tbody id="allFarmersBody"><tr><td colspan="9"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
+        <thead><tr><th>Farmer</th><th>Village</th><th>District</th><th>Acres</th><th>Straw/Acre</th><th>Est. Straw</th><th>Distance</th><th>Transport</th><th>Seasons</th><th>Added By</th></tr></thead>
+        <tbody id="allFarmersBody"><tr><td colspan="10"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
       </table></div>
       <div class="pagination">
         <span id="paginationInfo">—</span>
@@ -235,7 +280,51 @@
     </div>
   </div>
 
+  <!-- FIELD AGENTS -->
+
+  <div id="section-agents" style="display:none">
+    <div class="panel">
+      <div class="panel-header">
+        <div><div class="panel-title">Field Agents</div><div class="panel-sub" id="agentsCount">Loading...</div></div>
+      </div>
+
+```
+  <!-- Agent summary stats -->
+  <div class="agents-stats">
+    <div class="agent-stat"><div class="agent-stat-val" id="agentStatTotal">—</div><div class="agent-stat-lbl">Total Agents</div></div>
+    <div class="agent-stat"><div class="agent-stat-val" id="agentStatActive">—</div><div class="agent-stat-lbl">Active</div></div>
+    <div class="agent-stat"><div class="agent-stat-val" id="agentStatFarmers">—</div><div class="agent-stat-lbl">Farmers Added</div></div>
+  </div>
+
+  <!-- Add new agent form -->
+  <div class="add-agent-form">
+    <h3>➕ Add New Agent</h3>
+    <div class="agent-form-grid">
+      <div class="agent-input-wrap">
+        <label>Full Name</label>
+        <input class="agent-input" type="text" id="newAgentName" placeholder="e.g. Rahul Kumar"/>
+      </div>
+      <div class="agent-input-wrap">
+        <label>Username</label>
+        <input class="agent-input" type="text" id="newAgentUsername" placeholder="e.g. rahul_agent"/>
+      </div>
+      <div class="agent-input-wrap">
+        <label>Password</label>
+        <input class="agent-input" type="text" id="newAgentPassword" placeholder="e.g. straw2025"/>
+      </div>
+      <button class="agent-add-btn" id="addAgentBtn" onclick="addAgent()">Add Agent</button>
+    </div>
+  </div>
+
+  <!-- Agents list -->
+  <div id="agentsList"><div class="loading"><div class="spinner"></div> Loading agents...</div></div>
+</div>
+```
+
+  </div>
+
   <!-- SEASONS -->
+
   <div id="section-seasons" style="display:none">
     <div class="panel">
       <div class="panel-header"><div class="panel-title">Harvest Seasons</div></div>
@@ -244,6 +333,7 @@
   </div>
 
   <!-- PICKUPS -->
+
   <div id="section-pickups" style="display:none">
     <div class="panel">
       <div class="panel-header"><div class="panel-title">Pickup History</div></div>
@@ -252,6 +342,7 @@
   </div>
 
   <!-- MAP -->
+
   <div id="section-map" style="display:none">
     <div class="panel">
       <div class="panel-header"><div><div class="panel-title">Farm Locations</div><div class="panel-sub">GPS coordinates of registered farms</div></div></div>
@@ -268,15 +359,16 @@
 
 <script>
   const API = 'https://straw-app-production.up.railway.app/api';
-  let allFarmers = [], allSeasons = [], allPickups = [];
+  let allFarmers = [], allSeasons = [], allPickups = [], allAgents = [];
   let currentPage = 1;
   const perPage = 10;
   let lastFiltered = null;
 
-  const sections = ['dashboard','farmers','seasons','pickups','map'];
+  const sections = ['dashboard','farmers','agents','seasons','pickups','map'];
   const titles = {
     dashboard:['Dashboard','Overview of your straw collection network'],
     farmers:  ['All Farmers','Complete farmer registry'],
+    agents:   ['Field Agents','Manage your field agents and their accounts'],
     seasons:  ['Harvest Seasons','Upcoming and active harvest seasons'],
     pickups:  ['Pickup History','All straw collection records'],
     map:      ['Farm Map','GPS locations of all registered farms'],
@@ -291,6 +383,7 @@
     if (name==='seasons') renderAllSeasons();
     if (name==='pickups') renderAllPickups();
     if (name==='farmers') { populateFilters(); renderAllFarmers(); }
+    if (name==='agents')  loadAgents();
   }
 
   function showToast(msg) {
@@ -337,13 +430,14 @@
   function renderRecentFarmers() {
     const tbody = document.getElementById('recentFarmersBody');
     const recent = allFarmers.slice(0,8);
-    if (!recent.length) { tbody.innerHTML=`<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">👨‍🌾</div><p>No farmers yet. <a href="farmer-form.html" style="color:var(--green)">Add your first farmer →</a></p></div></td></tr>`; return; }
+    if (!recent.length) { tbody.innerHTML=`<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">👨‍🌾</div><p>No farmers yet. <a href="farmer-form.html" style="color:var(--green)">Add your first farmer →</a></p></div></td></tr>`; return; }
     tbody.innerHTML = recent.map(f=>`<tr>
       <td><div class="farmer-name">${f.full_name}</div><div class="farmer-phone">${f.phone||'—'}</div></td>
       <td>${f.village_name||'—'}</td>
       <td>${parseFloat(f.total_acres).toLocaleString('en-IN')} ac</td>
       <td>${f.farm_distance_km?f.farm_distance_km+' km':'—'}</td>
       <td>${seasonBadges(f)}</td>
+      <td><span class="badge badge-green">${f.added_by_name||'—'}</span></td>
     </tr>`).join('');
   }
 
@@ -377,9 +471,11 @@
   function populateFilters() {
     const dSel = document.getElementById('filterDistrict');
     const vSel = document.getElementById('filterVillage');
+    const aSel = document.getElementById('filterAgent');
     if (dSel.options.length > 1) return;
     [...new Set(allFarmers.map(f=>f.district).filter(Boolean))].sort().forEach(d=>{ dSel.innerHTML+=`<option value="${d}">${d}</option>`; });
     [...new Set(allFarmers.map(f=>f.village_name).filter(Boolean))].sort().forEach(v=>{ vSel.innerHTML+=`<option value="${v}">${v}</option>`; });
+    [...new Set(allFarmers.map(f=>f.added_by_name).filter(Boolean))].sort().forEach(a=>{ aSel.innerHTML+=`<option value="${a}">${a}</option>`; });
   }
 
   function filterFarmers() {
@@ -388,11 +484,13 @@
     const village  = (document.getElementById('filterVillage')?.value)||'';
     const season   = (document.getElementById('filterSeason')?.value)||'';
     const distance = (document.getElementById('filterDistance')?.value)||'';
+    const agent    = (document.getElementById('filterAgent')?.value)||'';
     lastFiltered = allFarmers.filter(f=>{
       if (search && !f.full_name.toLowerCase().includes(search) && !(f.village_name||'').toLowerCase().includes(search) && !(f.district||'').toLowerCase().includes(search)) return false;
       if (district && f.district!==district) return false;
       if (village  && f.village_name!==village) return false;
       if (season && !allSeasons.some(s=>s.farmer_id===f.farmer_id&&s.season_name===season)) return false;
+      if (agent && f.added_by_name!==agent) return false;
       if (distance) {
         const km=parseFloat(f.farm_distance_km||0);
         if (distance==='0-30'&&!(km>=0&&km<30)) return false;
@@ -413,7 +511,7 @@
     document.getElementById('farmersCount').textContent = `${total} farmer${total!==1?'s':''} found`;
     document.getElementById('paginationInfo').textContent = total ? `Showing ${(currentPage-1)*perPage+1}–${Math.min(currentPage*perPage,total)} of ${total}` : 'No results';
     const tbody = document.getElementById('allFarmersBody');
-    if (!slice.length) { tbody.innerHTML=`<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">🔍</div><p>No farmers match your filters</p></div></td></tr>`; }
+    if (!slice.length) { tbody.innerHTML=`<tr><td colspan="10"><div class="empty-state"><div class="empty-icon">🔍</div><p>No farmers match your filters</p></div></td></tr>`; }
     else tbody.innerHTML = slice.map(f=>{
       const est = f.total_acres&&f.straw_per_acre_kg ? (parseFloat(f.total_acres)*parseFloat(f.straw_per_acre_kg)/1000).toFixed(1)+'T' : '—';
       return `<tr>
@@ -425,6 +523,7 @@
         <td>${f.farm_distance_km?f.farm_distance_km+' km':'—'}</td>
         <td>${f.transport_cost_per_trip?'₹'+parseFloat(f.transport_cost_per_trip).toLocaleString('en-IN'):'—'}</td>
         <td>${seasonBadges(f)}</td>
+        <td><span class="badge badge-green">${f.added_by_name||'—'}</span></td>
       </tr>`;
     }).join('');
     const pages=Math.ceil(total/perPage);
@@ -437,6 +536,93 @@
       btn.onclick=()=>{ currentPage=i; renderAllFarmers(lastFiltered||allFarmers); };
       pb.appendChild(btn);
     }
+  }
+
+  // ── AGENTS ──
+  async function loadAgents() {
+    try {
+      const res = await fetch(`${API}/auth/agents`);
+      allAgents = await res.json();
+      renderAgents();
+    } catch(e) { showToast('⚠️ Could not load agents'); }
+  }
+
+  function renderAgents() {
+    const total   = allAgents.length;
+    const active  = allAgents.filter(a=>a.is_active).length;
+    const farmers = allAgents.reduce((s,a)=>s+parseInt(a.farmers_added||0),0);
+    document.getElementById('agentsCount').textContent   = `${total} agent${total!==1?'s':''} registered`;
+    document.getElementById('agentStatTotal').textContent   = total;
+    document.getElementById('agentStatActive').textContent  = active;
+    document.getElementById('agentStatFarmers').textContent = farmers;
+
+    const el = document.getElementById('agentsList');
+    if (!allAgents.length) {
+      el.innerHTML = `<div class="empty-state"><div class="empty-icon">🧑‍💼</div><p>No agents yet. Add your first agent above!</p></div>`;
+      return;
+    }
+    el.innerHTML = allAgents.map(a=>`
+      <div class="agent-card">
+        <div class="agent-avatar">🧑‍💼</div>
+        <div class="agent-info">
+          <div class="agent-name">${a.full_name}</div>
+          <div class="agent-username">@${a.username}</div>
+          <div class="agent-meta">
+            <div class="agent-meta-item"><div class="agent-meta-val">${a.farmers_added||0}</div><div class="agent-meta-lbl">Farmers</div></div>
+            <div class="agent-meta-item"><div class="agent-meta-val">${parseFloat(a.total_acres||0).toFixed(0)}</div><div class="agent-meta-lbl">Acres</div></div>
+            <div class="agent-meta-item"><div class="agent-meta-val">${parseFloat(a.total_straw_tons||0).toFixed(1)}T</div><div class="agent-meta-lbl">Straw</div></div>
+          </div>
+        </div>
+        <div class="agent-actions">
+          <span class="agent-status ${a.is_active?'active':'inactive'}">${a.is_active?'✅ Active':'❌ Inactive'}</span>
+          <button class="agent-toggle-btn" onclick="toggleAgent(${a.user_id})">${a.is_active?'Deactivate':'Activate'}</button>
+          <button class="agent-delete-btn" onclick="deleteAgent(${a.user_id},'${a.full_name}')">🗑</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function addAgent() {
+    const name     = document.getElementById('newAgentName').value.trim();
+    const username = document.getElementById('newAgentUsername').value.trim();
+    const password = document.getElementById('newAgentPassword').value.trim();
+    if (!name || !username || !password) { showToast('⚠️ Please fill all fields'); return; }
+    const btn = document.getElementById('addAgentBtn');
+    btn.disabled = true; btn.textContent = 'Adding...';
+    try {
+      const res  = await fetch(`${API}/auth/agents`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({full_name:name, username, password})
+      });
+      const data = await res.json();
+      if (data.user_id) {
+        showToast(`✅ Agent "${name}" created!`);
+        document.getElementById('newAgentName').value = '';
+        document.getElementById('newAgentUsername').value = '';
+        document.getElementById('newAgentPassword').value = '';
+        loadAgents();
+      } else {
+        showToast('❌ ' + (data.error||'Could not create agent'));
+      }
+    } catch(e) { showToast('❌ Server error'); }
+    btn.disabled = false; btn.textContent = 'Add Agent';
+  }
+
+  async function toggleAgent(id) {
+    try {
+      await fetch(`${API}/auth/agents/${id}`, { method:'PATCH' });
+      loadAgents();
+    } catch(e) { showToast('❌ Could not update agent'); }
+  }
+
+  async function deleteAgent(id, name) {
+    if (!confirm(`Delete agent "${name}"? This cannot be undone.`)) return;
+    try {
+      await fetch(`${API}/auth/agents/${id}`, { method:'DELETE' });
+      showToast(`🗑 Agent "${name}" deleted`);
+      loadAgents();
+    } catch(e) { showToast('❌ Could not delete agent'); }
   }
 
   function renderAllSeasons() {
@@ -482,5 +668,6 @@
 
   loadAll();
 </script>
+
 </body>
 </html>
