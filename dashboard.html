@@ -133,7 +133,6 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
 .toast { position: fixed; bottom: 24px; right: 24px; background: var(--dark); color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 13px; opacity: 0; transform: translateY(10px); transition: all .3s; z-index: 999; }
 .toast.show { opacity: 1; transform: translateY(0); }
 
-/* Agents */
 .ag-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; padding: 20px; border-bottom: 1px solid var(--border); }
 .ag-stat-box { background: var(--bg); border-radius: 12px; padding: 16px; text-align: center; }
 .ag-stat-num { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--green); }
@@ -204,8 +203,6 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
     </div>
   </div>
 
-  <!-- DASHBOARD -->
-
   <div id="section-dashboard">
     <div class="stats-grid">
       <div class="stat-card green"><span class="stat-icon">👨‍🌾</span><div class="stat-label">Total Farmers</div><div class="stat-value" id="stat-farmers">—</div><div class="stat-sub">Registered</div></div>
@@ -220,8 +217,8 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
           <button class="panel-action" onclick="showSection('farmers')">View All</button>
         </div>
         <div class="table-wrap"><table>
-          <thead><tr><th>Farmer</th><th>Village</th><th>Acres</th><th>Distance</th><th>Season</th><th>Added By</th></tr></thead>
-          <tbody id="recentFarmersBody"><tr><td colspan="6"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
+          <thead><tr><th>Farmer</th><th>Village</th><th>Acres</th><th>Distance</th><th>Season</th></tr></thead>
+          <tbody id="recentFarmersBody"><tr><td colspan="5"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
         </table></div>
       </div>
       <div class="right-col">
@@ -239,8 +236,6 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
       </div>
     </div>
   </div>
-
-  <!-- FARMERS -->
 
   <div id="section-farmers" style="display:none">
     <div class="panel">
@@ -264,11 +259,10 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
           <option value="60-100">60–100 km</option>
           <option value="100+">100+ km</option>
         </select>
-        <select class="filter-select" id="filterAgent" onchange="filterFarmers()"><option value="">All Agents</option></select>
       </div>
       <div class="table-wrap"><table>
-        <thead><tr><th>Farmer</th><th>Village</th><th>District</th><th>Acres</th><th>Straw/Acre</th><th>Est. Straw</th><th>Distance</th><th>Transport</th><th>Seasons</th><th>Added By</th></tr></thead>
-        <tbody id="allFarmersBody"><tr><td colspan="10"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
+        <thead><tr><th>Farmer</th><th>Village</th><th>District</th><th>Acres</th><th>Straw/Acre</th><th>Est. Straw</th><th>Distance</th><th>Transport</th><th>Seasons</th></tr></thead>
+        <tbody id="allFarmersBody"><tr><td colspan="9"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
       </table></div>
       <div class="pagination">
         <span id="paginationInfo">—</span>
@@ -276,8 +270,6 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
       </div>
     </div>
   </div>
-
-  <!-- AGENTS -->
 
   <div id="section-agents" style="display:none">
     <div class="panel">
@@ -302,8 +294,6 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
     </div>
   </div>
 
-  <!-- SEASONS -->
-
   <div id="section-seasons" style="display:none">
     <div class="panel">
       <div class="panel-header"><div class="panel-title">Harvest Seasons</div></div>
@@ -311,16 +301,12 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
     </div>
   </div>
 
-  <!-- PICKUPS -->
-
   <div id="section-pickups" style="display:none">
     <div class="panel">
       <div class="panel-header"><div class="panel-title">Pickup History</div></div>
       <div id="allPickupsContent"><div class="loading"><div class="spinner"></div> Loading...</div></div>
     </div>
   </div>
-
-  <!-- MAP -->
 
   <div id="section-map" style="display:none">
     <div class="panel">
@@ -409,14 +395,13 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
   function renderRecentFarmers() {
     const tbody = document.getElementById('recentFarmersBody');
     const recent = allFarmers.slice(0,8);
-    if (!recent.length) { tbody.innerHTML=`<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">👨‍🌾</div><p>No farmers yet. <a href="farmer-form.html" style="color:var(--green)">Add your first farmer →</a></p></div></td></tr>`; return; }
+    if (!recent.length) { tbody.innerHTML=`<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">👨‍🌾</div><p>No farmers yet. <a href="farmer-form.html" style="color:var(--green)">Add your first farmer →</a></p></div></td></tr>`; return; }
     tbody.innerHTML = recent.map(f=>`<tr>
       <td><div class="farmer-name">${f.full_name}</div><div class="farmer-phone">${f.phone||'—'}</div></td>
       <td>${f.village_name||'—'}</td>
       <td>${parseFloat(f.total_acres).toLocaleString('en-IN')} ac</td>
       <td>${f.farm_distance_km?f.farm_distance_km+' km':'—'}</td>
       <td>${seasonBadges(f)}</td>
-      <td><span class="badge badge-green">${f.added_by_name||'—'}</span></td>
     </tr>`).join('');
   }
 
@@ -450,11 +435,9 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
   function populateFilters() {
     const dSel = document.getElementById('filterDistrict');
     const vSel = document.getElementById('filterVillage');
-    const aSel = document.getElementById('filterAgent');
     if (dSel.options.length > 1) return;
     [...new Set(allFarmers.map(f=>f.district).filter(Boolean))].sort().forEach(d=>{ dSel.innerHTML+=`<option value="${d}">${d}</option>`; });
     [...new Set(allFarmers.map(f=>f.village_name).filter(Boolean))].sort().forEach(v=>{ vSel.innerHTML+=`<option value="${v}">${v}</option>`; });
-    [...new Set(allFarmers.map(f=>f.added_by_name).filter(Boolean))].sort().forEach(a=>{ aSel.innerHTML+=`<option value="${a}">${a}</option>`; });
   }
 
   function filterFarmers() {
@@ -463,13 +446,11 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
     const village  = (document.getElementById('filterVillage')?.value)||'';
     const season   = (document.getElementById('filterSeason')?.value)||'';
     const distance = (document.getElementById('filterDistance')?.value)||'';
-    const agent    = (document.getElementById('filterAgent')?.value)||'';
     lastFiltered = allFarmers.filter(f=>{
       if (search && !f.full_name.toLowerCase().includes(search) && !(f.village_name||'').toLowerCase().includes(search) && !(f.district||'').toLowerCase().includes(search)) return false;
       if (district && f.district!==district) return false;
       if (village  && f.village_name!==village) return false;
       if (season && !allSeasons.some(s=>s.farmer_id===f.farmer_id&&s.season_name===season)) return false;
-      if (agent && f.added_by_name!==agent) return false;
       if (distance) {
         const km=parseFloat(f.farm_distance_km||0);
         if (distance==='0-30'&&!(km>=0&&km<30)) return false;
@@ -490,7 +471,7 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
     document.getElementById('farmersCount').textContent = `${total} farmer${total!==1?'s':''} found`;
     document.getElementById('paginationInfo').textContent = total ? `Showing ${(currentPage-1)*perPage+1}–${Math.min(currentPage*perPage,total)} of ${total}` : 'No results';
     const tbody = document.getElementById('allFarmersBody');
-    if (!slice.length) { tbody.innerHTML=`<tr><td colspan="10"><div class="empty-state"><div class="empty-icon">🔍</div><p>No farmers match your filters</p></div></td></tr>`; }
+    if (!slice.length) { tbody.innerHTML=`<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">🔍</div><p>No farmers match your filters</p></div></td></tr>`; }
     else tbody.innerHTML = slice.map(f=>{
       const est = f.total_acres&&f.straw_per_acre_kg ? (parseFloat(f.total_acres)*parseFloat(f.straw_per_acre_kg)/1000).toFixed(1)+'T' : '—';
       return `<tr>
@@ -502,7 +483,6 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
         <td>${f.farm_distance_km?f.farm_distance_km+' km':'—'}</td>
         <td>${f.transport_cost_per_trip?'₹'+parseFloat(f.transport_cost_per_trip).toLocaleString('en-IN'):'—'}</td>
         <td>${seasonBadges(f)}</td>
-        <td><span class="badge badge-green">${f.added_by_name||'—'}</span></td>
       </tr>`;
     }).join('');
     const pages=Math.ceil(total/perPage);
