@@ -133,12 +133,10 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
 .toast { position: fixed; bottom: 24px; right: 24px; background: var(--dark); color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 13px; opacity: 0; transform: translateY(10px); transition: all .3s; z-index: 999; }
 .toast.show { opacity: 1; transform: translateY(0); }
 
-/* ── AGENTS SECTION ── */
 .agents-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; padding: 20px; border-bottom: 1px solid var(--border); }
 .agent-stat { background: var(--bg); border-radius: 12px; padding: 16px; text-align: center; }
 .agent-stat-val { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--green); }
 .agent-stat-lbl { font-size: 11px; color: var(--muted); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
-
 .add-agent-form { padding: 20px; border-bottom: 1px solid var(--border); background: #fafbf8; }
 .add-agent-form h3 { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 14px; color: var(--dark); }
 .agent-form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: end; }
@@ -149,7 +147,6 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
 .agent-add-btn { padding: 10px 20px; background: var(--green); color: #fff; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: background .2s; white-space: nowrap; height: 42px; }
 .agent-add-btn:hover { background: #235c42; }
 .agent-add-btn:disabled { opacity: .5; cursor: not-allowed; }
-
 .agent-card { display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-bottom: 1px solid var(--border); transition: background .15s; }
 .agent-card:last-child { border-bottom: none; }
 .agent-card:hover { background: #fafbf8; }
@@ -182,12 +179,12 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
     <p>Saraipali Factory</p>
   </div>
   <div class="nav-section">Main</div>
-  <a class="nav-item active" onclick="showSection('dashboard')"><span class="nav-icon">📊</span><span>Dashboard</span></a>
-  <a class="nav-item" onclick="showSection('farmers')"><span class="nav-icon">👨‍🌾</span><span>All Farmers</span></a>
-  <a class="nav-item" onclick="showSection('agents')"><span class="nav-icon">🧑‍💼</span><span>Field Agents</span></a>
-  <a class="nav-item" onclick="showSection('seasons')"><span class="nav-icon">🌾</span><span>Harvest Seasons</span></a>
-  <a class="nav-item" onclick="showSection('pickups')"><span class="nav-icon">🚛</span><span>Pickups</span></a>
-  <a class="nav-item" onclick="showSection('map')"><span class="nav-icon">🗺️</span><span>Farm Map</span></a>
+  <a class="nav-item active" data-section="dashboard" onclick="showSection('dashboard')"><span class="nav-icon">📊</span><span>Dashboard</span></a>
+  <a class="nav-item" data-section="farmers" onclick="showSection('farmers')"><span class="nav-icon">👨‍🌾</span><span>All Farmers</span></a>
+  <a class="nav-item" data-section="agents" onclick="showSection('agents')"><span class="nav-icon">🧑‍💼</span><span>Field Agents</span></a>
+  <a class="nav-item" data-section="seasons" onclick="showSection('seasons')"><span class="nav-icon">🌾</span><span>Harvest Seasons</span></a>
+  <a class="nav-item" data-section="pickups" onclick="showSection('pickups')"><span class="nav-icon">🚛</span><span>Pickups</span></a>
+  <a class="nav-item" data-section="map" onclick="showSection('map')"><span class="nav-icon">🗺️</span><span>Farm Map</span></a>
   <div class="sidebar-bottom">
     <a href="farmer-form.html" class="add-farmer-btn"><span>+</span><span>Add Farmer</span></a>
   </div>
@@ -287,40 +284,31 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
       <div class="panel-header">
         <div><div class="panel-title">Field Agents</div><div class="panel-sub" id="agentsCount">Loading...</div></div>
       </div>
-
-```
-  <!-- Agent summary stats -->
-  <div class="agents-stats">
-    <div class="agent-stat"><div class="agent-stat-val" id="agentStatTotal">—</div><div class="agent-stat-lbl">Total Agents</div></div>
-    <div class="agent-stat"><div class="agent-stat-val" id="agentStatActive">—</div><div class="agent-stat-lbl">Active</div></div>
-    <div class="agent-stat"><div class="agent-stat-val" id="agentStatFarmers">—</div><div class="agent-stat-lbl">Farmers Added</div></div>
-  </div>
-
-  <!-- Add new agent form -->
-  <div class="add-agent-form">
-    <h3>➕ Add New Agent</h3>
-    <div class="agent-form-grid">
-      <div class="agent-input-wrap">
-        <label>Full Name</label>
-        <input class="agent-input" type="text" id="newAgentName" placeholder="e.g. Rahul Kumar"/>
+      <div class="agents-stats">
+        <div class="agent-stat"><div class="agent-stat-val" id="agentStatTotal">—</div><div class="agent-stat-lbl">Total Agents</div></div>
+        <div class="agent-stat"><div class="agent-stat-val" id="agentStatActive">—</div><div class="agent-stat-lbl">Active</div></div>
+        <div class="agent-stat"><div class="agent-stat-val" id="agentStatFarmers">—</div><div class="agent-stat-lbl">Farmers Added</div></div>
       </div>
-      <div class="agent-input-wrap">
-        <label>Username</label>
-        <input class="agent-input" type="text" id="newAgentUsername" placeholder="e.g. rahul_agent"/>
+      <div class="add-agent-form">
+        <h3>➕ Add New Agent</h3>
+        <div class="agent-form-grid">
+          <div class="agent-input-wrap">
+            <label>Full Name</label>
+            <input class="agent-input" type="text" id="newAgentName" placeholder="e.g. Rahul Kumar"/>
+          </div>
+          <div class="agent-input-wrap">
+            <label>Username</label>
+            <input class="agent-input" type="text" id="newAgentUsername" placeholder="e.g. rahul_agent"/>
+          </div>
+          <div class="agent-input-wrap">
+            <label>Password</label>
+            <input class="agent-input" type="text" id="newAgentPassword" placeholder="e.g. straw2025"/>
+          </div>
+          <button class="agent-add-btn" id="addAgentBtn" onclick="addAgent()">Add Agent</button>
+        </div>
       </div>
-      <div class="agent-input-wrap">
-        <label>Password</label>
-        <input class="agent-input" type="text" id="newAgentPassword" placeholder="e.g. straw2025"/>
-      </div>
-      <button class="agent-add-btn" id="addAgentBtn" onclick="addAgent()">Add Agent</button>
+      <div id="agentsList"><div class="loading"><div class="spinner"></div> Loading agents...</div></div>
     </div>
-  </div>
-
-  <!-- Agents list -->
-  <div id="agentsList"><div class="loading"><div class="spinner"></div> Loading agents...</div></div>
-</div>
-```
-
   </div>
 
   <!-- SEASONS -->
@@ -364,7 +352,6 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
   const perPage = 10;
   let lastFiltered = null;
 
-  const sections = ['dashboard','farmers','agents','seasons','pickups','map'];
   const titles = {
     dashboard:['Dashboard','Overview of your straw collection network'],
     farmers:  ['All Farmers','Complete farmer registry'],
@@ -375,8 +362,12 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
   };
 
   function showSection(name) {
-    sections.forEach(s => document.getElementById('section-'+s).style.display = s===name?'block':'none');
-    document.querySelectorAll('.nav-item').forEach((el,i) => el.classList.toggle('active', sections[i]===name));
+    ['dashboard','farmers','agents','seasons','pickups','map'].forEach(s => {
+      document.getElementById('section-'+s).style.display = s===name?'block':'none';
+    });
+    document.querySelectorAll('.nav-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.section === name);
+    });
     document.getElementById('pageTitle').textContent    = titles[name][0];
     document.getElementById('pageSubtitle').textContent = titles[name][1];
     if (name==='map')     renderMapTable();
@@ -538,7 +529,6 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
     }
   }
 
-  // ── AGENTS ──
   async function loadAgents() {
     try {
       const res = await fetch(`${API}/auth/agents`);
@@ -551,7 +541,7 @@ tbody td { padding: 13px 16px; vertical-align: middle; }
     const total   = allAgents.length;
     const active  = allAgents.filter(a=>a.is_active).length;
     const farmers = allAgents.reduce((s,a)=>s+parseInt(a.farmers_added||0),0);
-    document.getElementById('agentsCount').textContent   = `${total} agent${total!==1?'s':''} registered`;
+    document.getElementById('agentsCount').textContent      = `${total} agent${total!==1?'s':''} registered`;
     document.getElementById('agentStatTotal').textContent   = total;
     document.getElementById('agentStatActive').textContent  = active;
     document.getElementById('agentStatFarmers').textContent = farmers;
