@@ -645,12 +645,13 @@
   }
 
   // ── SUBMIT ──
-  async function submitForm() {
+async function submitForm() {
     const nextBtn = document.getElementById('nextBtn');
     nextBtn.textContent = '⏳ Saving...'; nextBtn.disabled = true;
     try {
       // Read the logged-in agent so we can stamp the farmer with who added them
       const agent = JSON.parse(localStorage.getItem('agent'));
+
       const villageRes = await fetch(`${API}/villages`, {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
@@ -679,6 +680,7 @@
           added_by_user_id:        agent.user_id,
           added_by_name:           agent.full_name,
         })
+      });
       const farmer = await farmerRes.json();
 
       for (const key of selectedSeasons) {
@@ -710,31 +712,3 @@
       nextBtn.textContent = '💾 Save Farmer'; nextBtn.disabled = false;
     }
   }
-
-  // ── RESET ──
-  function resetForm() {
-    document.getElementById('successScreen').classList.remove('active');
-    document.getElementById('navBtns').style.display = 'flex';
-    document.querySelectorAll('input, textarea, select').forEach(el => el.value = '');
-    selectedSeasons.clear();
-    document.querySelectorAll('.season-chip').forEach(c => c.classList.remove('selected'));
-    document.getElementById('customSeasonCard').style.display = 'none';
-    document.getElementById('gpsBtnIcon').textContent = '📡';
-    document.getElementById('gpsBtnText').textContent = 'Capture My Location';
-    document.getElementById('gpsBtn').classList.remove('captured');
-    document.getElementById('gpsDisplay').textContent = '';
-    document.getElementById('distance_display').textContent = '— Add farm location above first';
-    document.getElementById('distance_display').classList.remove('success');
-    document.getElementById('dist_status').textContent = '';
-    document.getElementById('link_status').textContent = '';
-    document.getElementById('estimate_pill').style.display = 'none';
-    document.getElementById('nextBtn').disabled = false;
-    switchTab('gps');
-    showStep(1);
-  }
-
-  updateProgress();
-</script>
-
-</body>
-</html>
