@@ -60,17 +60,22 @@ router.patch('/:id', async (req, res) => {
           farm_distance_km, transport_cost_per_trip,
           village_name, district } = req.body;
   try {
-    // Find or create village
+    // Find existing village or create new one
     let village_id = null;
     if (village_name && district) {
-      const v = await pool.query(
-        `INSERT INTO villages (village_name, district)
-         VALUES ($1, $2)
-         ON CONFLICT (village_name, district) DO UPDATE SET village_name = EXCLUDED.village_name
-         RETURNING village_id`,
+      const existing = await pool.query(
+        `SELECT village_id FROM villages WHERE village_name = $1 AND district = $2 LIMIT 1`,
         [village_name, district]
       );
-      village_id = v.rows[0].village_id;
+      if (existing.rows.length > 0) {
+        village_id = existing.rows[0].village_id;
+      } else {
+        const newV = await pool.query(
+          `INSERT INTO villages (village_name, district) VALUES ($1, $2) RETURNING village_id`,
+          [village_name, district]
+        );
+        village_id = newV.rows[0].village_id;
+      }
     }
 
     const result = await pool.query(
@@ -97,7 +102,6 @@ router.patch('/:id', async (req, res) => {
 // Delete farmer
 router.delete('/:id', async (req, res) => {
   try {
-    // Delete seasons first (foreign key), then farmer
     await pool.query('DELETE FROM harvest_seasons WHERE farmer_id = $1', [req.params.id]);
     await pool.query('DELETE FROM farmers WHERE farmer_id = $1', [req.params.id]);
     res.json({ message: 'Farmer deleted' });
