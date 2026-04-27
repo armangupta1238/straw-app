@@ -79,16 +79,16 @@
     .filter-select:focus { border-color: var(--primary-lt); }
 
     .table-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    thead th { padding: 10px 16px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); background: #fafafe; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    thead th { padding: 7px 10px; text-align: left; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); background: #fafafe; border-bottom: 1px solid var(--border); white-space: nowrap; }
     tbody tr { border-bottom: 1px solid var(--border); }
     tbody tr:last-child { border-bottom: none; }
     tbody tr:hover { background: #fafafe; }
-    tbody td { padding: 13px 16px; vertical-align: middle; }
-    .farmer-name { font-weight: 600; font-size: 14px; }
-    .farmer-phone { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    tbody td { padding: 8px 10px; vertical-align: middle; }
+    .farmer-name { font-weight: 600; font-size: 12px; }
+    .farmer-phone { font-size: 10px; color: var(--muted); margin-top: 1px; }
 
-    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; margin: 2px; }
+    .badge { display: inline-block; padding: 2px 7px; border-radius: 20px; font-size: 10px; font-weight: 600; margin: 1px; }
     .badge-purple{background:var(--primary-pale);color:var(--primary)}
     .badge-amber{background:var(--accent-pale);color:var(--earth)}
     .badge-blue{background:var(--blue-pale);color:var(--blue)}
@@ -136,9 +136,9 @@
     .toast.show { opacity: 1; transform: translateY(0); }
 
     /* ──────── ACTION BUTTONS ──────── */
-    .btn-edit { padding: 5px 10px; border-radius: 7px; border: 1.5px solid var(--primary-pale); background: var(--primary-pale); font-size: 12px; cursor: pointer; color: var(--primary); font-weight: 600; }
+    .btn-edit { padding: 3px 7px; border-radius: 6px; border: 1.5px solid var(--primary-pale); background: var(--primary-pale); font-size: 11px; cursor: pointer; color: var(--primary); font-weight: 600; }
     .btn-edit:hover { background: var(--primary); color: #fff; }
-    .btn-del { padding: 5px 10px; border-radius: 7px; border: 1.5px solid var(--red-pale); background: var(--red-pale); font-size: 12px; cursor: pointer; color: var(--red); font-weight: 600; }
+    .btn-del { padding: 3px 7px; border-radius: 6px; border: 1.5px solid var(--red-pale); background: var(--red-pale); font-size: 11px; cursor: pointer; color: var(--red); font-weight: 600; }
     .btn-del:hover { background: var(--red); color: #fff; }
 
     /* ──────── EDIT MODAL ──────── */
@@ -459,15 +459,22 @@
   }
 
   function trips(f) {
-    const straw_kg = parseFloat(f.total_acres||0) * parseFloat(f.straw_per_acre_kg||0);
-    return straw_kg > 0 ? Math.ceil(straw_kg / 3000) : 0;
+    const acres = parseFloat(String(f.total_acres||'').trim()) || 0;
+    const spa = parseFloat(String(f.straw_per_acre_kg||'').trim()) || 0;
+    const straw_kg = acres * spa;
+    if (straw_kg <= 0) return 0;
+    return Math.ceil(straw_kg / 3000);
   }
   function costPerTrip(f) {
-    const km = parseFloat(f.farm_distance_km||0);
-    return km > 0 ? Math.round(km * 2 * 18) : 0;
+    const km = parseFloat(String(f.farm_distance_km||'').trim()) || 0;
+    if (km <= 0) return 0;
+    return Math.round(km * 2 * 18);
   }
   function totalTransport(f) {
-    return trips(f) * costPerTrip(f);
+    const t = trips(f);
+    const cpp = costPerTrip(f);
+    if (t === 0 || cpp === 0) return 0;
+    return t * cpp;
   }
 
   function renderStats() {
@@ -576,7 +583,7 @@
         <td><div class="farmer-name">${f.full_name}</div><div class="farmer-phone">${f.phone||'—'}</div></td>
         <td>${f.village_name||'—'}</td><td>${f.district||'—'}</td>
         <td>${parseFloat(f.total_acres).toLocaleString('en-IN')} ac</td>
-        <td>${f.straw_per_acre_kg?f.straw_per_acre_kg+' kg':'—'}</td>
+        <td>${f.straw_per_acre_kg?parseFloat(f.straw_per_acre_kg).toLocaleString('en-IN')+' kg':'—'}</td>
         <td><strong>${est}</strong></td>
         <td>${f.farm_distance_km?f.farm_distance_km+' km':'—'}</td>
         <td>${f.transport_cost_per_trip?'₹'+parseFloat(f.transport_cost_per_trip).toLocaleString('en-IN'):'—'}</td>
