@@ -165,7 +165,7 @@
     .ag-stat-txt { font-size: 11px; color: var(--muted); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
     .ag-form { padding: 20px; border-bottom: 1px solid var(--border); background: #fafafe; }
     .ag-form h3 { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 14px; }
-    .ag-grid { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: end; }
+    .ag-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 10px; align-items: end; }
     .ag-fld { display: flex; flex-direction: column; gap: 5px; }
     .ag-fld label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; color: var(--primary); }
     .ag-input { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--dark); background: #fff; outline: none; }
@@ -202,6 +202,12 @@
     .ag-farmer-name { font-weight: 600; }
     .ag-farmer-detail { font-size: 11px; color: var(--muted); margin-top: 1px; }
     .ag-expand-icon { font-size: 11px; color: var(--muted); margin-left: auto; padding-left: 12px; }
+
+    /* Role badge in agent card */
+    .role-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: .5px; }
+    .role-badge.promoter { background: var(--primary-pale); color: var(--primary); }
+    .role-badge.agent    { background: var(--accent-pale);  color: var(--earth); }
+    .role-badge.admin    { background: #f3e8ff; color: #7c3aed; }
 
     /* ──────── RESPONSIVE ──────── */
     @media (max-width: 1100px) {
@@ -342,12 +348,19 @@
         <div class="ag-stat-box"><div class="ag-stat-num" id="agStatFarmers">—</div><div class="ag-stat-txt">Farmers Added</div></div>
       </div>
       <div class="ag-form">
-        <h3>➕ Add New Agent</h3>
+        <h3>➕ Add New User</h3>
         <div class="ag-grid">
           <div class="ag-fld"><label>Full Name</label><input class="ag-input" type="text" id="newAgentName" placeholder="e.g. Rahul Kumar"/></div>
-          <div class="ag-fld"><label>Username</label><input class="ag-input" type="text" id="newAgentUsername" placeholder="e.g. rahul_agent"/></div>
+          <div class="ag-fld"><label>Username</label><input class="ag-input" type="text" id="newAgentUsername" placeholder="e.g. rahul_k"/></div>
           <div class="ag-fld"><label>Password</label><input class="ag-input" type="text" id="newAgentPassword" placeholder="e.g. straw2025"/></div>
-          <button class="ag-add-btn" id="addAgentBtn" onclick="addAgent()">Add Agent</button>
+          <div class="ag-fld">
+            <label>Role</label>
+            <select class="ag-input" id="newAgentRole">
+              <option value="agent">Agent — Farmer form only</option>
+              <option value="promoter">Promoter — Dashboard + forms</option>
+            </select>
+          </div>
+          <button class="ag-add-btn" id="addAgentBtn" onclick="addAgent()">Add</button>
         </div>
       </div>
       <div id="agentsList"><div class="loading"><div class="spinner"></div> Loading agents...</div></div>
@@ -408,6 +421,26 @@
 <div class="toast" id="toast"></div>
 
 <script>
+  // ── AUTH GATE — blocks agents, allows admin and promoter only ──
+  (function() {
+    try {
+      const saved = localStorage.getItem('agent');
+      if (!saved) { window.location.href = 'login.html?error=access_denied'; return; }
+      const agent = JSON.parse(saved);
+      const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+      if (Date.now() - (agent.loginTime || 0) >= THIRTY_DAYS) {
+        localStorage.removeItem('agent');
+        window.location.href = 'login.html?error=access_denied';
+        return;
+      }
+      if (agent.role !== 'admin' && agent.role !== 'promoter') {
+        window.location.href = 'login.html?error=access_denied';
+      }
+    } catch(e) {
+      window.location.href = 'login.html?error=access_denied';
+    }
+  })();
+
   const API = 'https://straw-app-production.up.railway.app/api';
   let allFarmers = [], allSeasons = [], allPickups = [], allAgents = [];
   let currentPage = 1;
@@ -665,7 +698,6 @@
       const res  = await fetch(`${API}/farmers/${editingFarmerId}`, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
       const data = await res.json();
       if (data.farmer_id) {
-        // Update local array
         const idx = allFarmers.findIndex(f => f.farmer_id === editingFarmerId);
         if (idx !== -1) {
           allFarmers[idx] = { ...allFarmers[idx], ...body,
@@ -696,16 +728,22 @@
     } catch(e) { showToast('⚠️ Could not load agents'); }
   }
 
+  function roleBadge(role) {
+    if (role === 'admin')    return `<span class="role-badge admin">Admin</span>`;
+    if (role === 'promoter') return `<span class="role-badge promoter">Promoter</span>`;
+    return `<span class="role-badge agent">Agent</span>`;
+  }
+
   function renderAgents() {
     const total   = allAgents.length;
     const active  = allAgents.filter(a=>a.is_active).length;
     const farmers = allAgents.reduce((s,a)=>s+parseInt(a.farmers_added||0),0);
-    document.getElementById('agentsCount').textContent  = `${total} agent${total!==1?'s':''} registered`;
+    document.getElementById('agentsCount').textContent  = `${total} user${total!==1?'s':''} registered`;
     document.getElementById('agStatTotal').textContent  = total;
     document.getElementById('agStatActive').textContent = active;
     document.getElementById('agStatFarmers').textContent= farmers;
     const el = document.getElementById('agentsList');
-    if (!allAgents.length) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">🧑‍💼</div><p>No agents yet. Add your first agent above!</p></div>`; return; }
+    if (!allAgents.length) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">🧑‍💼</div><p>No users yet. Add one above!</p></div>`; return; }
     el.innerHTML = allAgents.map(a => {
       const agentFarmers = allFarmers.filter(f => f.added_by_user_id === a.user_id);
       const farmersHtml = agentFarmers.length ? agentFarmers.map(f=>`
@@ -722,7 +760,7 @@
           <div class="ag-card-top" onclick="toggleAgentFarmers(${a.user_id})">
             <div class="ag-avatar">🧑‍💼</div>
             <div class="ag-info">
-              <div class="ag-name">${a.full_name}</div>
+              <div class="ag-name">${a.full_name} ${roleBadge(a.role)}</div>
               <div class="ag-uname">@${a.username}</div>
               <div class="ag-meta">
                 <div class="ag-meta-i"><div class="ag-meta-v">${a.farmers_added||0}</div><div class="ag-meta-l">Farmers</div></div>
@@ -754,21 +792,23 @@
     const name     = document.getElementById('newAgentName').value.trim();
     const username = document.getElementById('newAgentUsername').value.trim();
     const password = document.getElementById('newAgentPassword').value.trim();
+    const role     = document.getElementById('newAgentRole').value;
     if (!name || !username || !password) { showToast('⚠️ Please fill all fields'); return; }
     const btn = document.getElementById('addAgentBtn');
     btn.disabled = true; btn.textContent = 'Adding...';
     try {
-      const res  = await fetch(`${API}/auth/agents`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({full_name:name, username, password}) });
+      const res  = await fetch(`${API}/auth/agents`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({full_name:name, username, password, role}) });
       const data = await res.json();
       if (data.user_id) {
-        showToast(`✅ Agent "${name}" created!`);
+        showToast(`✅ ${role === 'promoter' ? 'Promoter' : 'Agent'} "${name}" created!`);
         document.getElementById('newAgentName').value = '';
         document.getElementById('newAgentUsername').value = '';
         document.getElementById('newAgentPassword').value = '';
+        document.getElementById('newAgentRole').value = 'agent';
         loadAgents();
-      } else { showToast('❌ ' + (data.error||'Could not create agent')); }
+      } else { showToast('❌ ' + (data.error||'Could not create user')); }
     } catch(e) { showToast('❌ Server error'); }
-    btn.disabled = false; btn.textContent = 'Add Agent';
+    btn.disabled = false; btn.textContent = 'Add';
   }
 
   async function toggleAgent(id) {
@@ -779,7 +819,7 @@
     try {
       await fetch(`${API}/auth/agents/${id}`, { method:'DELETE' });
       allAgents = allAgents.filter(a => a.user_id !== id);
-      showToast(`🗑 Agent "${name}" deleted`);
+      showToast(`🗑 "${name}" deleted`);
       renderAgents();
     } catch(e) { showToast('❌ Could not delete agent'); }
   }
