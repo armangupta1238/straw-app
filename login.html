@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Straw Collector — Agent Login</title>
+  <title>Straw Collector — Login</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -42,7 +42,6 @@
       overflow: hidden;
     }
 
-    /* Purple glow */
     .glow {
       position: absolute;
       width: 500px;
@@ -55,7 +54,6 @@
       pointer-events: none;
     }
 
-    /* Wheat stalks — confined to bottom zone */
     .field-art {
       position: absolute;
       bottom: 0;
@@ -92,16 +90,8 @@
       50%       { transform: rotate(2deg); }
     }
 
-    .left-top {
-      position: relative;
-      z-index: 1;
-    }
-
-    .left-bottom {
-      position: relative;
-      z-index: 1;
-      padding-bottom: 250px;
-    }
+    .left-top { position: relative; z-index: 1; }
+    .left-bottom { position: relative; z-index: 1; padding-bottom: 250px; }
 
     .badge {
       display: inline-flex;
@@ -131,36 +121,12 @@
       margin-bottom: 0;
     }
 
-    .left h1 em {
-      font-style: normal;
-      color: var(--purple-mid);
-    }
+    .left h1 em { font-style: normal; color: var(--purple-mid); }
 
-    .stats {
-      display: flex;
-      gap: 32px;
-    }
-
-    .stat-item {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .stat-num {
-      font-family: 'Syne', sans-serif;
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--amber);
-    }
-
-    .stat-label {
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      color: rgba(250,249,251,0.35);
-    }
+    .stats { display: flex; gap: 32px; }
+    .stat-item { display: flex; flex-direction: column; gap: 4px; }
+    .stat-num { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700; color: var(--amber); }
+    .stat-label { font-size: 11px; font-weight: 500; letter-spacing: 0.8px; text-transform: uppercase; color: rgba(250,249,251,0.35); }
 
     /* ── RIGHT PANEL ── */
     .right {
@@ -196,193 +162,92 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    .logo-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 40px;
-    }
+    .logo-row { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; }
 
     .logo-icon {
-      width: 44px;
-      height: 44px;
+      width: 44px; height: 44px;
       background: var(--purple);
       border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       font-size: 22px;
     }
 
-    .logo-text {
-      display: flex;
-      flex-direction: column;
-    }
+    .logo-text { display: flex; flex-direction: column; }
+    .logo-name { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; color: var(--dark); line-height: 1.1; }
+    .logo-sub { font-size: 10px; font-weight: 600; letter-spacing: 1.4px; text-transform: uppercase; color: var(--muted); }
 
-    .logo-name {
-      font-family: 'Syne', sans-serif;
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--dark);
-      line-height: 1.1;
-    }
+    .form-title { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
+    .form-sub { font-size: 14px; font-weight: 300; color: var(--muted); margin-bottom: 36px; }
 
-    .logo-sub {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 1.4px;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    .form-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 30px;
-      font-weight: 700;
-      color: var(--dark);
-      margin-bottom: 8px;
-    }
-
-    .form-sub {
-      font-size: 14px;
-      font-weight: 300;
-      color: var(--muted);
-      margin-bottom: 36px;
-    }
-
-    /* Fields */
     .field { margin-bottom: 20px; }
-
-    .field label {
-      display: block;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      color: var(--purple);
-      margin-bottom: 8px;
-    }
-
+    .field label { display: block; font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--purple); margin-bottom: 8px; }
     .input-wrap { position: relative; }
-
-    .input-wrap svg {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 16px;
-      height: 16px;
-      color: var(--muted);
-      pointer-events: none;
-      transition: color 0.2s;
-    }
-
-    .field input {
-      width: 100%;
-      padding: 14px 16px 14px 44px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      font-weight: 400;
-      color: var(--dark);
-      background: #ffffff;
-      border: 1.5px solid #ddd5c4;
-      border-radius: 12px;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
+    .input-wrap svg { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted); pointer-events: none; transition: color 0.2s; }
+    .field input { width: 100%; padding: 14px 16px 14px 44px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 400; color: var(--dark); background: #ffffff; border: 1.5px solid #ddd5c4; border-radius: 12px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
     .field input::placeholder { color: #c4b89e; }
-
-    .field input:focus {
-      border-color: var(--purple);
-      box-shadow: 0 0 0 4px rgba(109,40,217,0.1);
-    }
-
+    .field input:focus { border-color: var(--purple); box-shadow: 0 0 0 4px rgba(109,40,217,0.1); }
     .input-wrap:focus-within svg { color: var(--purple); }
-
     #password { padding-right: 52px; }
 
     .toggle-pw {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: #eee8dc;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      color: var(--dark);
-      padding: 6px 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s, color 0.2s;
-      line-height: 1;
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: #eee8dc; border: none; border-radius: 8px; cursor: pointer;
+      color: var(--dark); padding: 6px 8px; display: flex; align-items: center;
+      justify-content: center; transition: background 0.2s, color 0.2s; line-height: 1;
     }
+    .toggle-pw:hover { background: var(--purple); color: var(--cream); }
 
-    .toggle-pw:hover {
-      background: var(--purple);
-      color: var(--cream);
-    }
-
-    /* Button */
     .btn {
-      width: 100%;
-      padding: 16px;
-      margin-top: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--cream);
-      background: var(--purple);
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      letter-spacing: 0.3px;
+      width: 100%; padding: 16px; margin-top: 8px;
+      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+      color: var(--cream); background: var(--purple); border: none; border-radius: 12px;
+      cursor: pointer; letter-spacing: 0.3px;
       transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
-      position: relative;
-      overflow: hidden;
+      position: relative; overflow: hidden;
     }
-
-    .btn::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, transparent 60%);
-    }
-
-    .btn:hover {
-      background: var(--purple-dark);
-      box-shadow: 0 8px 24px rgba(109,40,217,0.35);
-    }
-
+    .btn::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, transparent 60%); }
+    .btn:hover { background: var(--purple-dark); box-shadow: 0 8px 24px rgba(109,40,217,0.35); }
     .btn:active { transform: scale(0.985); }
     .btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
-    /* Error */
+    /* Error / info message */
     .error {
-      display: none;
-      margin-top: 16px;
-      padding: 12px 16px;
-      background: #fdf0f0;
-      border: 1px solid #f0c8c8;
-      border-radius: 10px;
-      font-size: 13px;
-      color: #b03030;
-      text-align: center;
+      display: none; margin-top: 16px; padding: 12px 16px;
+      background: #fdf0f0; border: 1px solid #f0c8c8;
+      border-radius: 10px; font-size: 13px; color: #b03030; text-align: center;
     }
     .error.show { display: block; }
 
-    .footer-note {
-      margin-top: 32px;
-      font-size: 12px;
-      font-weight: 400;
-      color: #bbb0a0;
-      text-align: center;
-      line-height: 1.6;
+    /* ── ROLE CHOICE SCREEN ── */
+    .choice-wrap {
+      display: none;
+      width: 100%;
+      max-width: 340px;
+      animation: fadeUp 0.5s ease both;
     }
+    .choice-wrap.show { display: block; }
+    .form-wrap.hide { display: none; }
 
-    /* Responsive */
+    .choice-title { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; color: var(--dark); margin-bottom: 6px; }
+    .choice-sub { font-size: 14px; color: var(--muted); font-weight: 300; margin-bottom: 32px; }
+
+    .choice-btn {
+      display: flex; align-items: center; gap: 16px;
+      width: 100%; padding: 18px 20px; margin-bottom: 12px;
+      background: #fff; border: 2px solid #e5e7eb; border-radius: 14px;
+      cursor: pointer; text-align: left;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.1s;
+      text-decoration: none;
+    }
+    .choice-btn:hover { border-color: var(--purple); box-shadow: 0 4px 16px rgba(109,40,217,0.12); transform: translateY(-1px); }
+    .choice-icon { font-size: 28px; width: 48px; height: 48px; background: var(--purple-pale); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .choice-text { flex: 1; }
+    .choice-label { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--dark); }
+    .choice-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .choice-arrow { font-size: 18px; color: var(--purple-mid); }
+
+    .footer-note { margin-top: 32px; font-size: 12px; font-weight: 400; color: #bbb0a0; text-align: center; line-height: 1.6; }
+
     @media (max-width: 820px) {
       body { flex-direction: column; overflow: auto; }
       .left { min-height: 260px; padding: 40px 28px 36px; flex: none; }
@@ -400,42 +265,34 @@
     <div class="field-art" id="fieldArt"></div>
 
     <div class="left-top">
-      <div class="badge"><span>🌾</span> Field Agent Portal</div>
+      <div class="badge"><span>🌾</span> Straw Collector Portal</div>
       <h1>Harvest.<br/><em>Track.</em><br/>Collect.</h1>
     </div>
 
     <div class="left-bottom">
       <div class="stats">
-        <div class="stat-item">
-          <span class="stat-num">240+</span>
-          <span class="stat-label">Farmers</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-num">18</span>
-          <span class="stat-label">Active Agents</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-num">5 T</span>
-          <span class="stat-label">Collected</span>
-        </div>
+        <div class="stat-item"><span class="stat-num">240+</span><span class="stat-label">Farmers</span></div>
+        <div class="stat-item"><span class="stat-num">18</span><span class="stat-label">Active Agents</span></div>
+        <div class="stat-item"><span class="stat-num">5 T</span><span class="stat-label">Collected</span></div>
       </div>
     </div>
   </div>
 
   <!-- RIGHT PANEL -->
   <div class="right">
-    <div class="form-wrap">
 
+    <!-- LOGIN FORM -->
+    <div class="form-wrap" id="loginForm">
       <div class="logo-row">
         <div class="logo-icon">🌾</div>
         <div class="logo-text">
           <span class="logo-name">Straw Collector</span>
-          <span class="logo-sub">Agent Portal</span>
+          <span class="logo-sub">Operations Portal</span>
         </div>
       </div>
 
       <div class="form-title">Welcome back</div>
-      <div class="form-sub">Sign in to your agent account</div>
+      <div class="form-sub">Sign in to continue</div>
 
       <div class="field">
         <label>Username</label>
@@ -466,28 +323,76 @@
       <button class="btn" id="loginBtn" onclick="login()">Sign In →</button>
       <div class="error" id="errorMsg"></div>
 
-      <div class="footer-note">Straw Collector © 2025 · For authorized field agents only</div>
+      <div class="footer-note">Straw Collector © 2025 · Authorized personnel only</div>
     </div>
+
+    <!-- ROLE CHOICE SCREEN (shown after promoter/admin login) -->
+    <div class="choice-wrap" id="choiceScreen">
+      <div class="logo-row">
+        <div class="logo-icon">🌾</div>
+        <div class="logo-text">
+          <span class="logo-name">Straw Collector</span>
+          <span class="logo-sub">Operations Portal</span>
+        </div>
+      </div>
+
+      <div class="choice-title">Where to?</div>
+      <div class="choice-sub" id="choiceGreeting">Welcome back! Choose where you'd like to go.</div>
+
+      <a href="dashboard.html" class="choice-btn">
+        <div class="choice-icon">📊</div>
+        <div class="choice-text">
+          <div class="choice-label">Dashboard</div>
+          <div class="choice-desc">View stats, farmers, agents and pickups</div>
+        </div>
+        <span class="choice-arrow">→</span>
+      </a>
+
+      <a href="farmer-form.html" class="choice-btn">
+        <div class="choice-icon">👨‍🌾</div>
+        <div class="choice-text">
+          <div class="choice-label">Add Farmer</div>
+          <div class="choice-desc">Register a new farmer in the field</div>
+        </div>
+        <span class="choice-arrow">→</span>
+      </a>
+
+      <div class="footer-note">Straw Collector © 2025 · Authorized personnel only</div>
+    </div>
+
   </div>
 
   <script>
     const API = 'https://straw-app-production.up.railway.app/api';
     const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
 
-    // Auto-login
+    // Show access denied message if redirected from dashboard
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('error') === 'access_denied') {
+      const err = document.getElementById('errorMsg');
+      err.textContent = '🚫 You don\'t have permission to access that page.';
+      err.classList.add('show');
+    }
+
+    // Auto-login — skip login form if session still valid
     try {
       const saved = localStorage.getItem('agent');
       if (saved) {
         const agent = JSON.parse(saved);
         if (Date.now() - (agent.loginTime || 0) < THIRTY_DAYS) {
-          window.location.href = 'farmer-form.html';
+          // Already logged in — send to right place
+          if (agent.role === 'admin' || agent.role === 'promoter') {
+            showChoiceScreen(agent.full_name);
+          } else {
+            window.location.href = 'farmer-form.html';
+          }
         } else {
           localStorage.removeItem('agent');
         }
       }
     } catch(e) {}
 
-    // Generate stalks
+    // Generate wheat stalks
     const art = document.getElementById('fieldArt');
     for (let i = 0; i < 22; i++) {
       const s = document.createElement('div');
@@ -514,6 +419,12 @@
       document.getElementById('eyeIcon').innerHTML = isText ? EYE_ON : EYE_OFF;
     });
 
+    function showChoiceScreen(name) {
+      document.getElementById('loginForm').classList.add('hide');
+      document.getElementById('choiceGreeting').textContent = `Welcome back, ${name}! Where would you like to go?`;
+      document.getElementById('choiceScreen').classList.add('show');
+    }
+
     async function login() {
       const username = document.getElementById('username').value.trim();
       const password = pwInput.value.trim();
@@ -539,10 +450,17 @@
         const data = await res.json();
 
         if (data.success) {
-          data.loginTime = Date.now();
           localStorage.setItem('agent', JSON.stringify({ ...data, loginTime: Date.now() }));
-          btn.textContent = '✓ Redirecting…';
-          window.location.href = 'farmer-form.html';
+
+          if (data.role === 'admin' || data.role === 'promoter') {
+            // Show choice screen — let them pick dashboard or farmer form
+            btn.textContent = '✓ Signed in!';
+            showChoiceScreen(data.full_name);
+          } else {
+            // Agent — go straight to farmer form
+            btn.textContent = '✓ Redirecting…';
+            window.location.href = 'farmer-form.html';
+          }
         } else {
           err.textContent = '❌ Invalid username or password.';
           err.classList.add('show');
