@@ -92,8 +92,12 @@
     .field input:focus, .field select:focus, .field textarea:focus {
       border-color:var(--purple-mid); box-shadow:0 0 0 3px rgba(167,139,250,0.15);
     }
+    .field input.input-error { border-color:#dc2626; box-shadow:0 0 0 3px rgba(220,38,38,0.1); }
     .field textarea { resize:vertical; min-height:80px; }
     .field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .phone-hint { font-size:11px; color:var(--muted); margin-top:5px; }
+    .phone-hint.error { color:#dc2626; }
+    .phone-hint.ok    { color:var(--purple); }
 
     /* Location method tabs */
     .method-tabs { display:flex; gap:8px; margin-bottom:14px; }
@@ -157,7 +161,6 @@
     .hl-value { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; margin-top:4px; }
     .hl-sub   { font-size:12px; opacity:.7; margin-top:2px; }
 
-    /* Estimate pill */
     .estimate-pill {
       display:inline-flex; align-items:center; gap:6px;
       background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.35);
@@ -244,7 +247,8 @@
     </div>
     <div class="field">
       <label>Mobile Number</label>
-      <input type="tel" id="phone" placeholder="10-digit mobile number"/>
+      <input type="tel" id="phone" placeholder="10-digit mobile number" maxlength="10" inputmode="numeric" oninput="handlePhone(this)"/>
+      <div class="phone-hint" id="phone_hint">Enter 10-digit mobile number</div>
     </div>
     <div class="field-row">
       <div class="field">
@@ -473,6 +477,29 @@
     setTimeout(() => t.classList.remove('show'), 3000);
   }
 
+  // ── PHONE HANDLER — digits only, max 10 ──
+  function handlePhone(input) {
+    // Strip anything that isn't a digit
+    input.value = input.value.replace(/\D/g, '');
+    // Enforce max 10
+    if (input.value.length > 10) input.value = input.value.slice(0, 10);
+    const hint = document.getElementById('phone_hint');
+    const len  = input.value.length;
+    if (len === 0) {
+      hint.textContent = 'Enter 10-digit mobile number';
+      hint.className   = 'phone-hint';
+      input.classList.remove('input-error');
+    } else if (len < 10) {
+      hint.textContent = `${len}/10 digits entered`;
+      hint.className   = 'phone-hint error';
+      input.classList.add('input-error');
+    } else {
+      hint.textContent = '✓ Valid mobile number';
+      hint.className   = 'phone-hint ok';
+      input.classList.remove('input-error');
+    }
+  }
+
   // ── PROGRESS ──
   function updateProgress() {
     for (let i = 1; i <= totalSteps; i++) {
@@ -495,8 +522,19 @@
   // ── VALIDATE ──
   function validate() {
     if (currentStep === 1) {
-      if (!document.getElementById('full_name').value.trim()) { showToast('⚠️ Please enter the farmer\'s name'); return false; }
-      if (!document.getElementById('total_acres').value)      { showToast('⚠️ Please enter total acres'); return false; }
+      if (!document.getElementById('full_name').value.trim()) {
+        showToast('⚠️ Please enter the farmer\'s name'); return false;
+      }
+      if (!document.getElementById('total_acres').value) {
+        showToast('⚠️ Please enter total acres'); return false;
+      }
+      // Phone validation — if entered, must be exactly 10 digits
+      const phone = document.getElementById('phone').value;
+      if (phone.length > 0 && phone.length !== 10) {
+        showToast('⚠️ Mobile number must be exactly 10 digits');
+        document.getElementById('phone').classList.add('input-error');
+        return false;
+      }
     }
     if (currentStep === 2) {
       if (!document.getElementById('village_name').value.trim()) { showToast('⚠️ Please enter the village name'); return false; }
@@ -613,17 +651,13 @@
       const status = document.getElementById('link_status');
       if (!input) {
         status.textContent = '';
-        // Clear stale coords if input is cleared
         document.getElementById('farm_lat').value = '';
         document.getElementById('farm_lng').value = '';
         return;
       }
-
       status.textContent = '⏳ Reading link...';
       status.className   = 'status-msg loading';
-
       let coords = extractCoords(input);
-
       if (!coords) {
         status.textContent = '⏳ Resolving short link...';
         try {
@@ -632,7 +666,6 @@
           if (data.resolved) coords = extractCoords(data.resolved);
         } catch(e) {}
       }
-
       if (coords) {
         document.getElementById('farm_lat').value = coords.lat.toFixed(6);
         document.getElementById('farm_lng').value = coords.lng.toFixed(6);
@@ -640,7 +673,6 @@
         status.className   = 'status-msg ok';
         await getDistance(coords.lat, coords.lng);
       } else {
-        // BUG FIX: clear stale coords when link fails to parse
         document.getElementById('farm_lat').value = '';
         document.getElementById('farm_lng').value = '';
         document.getElementById('farm_distance_km').value = '';
@@ -770,6 +802,8 @@
     document.getElementById('dist_status').textContent = '';
     document.getElementById('link_status').textContent = '';
     document.getElementById('estimate_pill').style.display = 'none';
+    document.getElementById('phone_hint').textContent = 'Enter 10-digit mobile number';
+    document.getElementById('phone_hint').className   = 'phone-hint';
     document.getElementById('nextBtn').disabled = false;
     switchTab('gps');
     showStep(1);
