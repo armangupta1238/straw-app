@@ -133,9 +133,7 @@
     .status-msg.loading { color:var(--muted); }
 
     /* ── MONTH GRID ── */
-    .month-grid {
-      display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;
-    }
+    .month-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; }
     .month-chip {
       padding:12px 4px; border-radius:10px; border:1.5px solid var(--border);
       background:#fff; text-align:center; cursor:pointer; font-size:13px;
@@ -143,6 +141,12 @@
     }
     .month-chip.selected {
       border-color:var(--purple); background:rgba(109,40,217,0.08); color:var(--purple);
+    }
+
+    /* auto-filled field style */
+    .field input.auto-filled {
+      background:#f5f3ff; color:var(--purple); font-weight:600;
+      border-color:var(--purple-mid);
     }
 
     /* Review */
@@ -328,7 +332,8 @@
   <div class="card">
     <div class="field">
       <label>Total Expected Straw (kg) *</label>
-      <input type="number" id="expected_straw_kg" placeholder="e.g. 6000" min="0"/>
+      <input type="number" id="expected_straw_kg" placeholder="Auto-filled from acres × straw/acre" min="0"/>
+      <div class="phone-hint" id="straw_hint" style="color:var(--purple);">Auto-filled from Step 1 — you can edit if needed</div>
     </div>
   </div>
 
@@ -519,15 +524,22 @@
   }
   function prevStep() { if (currentStep > 1) showStep(currentStep - 1); }
 
-  // ── ESTIMATE ──
+  // ── ESTIMATE — auto-fills expected straw in Step 3 ──
   function updateEstimate() {
     const acres = parseFloat(document.getElementById('total_acres').value) || 0;
     const spa   = parseFloat(document.getElementById('straw_per_acre').value) || 0;
     const pill  = document.getElementById('estimate_pill');
+    const expField = document.getElementById('expected_straw_kg');
     if (acres > 0 && spa > 0) {
-      document.getElementById('est_val').textContent = (acres * spa).toLocaleString('en-IN');
+      const total = Math.round(acres * spa);
+      document.getElementById('est_val').textContent = total.toLocaleString('en-IN');
+      expField.value = total;
+      expField.classList.add('auto-filled');
       pill.style.display = 'block';
-    } else pill.style.display = 'none';
+    } else {
+      pill.style.display = 'none';
+      expField.classList.remove('auto-filled');
+    }
   }
 
   // ── TAB SWITCH ──
@@ -716,7 +728,6 @@
       });
       const farmer = await farmerRes.json();
 
-      // Save months as a single season record using season_name = comma-separated months
       const sortedMonths = [...selectedMonths].sort((a,b) => a-b).map(i => MONTH_FULL[i]);
       const expKg = document.getElementById('expected_straw_kg').value;
       await fetch(`${API}/seasons`, {
@@ -746,6 +757,7 @@
     document.querySelectorAll('input, textarea, select').forEach(el => el.value = '');
     selectedMonths.clear();
     document.querySelectorAll('.month-chip').forEach(c => c.classList.remove('selected'));
+    document.getElementById('expected_straw_kg').classList.remove('auto-filled');
     document.getElementById('gpsBtnIcon').textContent = '📡';
     document.getElementById('gpsBtnText').textContent = 'Capture My Location';
     document.getElementById('gpsBtn').classList.remove('captured');
