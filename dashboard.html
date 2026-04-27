@@ -266,7 +266,7 @@
       <div class="stat-card purple"><span class="stat-icon">👨‍🌾</span><div class="stat-label">Total Farmers</div><div class="stat-value" id="stat-farmers">—</div><div class="stat-sub">Registered</div></div>
       <div class="stat-card amber"><span class="stat-icon">🌾</span><div class="stat-label">Total Acres</div><div class="stat-value" id="stat-acres">—</div><div class="stat-sub">Across all farmers</div></div>
       <div class="stat-card blue"><span class="stat-icon">📦</span><div class="stat-label">Est. Total Straw</div><div class="stat-value" id="stat-straw">—</div><div class="stat-sub">Tonnes available</div></div>
-      <div class="stat-card teal"><span class="stat-icon">🚛</span><div class="stat-label">Transport Cost</div><div class="stat-value" id="stat-transport">—</div><div class="stat-sub">Total estimated</div></div>
+      <div class="stat-card teal"><span class="stat-icon">🚛</span><div class="stat-label">Est. Total Trips</div><div class="stat-value" id="stat-trips">—</div><div class="stat-sub">Tractor trips needed</div></div>
     </div>
     <div class="content-grid">
       <div class="panel">
@@ -320,7 +320,7 @@
         </select>
       </div>
       <div class="table-wrap"><table>
-        <thead><tr><th>Farmer</th><th>Village</th><th>District</th><th>Acres</th><th>Straw/Acre</th><th>Est. Straw</th><th>Distance</th><th>Transport</th><th>Seasons</th><th>Added By</th><th>Actions</th></tr></thead>
+        <thead><tr><th>Farmer</th><th>Village</th><th>District</th><th>Acres</th><th>Straw/Acre</th><th>Est. Straw</th><th>Trips</th><th>Distance</th><th>Cost/Trip</th><th>Est. Total Cost</th><th>Seasons</th><th>Added By</th><th>Actions</th></tr></thead>
         <tbody id="allFarmersBody"><tr><td colspan="11"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
       </table></div>
       <div class="pagination">
@@ -391,10 +391,10 @@
     <div class="modal-grid">
       <div class="modal-fld full"><label>Full Name</label><input type="text" id="edit_full_name" placeholder="Full name"/></div>
       <div class="modal-fld"><label>Phone</label><input type="text" id="edit_phone" placeholder="Mobile number"/></div>
-      <div class="modal-fld"><label>Total Acres</label><input type="number" id="edit_total_acres" placeholder="e.g. 5.5" step="0.1"/></div>
-      <div class="modal-fld"><label>Straw/Acre (kg)</label><input type="number" id="edit_straw_per_acre" placeholder="e.g. 1200"/></div>
-      <div class="modal-fld"><label>Distance (km)</label><input type="number" id="edit_distance" placeholder="e.g. 24.5" step="0.1"/></div>
-      <div class="modal-fld"><label>Transport Cost (₹)</label><input type="number" id="edit_transport" placeholder="e.g. 1800"/></div>
+      <div class="modal-fld"><label>Total Acres</label><input type="number" id="edit_total_acres" placeholder="e.g. 5.5" step="0.1" oninput="calcTransport()"/></div>
+      <div class="modal-fld"><label>Straw/Acre (kg)</label><input type="number" id="edit_straw_per_acre" placeholder="e.g. 1200" oninput="calcTransport()"/></div>
+      <div class="modal-fld"><label>Distance (km)</label><input type="number" id="edit_distance" placeholder="e.g. 24.5" step="0.1" oninput="calcTransport()"/></div>
+      <div class="modal-fld"><label>Transport Cost (₹) — auto</label><input type="number" id="edit_transport" placeholder="Auto calculated" readonly style="background:#f5f3ff;color:var(--primary);font-weight:600;"/></div>
       <div class="modal-fld"><label>Village</label><input type="text" id="edit_village" placeholder="Village name"/></div>
       <div class="modal-fld"><label>District</label><input type="text" id="edit_district" placeholder="District name"/></div>
     </div>
@@ -458,15 +458,27 @@
     } catch(e) { showToast('⚠️ Cannot connect to server. Is it running?'); }
   }
 
+  function trips(f) {
+    const straw_kg = parseFloat(f.total_acres||0) * parseFloat(f.straw_per_acre_kg||0);
+    return straw_kg > 0 ? Math.ceil(straw_kg / 3000) : 0;
+  }
+  function costPerTrip(f) {
+    const km = parseFloat(f.farm_distance_km||0);
+    return km > 0 ? Math.round(km * 2 * 18) : 0;
+  }
+  function totalTransport(f) {
+    return trips(f) * costPerTrip(f);
+  }
+
   function renderStats() {
     const fa = allFarmers.length;
     const ac = allFarmers.reduce((s,f)=>s+parseFloat(f.total_acres||0),0);
     const st = allFarmers.reduce((s,f)=>s+(parseFloat(f.total_acres||0)*parseFloat(f.straw_per_acre_kg||0)),0);
-    const tr = allFarmers.reduce((s,f)=>s+parseFloat(f.transport_cost_per_trip||0),0);
-    document.getElementById('stat-farmers').textContent   = fa.toLocaleString('en-IN');
-    document.getElementById('stat-acres').textContent     = ac.toLocaleString('en-IN',{maximumFractionDigits:1});
-    document.getElementById('stat-straw').textContent     = (st/1000).toLocaleString('en-IN',{maximumFractionDigits:1})+'T';
-    document.getElementById('stat-transport').textContent = '₹'+(tr/1000).toLocaleString('en-IN',{maximumFractionDigits:1})+'K';
+    const tr = allFarmers.reduce((s,f)=>s+trips(f),0);
+    document.getElementById('stat-farmers').textContent = fa.toLocaleString('en-IN');
+    document.getElementById('stat-acres').textContent   = ac.toLocaleString('en-IN',{maximumFractionDigits:1});
+    document.getElementById('stat-straw').textContent   = (st/1000).toLocaleString('en-IN',{maximumFractionDigits:1})+'T';
+    document.getElementById('stat-trips').textContent   = tr.toLocaleString('en-IN');
   }
 
   function seasonBadges(farmer) {
@@ -557,7 +569,7 @@
     document.getElementById('farmersCount').textContent = `${total} farmer${total!==1?'s':''} found`;
     document.getElementById('paginationInfo').textContent = total ? `Showing ${(currentPage-1)*perPage+1}–${Math.min(currentPage*perPage,total)} of ${total}` : 'No results';
     const tbody = document.getElementById('allFarmersBody');
-    if (!slice.length) { tbody.innerHTML=`<tr><td colspan="11"><div class="empty-state"><div class="empty-icon">🔍</div><p>No farmers match your filters</p></div></td></tr>`; }
+    if (!slice.length) { tbody.innerHTML=`<tr><td colspan="13"><div class="empty-state"><div class="empty-icon">🔍</div><p>No farmers match your filters</p></div></td></tr>`; }
     else tbody.innerHTML = slice.map(f=>{
       const est = f.total_acres&&f.straw_per_acre_kg ? (parseFloat(f.total_acres)*parseFloat(f.straw_per_acre_kg)/1000).toFixed(1)+'T' : '—';
       return `<tr>
@@ -797,6 +809,15 @@
       <td>${parseFloat(f.farm_lng).toFixed(6)}</td>
       <td>${f.farm_distance_km?f.farm_distance_km+' km':'—'}</td>
     </tr>`).join('');
+  }
+
+  function calcTransport() {
+    const km = parseFloat(document.getElementById("edit_distance").value) || 0;
+    const acres = parseFloat(document.getElementById("edit_total_acres").value) || 0;
+    const spa = parseFloat(document.getElementById("edit_straw_per_acre").value) || 0;
+    const straw_kg = acres * spa;
+    const t = straw_kg > 0 ? Math.ceil(straw_kg / 3000) : 1;
+    document.getElementById("edit_transport").value = km > 0 ? Math.round(t * km * 2 * 18) : "";
   }
 
   loadAll();
