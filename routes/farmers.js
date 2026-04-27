@@ -98,7 +98,7 @@ router.patch('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     // Delete seasons first (foreign key), then farmer
-    await pool.query('DELETE FROM seasons WHERE farmer_id = $1', [req.params.id]);
+    await pool.query('DELETE FROM harvest_seasons WHERE farmer_id = $1', [req.params.id]);
     await pool.query('DELETE FROM farmers WHERE farmer_id = $1', [req.params.id]);
     res.json({ message: 'Farmer deleted' });
   } catch (err) {
