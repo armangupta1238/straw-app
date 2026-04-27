@@ -26,7 +26,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Get all agents with full stats
+// Get all users (agents + promoters) with full stats
 router.get('/agents', async (req, res) => {
   try {
     const result = await pool.query(`
@@ -38,7 +38,7 @@ router.get('/agents', async (req, res) => {
       FROM users u
       LEFT JOIN farmers f ON f.added_by_user_id = u.user_id
       LEFT JOIN pickups p ON p.farmer_id = f.farmer_id
-      WHERE u.role = 'agent'
+      WHERE u.role IN ('agent', 'promoter')
       GROUP BY u.user_id
       ORDER BY u.created_at DESC
     `);
@@ -48,14 +48,14 @@ router.get('/agents', async (req, res) => {
   }
 });
 
-// Add new agent
+// Add new user — role comes from request body (agent or promoter)
 router.post('/agents', async (req, res) => {
-  const { full_name, username, password } = req.body;
+  const { full_name, username, password, role } = req.body;
   try {
     const result = await pool.query(
       `INSERT INTO users (full_name, username, password, role)
-       VALUES ($1, $2, $3, 'agent') RETURNING *`,
-      [full_name, username, password]
+       VALUES ($1, $2, $3, $4) RETURNING *`,
+      [full_name, username, password, role || 'agent']
     );
     res.json(result.rows[0]);
   } catch (err) {
@@ -67,12 +67,11 @@ router.post('/agents', async (req, res) => {
   }
 });
 
-// Toggle agent active/inactive
+// Toggle active/inactive
 router.patch('/agents/:id', async (req, res) => {
   try {
     const result = await pool.query(
-      `UPDATE users SET is_active = NOT is_active 
-       WHERE user_id = $1 RETURNING *`,
+      `UPDATE users SET is_active = NOT is_active WHERE user_id = $1 RETURNING *`,
       [req.params.id]
     );
     res.json(result.rows[0]);
@@ -81,7 +80,7 @@ router.patch('/agents/:id', async (req, res) => {
   }
 });
 
-// Delete agent — unlink farmers first to avoid foreign key error
+// Delete user — unlink farmers first to avoid foreign key error
 router.delete('/agents/:id', async (req, res) => {
   try {
     await pool.query(
@@ -89,7 +88,7 @@ router.delete('/agents/:id', async (req, res) => {
       [req.params.id]
     );
     await pool.query('DELETE FROM users WHERE user_id = $1', [req.params.id]);
-    res.json({ message: 'Agent deleted' });
+    res.json({ message: 'User deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
