@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Straw Collector — Add Farmer</title>
 
-  <!-- ══ AUTH GATE — runs before anything else on the page ══ -->
   <script>
     if (!localStorage.getItem('agent')) {
       window.location.replace('login.html');
@@ -43,10 +42,7 @@
 
     header {
       background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple-deep) 100%);
-      color: #fff;
-      padding: 28px 24px 22px;
-      position: relative;
-      overflow: hidden;
+      color: #fff; padding: 28px 24px 22px; position: relative; overflow: hidden;
     }
     header::before { content:''; position:absolute; right:-40px; top:-40px; width:180px; height:180px; border-radius:50%; background:rgba(167,139,250,0.12); }
     header::after  { content:''; position:absolute; right:30px; bottom:-60px; width:120px; height:120px; border-radius:50%; background:rgba(167,139,250,0.08); }
@@ -64,9 +60,9 @@
     .progress-step.active { background:var(--purple-mid); }
     .progress-step.done   { background:var(--purple); }
     .step-labels {
-      display:flex; justify-content:space-between; padding:6px 24px 0;
+      display:flex; justify-content:space-between; padding:6px 24px 4px;
       font-size:10px; color:var(--muted); font-weight:500; text-transform:uppercase;
-      letter-spacing:.4px; background:#fff; padding-bottom:4px;
+      letter-spacing:.4px; background:#fff;
     }
 
     .section { display:none; padding:20px 24px; animation:fadeUp .35s ease; }
@@ -99,7 +95,7 @@
     .phone-hint.error { color:#dc2626; }
     .phone-hint.ok    { color:var(--purple); }
 
-    /* Location method tabs */
+    /* Location tabs */
     .method-tabs { display:flex; gap:8px; margin-bottom:14px; }
     .method-tab {
       flex:1; padding:11px 8px; border-radius:12px; border:1.5px solid var(--border);
@@ -136,17 +132,18 @@
     .status-msg.err     { color:#dc2626; }
     .status-msg.loading { color:var(--muted); }
 
-    /* Season chips */
-    .season-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    .season-chip {
-      border:1.5px solid var(--border); border-radius:12px; padding:14px 12px;
-      cursor:pointer; transition:all .2s; text-align:center; background:#fff;
+    /* ── MONTH GRID ── */
+    .month-grid {
+      display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;
     }
-    .season-chip.selected { border-color:var(--purple); background:rgba(109,40,217,0.07); }
-    .chip-icon   { font-size:24px; margin-bottom:4px; }
-    .chip-name   { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:var(--dark); }
-    .chip-months { font-size:10px; color:var(--muted); margin-top:2px; }
-    .season-chip.selected .chip-name { color:var(--purple); }
+    .month-chip {
+      padding:12px 4px; border-radius:10px; border:1.5px solid var(--border);
+      background:#fff; text-align:center; cursor:pointer; font-size:13px;
+      font-weight:600; color:var(--muted); transition:all .2s;
+    }
+    .month-chip.selected {
+      border-color:var(--purple); background:rgba(109,40,217,0.08); color:var(--purple);
+    }
 
     /* Review */
     .summary-row { display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid var(--border); font-size:14px; }
@@ -196,8 +193,7 @@
       width:80px; height:80px;
       background:linear-gradient(135deg, var(--purple-mid), var(--purple));
       border-radius:50%; display:flex; align-items:center; justify-content:center;
-      font-size:36px; margin:0 auto 20px;
-      box-shadow:0 8px 32px rgba(109,40,217,0.3);
+      font-size:36px; margin:0 auto 20px; box-shadow:0 8px 32px rgba(109,40,217,0.3);
     }
     .success-screen h2 { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:var(--purple); margin-bottom:8px; }
     .success-screen p  { color:var(--muted); font-size:14px; line-height:1.6; }
@@ -207,7 +203,6 @@
       font-size:16px; font-weight:700; cursor:pointer;
     }
 
-    /* Toast */
     .toast {
       position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px);
       background:var(--dark); color:#fff; padding:10px 20px; border-radius:20px;
@@ -218,14 +213,12 @@
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="header-badge">🌾 Field Agent App</div>
   <h1>Straw Collector</h1>
   <p>Register a new farmer &amp; farm details</p>
 </header>
 
-<!-- PROGRESS -->
 <div class="progress-bar">
   <div class="progress-step active" id="p1"></div>
   <div class="progress-step" id="p2"></div>
@@ -233,7 +226,7 @@
   <div class="progress-step" id="p4"></div>
 </div>
 <div class="step-labels">
-  <span>Farmer</span><span>Location</span><span>Seasons</span><span>Review</span>
+  <span>Farmer</span><span>Location</span><span>Months</span><span>Review</span>
 </div>
 
 <!-- ══ STEP 1: FARMER INFO ══ -->
@@ -289,16 +282,12 @@
         <button class="method-tab active" id="tab_gps" onclick="switchTab('gps')">📡 Capture GPS</button>
         <button class="method-tab" id="tab_link" onclick="switchTab('link')">🔗 Google Maps Link</button>
       </div>
-
-      <!-- GPS METHOD -->
       <div id="panel_gps">
         <button class="gps-btn" id="gpsBtn" onclick="captureGPS()">
           <span id="gpsBtnIcon">📡</span> <span id="gpsBtnText">Capture My Location</span>
         </button>
         <div class="gps-coords" id="gpsDisplay"></div>
       </div>
-
-      <!-- GOOGLE MAPS LINK METHOD -->
       <div id="panel_link" style="display:none">
         <div class="maps-hint">
           <strong>How to get a Google Maps link:</strong><br/>
@@ -312,15 +301,11 @@
         <div class="status-msg" id="link_status"></div>
       </div>
     </div>
-
-    <!-- DISTANCE RESULT -->
     <div class="field">
       <label>Road Distance to Warehouse</label>
       <div class="distance-box" id="distance_display">— Add farm location above first</div>
       <div class="status-msg" id="dist_status"></div>
     </div>
-
-    <!-- Hidden fields -->
     <input type="hidden" id="farm_lat"/>
     <input type="hidden" id="farm_lng"/>
     <input type="hidden" id="farm_distance_km"/>
@@ -328,63 +313,25 @@
   </div>
 </div>
 
-<!-- ══ STEP 3: HARVEST SEASONS ══ -->
+<!-- ══ STEP 3: PICKUP MONTHS ══ -->
 <div class="section" id="step3">
-  <p class="section-title">Harvest Seasons</p>
-  <p class="section-sub">Which seasons does this farmer harvest paddy?</p>
+  <p class="section-title">Pickup Months</p>
+  <p class="section-sub">Which months can straw be collected from this farmer?</p>
+
   <div class="card">
-    <div class="season-grid">
-      <div class="season-chip" id="chip_kharif" onclick="toggleSeason('kharif')">
-        <div class="chip-icon">☀️</div>
-        <div class="chip-name">Kharif</div>
-        <div class="chip-months">Oct – Nov</div>
-      </div>
-      <div class="season-chip" id="chip_rabi" onclick="toggleSeason('rabi')">
-        <div class="chip-icon">❄️</div>
-        <div class="chip-name">Rabi</div>
-        <div class="chip-months">Mar – Apr</div>
-      </div>
-      <div class="season-chip" id="chip_zaid" onclick="toggleSeason('zaid')">
-        <div class="chip-icon">🌿</div>
-        <div class="chip-name">Zaid</div>
-        <div class="chip-months">Jun – Jul</div>
-      </div>
-      <div class="season-chip" id="chip_custom" onclick="toggleSeason('custom')">
-        <div class="chip-icon">📅</div>
-        <div class="chip-name">Custom</div>
-        <div class="chip-months">Set manually</div>
-      </div>
-    </div>
-  </div>
-  <div class="card" id="customSeasonCard" style="display:none">
-    <p style="font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:var(--purple); margin-bottom:12px;">Custom Season</p>
     <div class="field">
-      <label>Season Name</label>
-      <input type="text" id="custom_season_name" placeholder="e.g. Summer Harvest"/>
-    </div>
-    <div class="field-row">
-      <div class="field">
-        <label>Start Month</label>
-        <select id="custom_month_start">
-          <option value="">Select</option>
-          <option value="1">January</option><option value="2">February</option><option value="3">March</option>
-          <option value="4">April</option><option value="5">May</option><option value="6">June</option>
-          <option value="7">July</option><option value="8">August</option><option value="9">September</option>
-          <option value="10">October</option><option value="11">November</option><option value="12">December</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>End Month</label>
-        <select id="custom_month_end">
-          <option value="">Select</option>
-          <option value="1">January</option><option value="2">February</option><option value="3">March</option>
-          <option value="4">April</option><option value="5">May</option><option value="6">June</option>
-          <option value="7">July</option><option value="8">August</option><option value="9">September</option>
-          <option value="10">October</option><option value="11">November</option><option value="12">December</option>
-        </select>
-      </div>
+      <label>Select Available Months *</label>
+      <div class="month-grid" id="monthGrid"></div>
     </div>
   </div>
+
+  <div class="card">
+    <div class="field">
+      <label>Total Expected Straw (kg) *</label>
+      <input type="number" id="expected_straw_kg" placeholder="e.g. 6000" min="0"/>
+    </div>
+  </div>
+
   <div class="card">
     <div class="field">
       <label>Additional Notes</label>
@@ -436,8 +383,12 @@
   </div>
   <div class="card">
     <div class="summary-row">
-      <span class="summary-label">Harvest Seasons</span>
-      <span class="summary-value" id="rev_seasons">—</span>
+      <span class="summary-label">Pickup Months</span>
+      <span class="summary-value" id="rev_months">—</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-label">Expected Straw</span>
+      <span class="summary-value" id="rev_expected_straw">—</span>
     </div>
   </div>
 </div>
@@ -463,12 +414,32 @@
 
   let currentStep = 1;
   const totalSteps = 4;
-  const selectedSeasons = new Set();
-  const seasons = {
-    kharif: { name:'Kharif', month_start:10, month_end:11 },
-    rabi:   { name:'Rabi',   month_start:3,  month_end:4  },
-    zaid:   { name:'Zaid',   month_start:6,  month_end:7  },
-  };
+  const selectedMonths = new Set();
+  const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const MONTH_FULL  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  // ── BUILD MONTH GRID ──
+  function buildMonthGrid() {
+    const grid = document.getElementById('monthGrid');
+    grid.innerHTML = '';
+    MONTH_NAMES.forEach((m, i) => {
+      const chip = document.createElement('div');
+      chip.className = 'month-chip';
+      chip.textContent = m;
+      chip.onclick = () => toggleMonth(i, chip);
+      grid.appendChild(chip);
+    });
+  }
+
+  function toggleMonth(idx, chip) {
+    if (selectedMonths.has(idx)) {
+      selectedMonths.delete(idx);
+      chip.classList.remove('selected');
+    } else {
+      selectedMonths.add(idx);
+      chip.classList.add('selected');
+    }
+  }
 
   // ── TOAST ──
   function showToast(msg) {
@@ -477,11 +448,9 @@
     setTimeout(() => t.classList.remove('show'), 3000);
   }
 
-  // ── PHONE HANDLER — digits only, max 10 ──
+  // ── PHONE HANDLER ──
   function handlePhone(input) {
-    // Strip anything that isn't a digit
     input.value = input.value.replace(/\D/g, '');
-    // Enforce max 10
     if (input.value.length > 10) input.value = input.value.slice(0, 10);
     const hint = document.getElementById('phone_hint');
     const len  = input.value.length;
@@ -522,13 +491,8 @@
   // ── VALIDATE ──
   function validate() {
     if (currentStep === 1) {
-      if (!document.getElementById('full_name').value.trim()) {
-        showToast('⚠️ Please enter the farmer\'s name'); return false;
-      }
-      if (!document.getElementById('total_acres').value) {
-        showToast('⚠️ Please enter total acres'); return false;
-      }
-      // Phone validation — if entered, must be exactly 10 digits
+      if (!document.getElementById('full_name').value.trim()) { showToast('⚠️ Please enter the farmer\'s name'); return false; }
+      if (!document.getElementById('total_acres').value)      { showToast('⚠️ Please enter total acres'); return false; }
       const phone = document.getElementById('phone').value;
       if (phone.length > 0 && phone.length !== 10) {
         showToast('⚠️ Mobile number must be exactly 10 digits');
@@ -540,7 +504,10 @@
       if (!document.getElementById('village_name').value.trim()) { showToast('⚠️ Please enter the village name'); return false; }
       if (!document.getElementById('district').value.trim())     { showToast('⚠️ Please enter the district'); return false; }
     }
-    if (currentStep === 3 && selectedSeasons.size === 0) { showToast('⚠️ Please select at least one harvest season'); return false; }
+    if (currentStep === 3) {
+      if (selectedMonths.size === 0) { showToast('⚠️ Please select at least one pickup month'); return false; }
+      if (!document.getElementById('expected_straw_kg').value)  { showToast('⚠️ Please enter expected straw (kg)'); return false; }
+    }
     return true;
   }
 
@@ -571,11 +538,11 @@
     document.getElementById('tab_link').className = 'method-tab' + (tab === 'link' ? ' active' : '');
   }
 
-  // ── DISTANCE FROM BACKEND ──
+  // ── DISTANCE ──
   async function getDistance(lat, lng) {
     const distBox    = document.getElementById('distance_display');
     const distStatus = document.getElementById('dist_status');
-    distBox.textContent    = '⏳ Calculating road distance...';
+    distBox.textContent = '⏳ Calculating road distance...';
     distStatus.textContent = '';
     try {
       const res  = await fetch(`${API}/distance?lat=${lat}&lng=${lng}`);
@@ -585,10 +552,10 @@
         document.getElementById('transport_cost').value   = data.transport_cost;
         distBox.textContent = `🛣️ ${data.distance_km} km by road`;
         distBox.classList.add('success');
-        distStatus.textContent = `Via road to Warehouse`;
+        distStatus.textContent = 'Via road to Warehouse';
         distStatus.className   = 'status-msg ok';
       } else {
-        distBox.textContent = '— Could not calculate distance';
+        distBox.textContent    = '— Could not calculate distance';
         distStatus.textContent = 'Google Maps could not find a route';
         distStatus.className   = 'status-msg err';
       }
@@ -599,7 +566,7 @@
     }
   }
 
-  // ── GPS CAPTURE ──
+  // ── GPS ──
   function captureGPS() {
     const btnIcon = document.getElementById('gpsBtnIcon');
     const btnText = document.getElementById('gpsBtnText');
@@ -686,14 +653,6 @@
     }, 800);
   }
 
-  // ── SEASONS ──
-  function toggleSeason(key) {
-    const chip = document.getElementById('chip_' + key);
-    if (selectedSeasons.has(key)) { selectedSeasons.delete(key); chip.classList.remove('selected'); }
-    else { selectedSeasons.add(key); chip.classList.add('selected'); }
-    document.getElementById('customSeasonCard').style.display = selectedSeasons.has('custom') ? 'block' : 'none';
-  }
-
   // ── REVIEW ──
   function buildReview() {
     const acres = document.getElementById('total_acres').value;
@@ -701,6 +660,7 @@
     const lat   = document.getElementById('farm_lat').value;
     const lng   = document.getElementById('farm_lng').value;
     const dist  = document.getElementById('farm_distance_km').value;
+    const expKg = document.getElementById('expected_straw_kg').value;
 
     document.getElementById('rev_name').textContent     = document.getElementById('full_name').value || '—';
     document.getElementById('rev_phone').textContent    = document.getElementById('phone').value || 'No phone';
@@ -712,9 +672,10 @@
     document.getElementById('rev_gps').textContent      = lat && lng ? `${lat}, ${lng}` : 'Not captured';
     document.getElementById('rev_total_straw').textContent = acres && spa
       ? (parseFloat(acres) * parseFloat(spa)).toLocaleString('en-IN') + ' kg' : '—';
-    document.getElementById('rev_seasons').textContent  = [...selectedSeasons].map(k =>
-      k === 'custom' ? (document.getElementById('custom_season_name').value || 'Custom') : seasons[k]?.name
-    ).join(', ') || '—';
+
+    const sortedMonths = [...selectedMonths].sort((a,b) => a-b).map(i => MONTH_NAMES[i]);
+    document.getElementById('rev_months').textContent         = sortedMonths.join(', ') || '—';
+    document.getElementById('rev_expected_straw').textContent = expKg ? parseFloat(expKg).toLocaleString('en-IN') + ' kg' : '—';
   }
 
   // ── SUBMIT ──
@@ -755,26 +716,19 @@
       });
       const farmer = await farmerRes.json();
 
-      for (const key of selectedSeasons) {
-        const acres = parseFloat(document.getElementById('total_acres').value) || 0;
-        const spa   = parseFloat(document.getElementById('straw_per_acre').value) || 0;
-        await fetch(`${API}/seasons`, {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify(key === 'custom' ? {
-            farmer_id:   farmer.farmer_id,
-            season_name: document.getElementById('custom_season_name').value || 'Custom',
-            month_start: document.getElementById('custom_month_start').value || null,
-            month_end:   document.getElementById('custom_month_end').value || null,
-            expected_straw_kg: null,
-          } : {
-            farmer_id:        farmer.farmer_id,
-            season_name:      seasons[key].name,
-            month_start:      seasons[key].month_start,
-            month_end:        seasons[key].month_end,
-            expected_straw_kg: acres && spa ? acres * spa : null,
-          })
-        });
-      }
+      // Save months as a single season record using season_name = comma-separated months
+      const sortedMonths = [...selectedMonths].sort((a,b) => a-b).map(i => MONTH_FULL[i]);
+      const expKg = document.getElementById('expected_straw_kg').value;
+      await fetch(`${API}/seasons`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          farmer_id:         farmer.farmer_id,
+          season_name:       sortedMonths.join(', '),
+          month_start:       [...selectedMonths].sort((a,b)=>a-b)[0] + 1,
+          month_end:         [...selectedMonths].sort((a,b)=>a-b).slice(-1)[0] + 1,
+          expected_straw_kg: expKg || null,
+        })
+      });
 
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
       document.getElementById('navBtns').style.display = 'none';
@@ -790,9 +744,8 @@
     document.getElementById('successScreen').classList.remove('active');
     document.getElementById('navBtns').style.display = 'flex';
     document.querySelectorAll('input, textarea, select').forEach(el => el.value = '');
-    selectedSeasons.clear();
-    document.querySelectorAll('.season-chip').forEach(c => c.classList.remove('selected'));
-    document.getElementById('customSeasonCard').style.display = 'none';
+    selectedMonths.clear();
+    document.querySelectorAll('.month-chip').forEach(c => c.classList.remove('selected'));
     document.getElementById('gpsBtnIcon').textContent = '📡';
     document.getElementById('gpsBtnText').textContent = 'Capture My Location';
     document.getElementById('gpsBtn').classList.remove('captured');
@@ -809,6 +762,7 @@
     showStep(1);
   }
 
+  buildMonthGrid();
   updateProgress();
 </script>
 
