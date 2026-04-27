@@ -752,8 +752,9 @@
   async function deleteAgent(id, name) {
     try {
       await fetch(`${API}/auth/agents/${id}`, { method:'DELETE' });
+      allAgents = allAgents.filter(a => a.user_id !== id);
       showToast(`🗑 Agent "${name}" deleted`);
-      loadAgents();
+      renderAgents();
     } catch(e) { showToast('❌ Could not delete agent'); }
   }
 
