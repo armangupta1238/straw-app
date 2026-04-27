@@ -36,6 +36,7 @@
       position: fixed; left: 0; top: 0; bottom: 0; width: 240px;
       background: linear-gradient(180deg, #1e1b3a 0%, #2d1b69 100%);
       display: flex; flex-direction: column; z-index: 100; padding: 28px 0 24px 0;
+      overflow-y: auto;
     }
     .sidebar-logo { padding: 0 24px 28px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); }
     .logo-badge { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.7); margin-bottom: 6px; }
@@ -135,7 +136,6 @@
     .toast { position: fixed; bottom: 24px; right: 24px; background: var(--dark); color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 13px; opacity: 0; transform: translateY(10px); transition: all .3s; z-index: 999; }
     .toast.show { opacity: 1; transform: translateY(0); }
 
-    /* ──────── ACTION BUTTONS ──────── */
     .btn-edit { padding: 3px 7px; border-radius: 6px; border: 1.5px solid var(--primary-pale); background: var(--primary-pale); font-size: 11px; cursor: pointer; color: var(--primary); font-weight: 600; }
     .btn-edit:hover { background: var(--primary); color: #fff; }
     .btn-del { padding: 3px 7px; border-radius: 6px; border: 1.5px solid var(--red-pale); background: var(--red-pale); font-size: 11px; cursor: pointer; color: var(--red); font-weight: 600; }
@@ -158,25 +158,26 @@
     .modal-save:hover { background: #5b21b6; }
     .modal-cancel { flex: 1; padding: 13px; border-radius: 12px; border: 1.5px solid var(--border); background: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: var(--muted); cursor: pointer; }
 
-    /* ──────── AGENTS ──────── */
+    /* ──────── AGENTS / PROMOTERS ──────── */
     .ag-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; padding: 20px; border-bottom: 1px solid var(--border); }
     .ag-stat-box { background: var(--bg); border-radius: 12px; padding: 16px; text-align: center; }
     .ag-stat-num { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--primary); }
     .ag-stat-txt { font-size: 11px; color: var(--muted); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
     .ag-form { padding: 20px; border-bottom: 1px solid var(--border); background: #fafafe; }
     .ag-form h3 { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 14px; }
-    .ag-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 10px; align-items: end; }
+    .ag-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: end; }
     .ag-fld { display: flex; flex-direction: column; gap: 5px; }
     .ag-fld label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; color: var(--primary); }
     .ag-input { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--dark); background: #fff; outline: none; }
     .ag-input:focus { border-color: var(--primary-lt); }
-    .ag-add-btn { padding: 10px 20px; background: var(--primary); color: #fff; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; height: 42px; }
+    .ag-add-btn { padding: 10px 20px; background: var(--primary); color: #fff; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; height: 42px; white-space: nowrap; }
     .ag-add-btn:hover { background: #5b21b6; }
     .ag-card { border-bottom: 1px solid var(--border); }
     .ag-card:last-child { border-bottom: none; }
     .ag-card-top { display: flex; align-items: center; gap: 16px; padding: 16px 20px; flex-wrap: wrap; cursor: pointer; }
     .ag-card-top:hover { background: #fafafe; }
     .ag-avatar { width: 44px; height: 44px; border-radius: 12px; background: var(--primary-pale); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    .ag-avatar.promoter-av { background: #f3e8ff; }
     .ag-info { flex: 1; min-width: 200px; }
     .ag-name { font-weight: 700; font-size: 14px; }
     .ag-uname { font-size: 12px; color: var(--muted); margin-top: 2px; }
@@ -192,8 +193,6 @@
     .ag-tog:hover { border-color: var(--primary); color: var(--primary); }
     .ag-del { padding: 6px 10px; border-radius: 8px; border: 1.5px solid var(--red-pale); background: var(--red-pale); font-size: 12px; cursor: pointer; color: var(--red); }
     .ag-del:hover { background: var(--red); color: #fff; }
-
-    /* Agent farmer list */
     .ag-farmers { display: none; background: #fafafe; border-top: 1px solid var(--border); padding: 12px 20px 16px 80px; }
     .ag-farmers.open { display: block; }
     .ag-farmers-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin-bottom: 10px; }
@@ -202,12 +201,6 @@
     .ag-farmer-name { font-weight: 600; }
     .ag-farmer-detail { font-size: 11px; color: var(--muted); margin-top: 1px; }
     .ag-expand-icon { font-size: 11px; color: var(--muted); margin-left: auto; padding-left: 12px; }
-
-    /* Role badge in agent card */
-    .role-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: .5px; }
-    .role-badge.promoter { background: var(--primary-pale); color: var(--primary); }
-    .role-badge.agent    { background: var(--accent-pale);  color: var(--earth); }
-    .role-badge.admin    { background: #f3e8ff; color: #7c3aed; }
 
     /* ──────── RESPONSIVE ──────── */
     @media (max-width: 1100px) {
@@ -224,7 +217,7 @@
       .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
       .stat-card { padding: 14px; }
       .stat-value { font-size: 22px; }
-      .ag-grid { grid-template-columns: 1fr; }
+      .ag-grid-3 { grid-template-columns: 1fr; }
       .ag-add-btn { width: 100%; }
       .search-box input { width: 140px; }
       .modal { padding: 20px; margin: 16px; }
@@ -243,7 +236,10 @@
   <div class="nav-section">Main</div>
   <a class="nav-item active" onclick="showSection('dashboard')"><span class="nav-icon">📊</span><span>Dashboard</span></a>
   <a class="nav-item" onclick="showSection('farmers')"><span class="nav-icon">👨‍🌾</span><span>All Farmers</span></a>
+  <div class="nav-section">People</div>
   <a class="nav-item" onclick="showSection('agents')"><span class="nav-icon">🧑‍💼</span><span>Field Agents</span></a>
+  <a class="nav-item" onclick="showSection('promoters')"><span class="nav-icon">⭐</span><span>Promoters</span></a>
+  <div class="nav-section">Operations</div>
   <a class="nav-item" onclick="showSection('seasons')"><span class="nav-icon">🌾</span><span>Harvest Seasons</span></a>
   <a class="nav-item" onclick="showSection('pickups')"><span class="nav-icon">🚛</span><span>Pickups</span></a>
   <a class="nav-item" onclick="showSection('map')"><span class="nav-icon">🗺️</span><span>Farm Map</span></a>
@@ -336,7 +332,7 @@
     </div>
   </div>
 
-  <!-- AGENTS -->
+  <!-- FIELD AGENTS — role='agent' only -->
   <div id="section-agents" style="display:none">
     <div class="panel">
       <div class="panel-header">
@@ -348,22 +344,39 @@
         <div class="ag-stat-box"><div class="ag-stat-num" id="agStatFarmers">—</div><div class="ag-stat-txt">Farmers Added</div></div>
       </div>
       <div class="ag-form">
-        <h3>➕ Add New User</h3>
-        <div class="ag-grid">
+        <h3>➕ Add New Agent</h3>
+        <div class="ag-grid-3">
           <div class="ag-fld"><label>Full Name</label><input class="ag-input" type="text" id="newAgentName" placeholder="e.g. Rahul Kumar"/></div>
           <div class="ag-fld"><label>Username</label><input class="ag-input" type="text" id="newAgentUsername" placeholder="e.g. rahul_k"/></div>
           <div class="ag-fld"><label>Password</label><input class="ag-input" type="text" id="newAgentPassword" placeholder="e.g. straw2025"/></div>
-          <div class="ag-fld">
-            <label>Role</label>
-            <select class="ag-input" id="newAgentRole">
-              <option value="agent">Agent — Farmer form only</option>
-              <option value="promoter">Promoter — Dashboard + forms</option>
-            </select>
-          </div>
-          <button class="ag-add-btn" id="addAgentBtn" onclick="addAgent()">Add</button>
+          <button class="ag-add-btn" id="addAgentBtn" onclick="addUser('agent')">Add Agent</button>
         </div>
       </div>
       <div id="agentsList"><div class="loading"><div class="spinner"></div> Loading agents...</div></div>
+    </div>
+  </div>
+
+  <!-- PROMOTERS — role='promoter' only -->
+  <div id="section-promoters" style="display:none">
+    <div class="panel">
+      <div class="panel-header">
+        <div><div class="panel-title">Promoters</div><div class="panel-sub" id="promotersCount">Loading...</div></div>
+      </div>
+      <div class="ag-stats">
+        <div class="ag-stat-box"><div class="ag-stat-num" id="prStatTotal">—</div><div class="ag-stat-txt">Total Promoters</div></div>
+        <div class="ag-stat-box"><div class="ag-stat-num" id="prStatActive">—</div><div class="ag-stat-txt">Active</div></div>
+        <div class="ag-stat-box"><div class="ag-stat-num" id="prStatFarmers">—</div><div class="ag-stat-txt">Farmers Added</div></div>
+      </div>
+      <div class="ag-form">
+        <h3>➕ Add New Promoter</h3>
+        <div class="ag-grid-3">
+          <div class="ag-fld"><label>Full Name</label><input class="ag-input" type="text" id="newPromoterName" placeholder="e.g. Arman Gupta"/></div>
+          <div class="ag-fld"><label>Username</label><input class="ag-input" type="text" id="newPromoterUsername" placeholder="e.g. arman_g"/></div>
+          <div class="ag-fld"><label>Password</label><input class="ag-input" type="text" id="newPromoterPassword" placeholder="e.g. straw2025"/></div>
+          <button class="ag-add-btn" id="addPromoterBtn" onclick="addUser('promoter')">Add Promoter</button>
+        </div>
+      </div>
+      <div id="promotersList"><div class="loading"><div class="spinner"></div> Loading promoters...</div></div>
     </div>
   </div>
 
@@ -421,7 +434,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // ── AUTH GATE — blocks agents, allows admin and promoter only ──
+  // ── AUTH GATE ──
   (function() {
     try {
       const saved = localStorage.getItem('agent');
@@ -436,9 +449,7 @@
       if (agent.role !== 'admin' && agent.role !== 'promoter') {
         window.location.href = 'login.html?error=access_denied';
       }
-    } catch(e) {
-      window.location.href = 'login.html?error=access_denied';
-    }
+    } catch(e) { window.location.href = 'login.html?error=access_denied'; }
   })();
 
   const API = 'https://straw-app-production.up.railway.app/api';
@@ -448,14 +459,15 @@
   let lastFiltered = null;
   let editingFarmerId = null;
 
-  const sections = ['dashboard','farmers','agents','seasons','pickups','map'];
+  const sections = ['dashboard','farmers','agents','promoters','seasons','pickups','map'];
   const titles = {
-    dashboard:['Dashboard','Overview of your straw collection network'],
-    farmers:  ['All Farmers','Complete farmer registry'],
-    agents:   ['Field Agents','Manage your field agents and their accounts'],
-    seasons:  ['Harvest Seasons','Upcoming and active harvest seasons'],
-    pickups:  ['Pickup History','All straw collection records'],
-    map:      ['Farm Map','GPS locations of all registered farms'],
+    dashboard: ['Dashboard','Overview of your straw collection network'],
+    farmers:   ['All Farmers','Complete farmer registry'],
+    agents:    ['Field Agents','Agents who register farmers in the field'],
+    promoters: ['Promoters','Promoters who manage the dashboard and operations'],
+    seasons:   ['Harvest Seasons','Upcoming and active harvest seasons'],
+    pickups:   ['Pickup History','All straw collection records'],
+    map:       ['Farm Map','GPS locations of all registered farms'],
   };
 
   function showSection(name) {
@@ -463,11 +475,12 @@
     document.querySelectorAll('.nav-item').forEach((el,i) => el.classList.toggle('active', sections[i]===name));
     document.getElementById('pageTitle').textContent = titles[name][0];
     document.getElementById('pageSubtitle').textContent = titles[name][1];
-    if (name==='map')     renderMapTable();
-    if (name==='seasons') renderAllSeasons();
-    if (name==='pickups') renderAllPickups();
-    if (name==='farmers') { populateFilters(); renderAllFarmers(); }
-    if (name==='agents')  loadAgents();
+    if (name==='map')       renderMapTable();
+    if (name==='seasons')   renderAllSeasons();
+    if (name==='pickups')   renderAllPickups();
+    if (name==='farmers')   { populateFilters(); renderAllFarmers(); }
+    if (name==='agents')    loadAndRenderUsers('agent');
+    if (name==='promoters') loadAndRenderUsers('promoter');
   }
 
   function showToast(msg) {
@@ -504,8 +517,7 @@
     return Math.round(km * 2 * 18);
   }
   function totalTransport(f) {
-    const t = trips(f);
-    const cpp = costPerTrip(f);
+    const t = trips(f); const cpp = costPerTrip(f);
     if (t === 0 || cpp === 0) return 0;
     return t * cpp;
   }
@@ -613,9 +625,7 @@
     else tbody.innerHTML = slice.map(f=>{
       const est_kg = parseFloat(f.total_acres||0) * parseFloat(f.straw_per_acre_kg||0);
       const est = est_kg > 0 ? (est_kg/1000).toFixed(1)+'T' : '—';
-      const t = trips(f);
-      const cpp = costPerTrip(f);
-      const total = totalTransport(f);
+      const t = trips(f); const cpp = costPerTrip(f); const total = totalTransport(f);
       return `<tr>
         <td><div class="farmer-name">${f.full_name}</div><div class="farmer-phone">${f.phone||'—'}</div></td>
         <td>${f.village_name||'—'}</td>
@@ -647,7 +657,6 @@
     }
   }
 
-  // ── DELETE FARMER ──
   async function deleteFarmer(id, name) {
     try {
       await fetch(`${API}/farmers/${id}`, { method: 'DELETE' });
@@ -659,7 +668,6 @@
     } catch(e) { showToast('❌ Could not delete farmer'); }
   }
 
-  // ── EDIT FARMER MODAL ──
   function openEditModal(id) {
     const f = allFarmers.find(x => x.farmer_id === id);
     if (!f) return;
@@ -699,12 +707,7 @@
       const data = await res.json();
       if (data.farmer_id) {
         const idx = allFarmers.findIndex(f => f.farmer_id === editingFarmerId);
-        if (idx !== -1) {
-          allFarmers[idx] = { ...allFarmers[idx], ...body,
-            village_name: body.village_name,
-            district:     body.district,
-          };
-        }
+        if (idx !== -1) allFarmers[idx] = { ...allFarmers[idx], ...body, village_name: body.village_name, district: body.district };
         showToast(`✅ "${body.full_name}" updated!`);
         closeModal();
         renderAllFarmers(lastFiltered || allFarmers);
@@ -714,37 +717,50 @@
     btn.textContent = '💾 Save Changes'; btn.disabled = false;
   }
 
-  // Close modal on overlay click
   document.getElementById('editModal').addEventListener('click', function(e) {
     if (e.target === this) closeModal();
   });
 
-  // ── AGENTS ──
-  async function loadAgents() {
+  // ── LOAD & RENDER USERS ──
+  async function loadAndRenderUsers(role) {
     try {
       const res = await fetch(`${API}/auth/agents`);
       allAgents = await res.json();
-      renderAgents();
-    } catch(e) { showToast('⚠️ Could not load agents'); }
+      renderUserList(role);
+    } catch(e) { showToast('⚠️ Could not load users'); }
   }
 
-  function roleBadge(role) {
-    if (role === 'admin')    return `<span class="role-badge admin">Admin</span>`;
-    if (role === 'promoter') return `<span class="role-badge promoter">Promoter</span>`;
-    return `<span class="role-badge agent">Agent</span>`;
-  }
+  function renderUserList(role) {
+    const isAgent     = role === 'agent';
+    const filtered    = allAgents.filter(a => a.role === role);
+    const total       = filtered.length;
+    const active      = filtered.filter(a=>a.is_active).length;
+    const farmersAdded= filtered.reduce((s,a)=>s+parseInt(a.farmers_added||0),0);
+    const avatarClass = isAgent ? 'ag-avatar' : 'ag-avatar promoter-av';
+    const avatarIcon  = isAgent ? '🧑‍💼' : '⭐';
+    const emptyIcon   = isAgent ? '🧑‍💼' : '⭐';
+    const emptyMsg    = isAgent ? 'No agents yet. Add one above!' : 'No promoters yet. Add one above!';
 
-  function renderAgents() {
-    const total   = allAgents.length;
-    const active  = allAgents.filter(a=>a.is_active).length;
-    const farmers = allAgents.reduce((s,a)=>s+parseInt(a.farmers_added||0),0);
-    document.getElementById('agentsCount').textContent  = `${total} user${total!==1?'s':''} registered`;
-    document.getElementById('agStatTotal').textContent  = total;
-    document.getElementById('agStatActive').textContent = active;
-    document.getElementById('agStatFarmers').textContent= farmers;
-    const el = document.getElementById('agentsList');
-    if (!allAgents.length) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">🧑‍💼</div><p>No users yet. Add one above!</p></div>`; return; }
-    el.innerHTML = allAgents.map(a => {
+    if (isAgent) {
+      document.getElementById('agentsCount').textContent   = `${total} agent${total!==1?'s':''} registered`;
+      document.getElementById('agStatTotal').textContent   = total;
+      document.getElementById('agStatActive').textContent  = active;
+      document.getElementById('agStatFarmers').textContent = farmersAdded;
+    } else {
+      document.getElementById('promotersCount').textContent = `${total} promoter${total!==1?'s':''} registered`;
+      document.getElementById('prStatTotal').textContent    = total;
+      document.getElementById('prStatActive').textContent   = active;
+      document.getElementById('prStatFarmers').textContent  = farmersAdded;
+    }
+
+    const el = document.getElementById(isAgent ? 'agentsList' : 'promotersList');
+
+    if (!filtered.length) {
+      el.innerHTML = `<div class="empty-state"><div class="empty-icon">${emptyIcon}</div><p>${emptyMsg}</p></div>`;
+      return;
+    }
+
+    el.innerHTML = filtered.map(a => {
       const agentFarmers = allFarmers.filter(f => f.added_by_user_id === a.user_id);
       const farmersHtml = agentFarmers.length ? agentFarmers.map(f=>`
         <div class="ag-farmer-row">
@@ -758,9 +774,9 @@
       return `
         <div class="ag-card">
           <div class="ag-card-top" onclick="toggleAgentFarmers(${a.user_id})">
-            <div class="ag-avatar">🧑‍💼</div>
+            <div class="${avatarClass}">${avatarIcon}</div>
             <div class="ag-info">
-              <div class="ag-name">${a.full_name} ${roleBadge(a.role)}</div>
+              <div class="ag-name">${a.full_name}</div>
               <div class="ag-uname">@${a.username}</div>
               <div class="ag-meta">
                 <div class="ag-meta-i"><div class="ag-meta-v">${a.farmers_added||0}</div><div class="ag-meta-l">Farmers</div></div>
@@ -770,8 +786,8 @@
             </div>
             <div class="ag-acts">
               <span class="ag-status ${a.is_active?'on':'off'}">${a.is_active?'✅ Active':'❌ Inactive'}</span>
-              <button class="ag-tog" onclick="event.stopPropagation();toggleAgent(${a.user_id})">${a.is_active?'Deactivate':'Activate'}</button>
-              <button class="ag-del" onclick="event.stopPropagation();deleteAgent(${a.user_id},'${a.full_name.replace(/'/g,"\\'")}')">🗑</button>
+              <button class="ag-tog" onclick="event.stopPropagation();toggleUser(${a.user_id},'${role}')">${a.is_active?'Deactivate':'Activate'}</button>
+              <button class="ag-del" onclick="event.stopPropagation();deleteUser(${a.user_id},'${a.full_name.replace(/'/g,"\\'")}','${role}')">🗑</button>
             </div>
             <span class="ag-expand-icon">▼ ${agentFarmers.length} farmer${agentFarmers.length!==1?'s':''}</span>
           </div>
@@ -788,40 +804,40 @@
     if (el) el.classList.toggle('open');
   }
 
-  async function addAgent() {
-    const name     = document.getElementById('newAgentName').value.trim();
-    const username = document.getElementById('newAgentUsername').value.trim();
-    const password = document.getElementById('newAgentPassword').value.trim();
-    const role     = document.getElementById('newAgentRole').value;
+  async function addUser(role) {
+    const isAgent  = role === 'agent';
+    const name     = document.getElementById(isAgent ? 'newAgentName'     : 'newPromoterName').value.trim();
+    const username = document.getElementById(isAgent ? 'newAgentUsername' : 'newPromoterUsername').value.trim();
+    const password = document.getElementById(isAgent ? 'newAgentPassword' : 'newPromoterPassword').value.trim();
+    const btn      = document.getElementById(isAgent ? 'addAgentBtn'      : 'addPromoterBtn');
     if (!name || !username || !password) { showToast('⚠️ Please fill all fields'); return; }
-    const btn = document.getElementById('addAgentBtn');
     btn.disabled = true; btn.textContent = 'Adding...';
     try {
       const res  = await fetch(`${API}/auth/agents`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({full_name:name, username, password, role}) });
       const data = await res.json();
       if (data.user_id) {
         showToast(`✅ ${role === 'promoter' ? 'Promoter' : 'Agent'} "${name}" created!`);
-        document.getElementById('newAgentName').value = '';
-        document.getElementById('newAgentUsername').value = '';
-        document.getElementById('newAgentPassword').value = '';
-        document.getElementById('newAgentRole').value = 'agent';
-        loadAgents();
+        document.getElementById(isAgent ? 'newAgentName'     : 'newPromoterName').value = '';
+        document.getElementById(isAgent ? 'newAgentUsername' : 'newPromoterUsername').value = '';
+        document.getElementById(isAgent ? 'newAgentPassword' : 'newPromoterPassword').value = '';
+        loadAndRenderUsers(role);
       } else { showToast('❌ ' + (data.error||'Could not create user')); }
     } catch(e) { showToast('❌ Server error'); }
-    btn.disabled = false; btn.textContent = 'Add';
+    btn.disabled = false; btn.textContent = isAgent ? 'Add Agent' : 'Add Promoter';
   }
 
-  async function toggleAgent(id) {
-    try { await fetch(`${API}/auth/agents/${id}`, { method:'PATCH' }); loadAgents(); } catch(e) { showToast('❌ Could not update agent'); }
+  async function toggleUser(id, role) {
+    try { await fetch(`${API}/auth/agents/${id}`, { method:'PATCH' }); loadAndRenderUsers(role); }
+    catch(e) { showToast('❌ Could not update'); }
   }
 
-  async function deleteAgent(id, name) {
+  async function deleteUser(id, name, role) {
     try {
       await fetch(`${API}/auth/agents/${id}`, { method:'DELETE' });
       allAgents = allAgents.filter(a => a.user_id !== id);
       showToast(`🗑 "${name}" deleted`);
-      renderAgents();
-    } catch(e) { showToast('❌ Could not delete agent'); }
+      renderUserList(role);
+    } catch(e) { showToast('❌ Could not delete'); }
   }
 
   function renderAllSeasons() {
