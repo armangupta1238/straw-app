@@ -31,7 +31,6 @@
     html, body { width: 100%; overflow-x: hidden; }
     body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--dark); min-height: 100vh; }
 
-    /* ──────── SIDEBAR ──────── */
     .sidebar {
       position: fixed; left: 0; top: 0; bottom: 0; width: 240px;
       background: linear-gradient(180deg, #1e1b3a 0%, #2d1b69 100%);
@@ -51,7 +50,6 @@
     .add-farmer-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; border-radius: 12px; background: var(--accent); color: #1e1b3a; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; border: none; cursor: pointer; text-decoration: none; transition: background 0.2s; }
     .add-farmer-btn:hover { background: #d97706; }
 
-    /* ──────── MAIN ──────── */
     .main { margin-left: 240px; min-height: 100vh; padding: 32px; }
     .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; gap: 16px; flex-wrap: wrap; }
     .topbar-left h2 { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; }
@@ -145,23 +143,16 @@
     .btn-del { padding: 3px 7px; border-radius: 6px; border: 1.5px solid var(--red-pale); background: var(--red-pale); font-size: 11px; cursor: pointer; color: var(--red); font-weight: 600; }
     .btn-del:hover { background: var(--red); color: #fff; }
 
-    /* ──────── PICKUP TABS ──────── */
     .pickup-tabs { display: flex; border-bottom: 1px solid var(--border); }
-    .pickup-tab {
-      padding: 14px 24px; font-size: 13px; font-weight: 600; cursor: pointer;
-      color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px;
-      transition: color 0.2s, border-color 0.2s;
-    }
+    .pickup-tab { padding: 14px 24px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.2s, border-color 0.2s; }
     .pickup-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
     .pickup-tab:hover { color: var(--primary); }
 
-    /* ──────── PICKUP SUMMARY CARDS ──────── */
     .pickup-summary { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; padding: 20px; border-bottom: 1px solid var(--border); }
     .pickup-sum-box { background: var(--bg); border-radius: 12px; padding: 14px 16px; text-align: center; }
     .pickup-sum-num { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--primary); }
     .pickup-sum-txt { font-size: 10px; color: var(--muted); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
 
-    /* ──────── EDIT MODAL ──────── */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(30,27,58,0.55); z-index: 500; align-items: center; justify-content: center; }
     .modal-overlay.open { display: flex; }
     .modal { background: #fff; border-radius: 20px; padding: 32px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 80px rgba(109,40,217,0.2); }
@@ -178,7 +169,6 @@
     .modal-save:hover { background: #5b21b6; }
     .modal-cancel { flex: 1; padding: 13px; border-radius: 12px; border: 1.5px solid var(--border); background: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: var(--muted); cursor: pointer; }
 
-    /* ──────── AGENTS / PROMOTERS ──────── */
     .ag-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; padding: 20px; border-bottom: 1px solid var(--border); }
     .ag-stat-box { background: var(--bg); border-radius: 12px; padding: 16px; text-align: center; }
     .ag-stat-num { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--primary); }
@@ -222,7 +212,6 @@
     .ag-farmer-detail { font-size: 11px; color: var(--muted); margin-top: 1px; }
     .ag-expand-icon { font-size: 11px; color: var(--muted); margin-left: auto; padding-left: 12px; }
 
-    /* ──────── RESPONSIVE ──────── */
     @media (max-width: 1100px) {
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
       .content-grid { grid-template-columns: 1fr; }
@@ -410,37 +399,29 @@
     </div>
   </div>
 
-  <!-- PICKUPS — with History + Pending tabs -->
+  <!-- PICKUPS -->
   <div id="section-pickups" style="display:none">
     <div class="panel">
       <div class="panel-header">
         <div><div class="panel-title">Pickups</div><div class="panel-sub" id="pickupsCount">All straw collection records</div></div>
         <a href="pickup-form.html" class="panel-action-amber">🚛 Record Pickup</a>
       </div>
-
-      <!-- Summary stats -->
       <div class="pickup-summary">
         <div class="pickup-sum-box"><div class="pickup-sum-num" id="pu-total">—</div><div class="pickup-sum-txt">Total Pickups</div></div>
         <div class="pickup-sum-box"><div class="pickup-sum-num" id="pu-straw">—</div><div class="pickup-sum-txt">Total Straw (T)</div></div>
         <div class="pickup-sum-box"><div class="pickup-sum-num" id="pu-transport">—</div><div class="pickup-sum-txt">Transport Cost (₹)</div></div>
         <div class="pickup-sum-box"><div class="pickup-sum-num" id="pu-labour">—</div><div class="pickup-sum-txt">Labour Cost (₹)</div></div>
       </div>
-
-      <!-- Tabs -->
       <div class="pickup-tabs">
         <div class="pickup-tab active" id="tab-history" onclick="switchPickupTab('history')">📋 History</div>
         <div class="pickup-tab" id="tab-pending" onclick="switchPickupTab('pending')">⏳ Pending Collections</div>
       </div>
-
-      <!-- HISTORY TAB -->
       <div id="pickup-tab-history">
         <div class="filters">
           <input class="filter-input" type="text" id="pickupSearch" placeholder="Search farmer..." oninput="renderPickupHistory()"/>
         </div>
         <div id="allPickupsContent"><div class="loading"><div class="spinner"></div> Loading...</div></div>
       </div>
-
-      <!-- PENDING TAB -->
       <div id="pickup-tab-pending" style="display:none">
         <div class="filters">
           <input class="filter-input" type="text" id="pendingSearch" placeholder="Search farmer..." oninput="renderPendingPickups()"/>
@@ -493,7 +474,6 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // ── AUTH GATE ──
   (function() {
     try {
       const saved = localStorage.getItem('agent');
@@ -543,7 +523,6 @@
     if (name==='promoters') loadAndRenderUsers('promoter');
   }
 
-  // ── PICKUP TAB SWITCH ──
   function switchPickupTab(tab) {
     activePickupTab = tab;
     document.getElementById('tab-history').classList.toggle('active', tab === 'history');
@@ -792,7 +771,6 @@
     if (e.target === this) closeModal();
   });
 
-  // ── LOAD & RENDER USERS ──
   async function loadAndRenderUsers(role) {
     try {
       const res = await fetch(`${API}/auth/agents`);
@@ -922,7 +900,6 @@
     }</tbody></table></div>`;
   }
 
-  // ── FULFILLMENT HELPER ──
   function getFulfillmentStatus(farmerId) {
     const farmerSeasons = allSeasons.filter(s => s.farmer_id === farmerId);
     const expected  = farmerSeasons.reduce((s, x) => s + parseFloat(x.expected_straw_kg || 0), 0);
@@ -933,9 +910,7 @@
     return { status: 'partial', label: `Partial (${Math.round(collected/expected*100)}%)`, cls: 'badge-amber', expected, collected };
   }
 
-  // ── MAIN PICKUPS RENDER — calls both tabs ──
   function renderAllPickups() {
-    // Update summary stats
     document.getElementById('pu-total').textContent     = allPickups.length.toLocaleString('en-IN');
     document.getElementById('pu-straw').textContent     = (allPickups.reduce((s,p)=>s+parseFloat(p.straw_qty_kg||0),0)/1000).toFixed(1)+'T';
     document.getElementById('pu-transport').textContent = '₹'+allPickups.reduce((s,p)=>s+parseFloat(p.transport_cost||0),0).toLocaleString('en-IN');
@@ -943,7 +918,6 @@
     renderPickupHistory();
   }
 
-  // ── HISTORY TAB ──
   function renderPickupHistory() {
     const el = document.getElementById('allPickupsContent');
     const search = (document.getElementById('pickupSearch')?.value || '').toLowerCase();
@@ -951,19 +925,9 @@
       !search || (p.full_name||'').toLowerCase().includes(search) || (p.village_name||'').toLowerCase().includes(search)
     );
     document.getElementById('pickupsCount').textContent = `${filtered.length} record${filtered.length!==1?'s':''}`;
-
-    if (!filtered.length) {
-      el.innerHTML = `<div class="empty-state"><div class="empty-icon">🚛</div><p>No pickups found</p></div>`;
-      return;
-    }
-
+    if (!filtered.length) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">🚛</div><p>No pickups found</p></div>`; return; }
     el.innerHTML = `<div class="table-wrap"><table style="width:100%">
-      <thead><tr>
-        <th>Date</th><th>Farmer</th><th>Village</th>
-        <th>Straw (kg)</th><th>Transport (₹)</th>
-        <th>Labourers</th><th>Labour Cost (₹)</th><th>Total Cost (₹)</th>
-        <th>Vehicle</th><th>Agent</th><th>Next Pickup</th><th>Status</th>
-      </tr></thead>
+      <thead><tr><th>Date</th><th>Farmer</th><th>Village</th><th>Straw (kg)</th><th>Transport (₹)</th><th>Labourers</th><th>Labour Cost (₹)</th><th>Total Cost (₹)</th><th>Vehicle</th><th>Agent</th><th>Next Pickup</th><th>Status</th></tr></thead>
       <tbody>${filtered.map(p => {
         const labourTotal = parseFloat(p.labour_count||0) * parseFloat(p.labour_cost_per_person||0);
         const transport   = parseFloat(p.transport_cost||0);
@@ -984,46 +948,30 @@
           <td>${nextDate !== '—' ? '<span style="color:var(--primary);font-weight:600;">'+nextDate+'</span>' : '—'}</td>
           <td><span class="badge ${fs.cls}">${fs.label}</span></td>
         </tr>`;
-      }).join('')}</tbody>
-    </table></div>`;
+      }).join('')}</tbody></table></div>`;
   }
 
-  // ── PENDING TAB — loops through ALL farmers ──
   function renderPendingPickups() {
     const el = document.getElementById('pendingPickupsContent');
     const search = (document.getElementById('pendingSearch')?.value || '').toLowerCase();
     const statusFilter = document.getElementById('pendingStatus')?.value || '';
-
     const pending = allFarmers.filter(f => {
       const fs = getFulfillmentStatus(f.farmer_id);
-      // Only show not_picked and partial
       if (fs.status === 'complete' || fs.status === 'no_target') return false;
       if (statusFilter === 'not_picked' && fs.status !== 'not_picked') return false;
       if (statusFilter === 'partial'    && fs.status !== 'partial')    return false;
       if (search && !f.full_name.toLowerCase().includes(search) && !(f.village_name||'').toLowerCase().includes(search)) return false;
       return true;
     });
-
-    if (!pending.length) {
-      el.innerHTML = `<div class="empty-state"><div class="empty-icon">✅</div><p>All collections are complete!</p></div>`;
-      return;
-    }
-
-    // Get next pickup date from most recent pickup for each farmer
+    if (!pending.length) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">✅</div><p>All collections are complete!</p></div>`; return; }
     el.innerHTML = `<div class="table-wrap"><table style="width:100%">
-      <thead><tr>
-        <th>Farmer</th><th>Village</th><th>Phone</th>
-        <th>Expected (kg)</th><th>Collected (kg)</th><th>Remaining (kg)</th>
-        <th>Next Pickup Date</th><th>Status</th><th>Action</th>
-      </tr></thead>
+      <thead><tr><th>Farmer</th><th>Village</th><th>Phone</th><th>Expected (kg)</th><th>Collected (kg)</th><th>Remaining (kg)</th><th>Next Pickup Date</th><th>Status</th><th>Action</th></tr></thead>
       <tbody>${pending.map(f => {
         const fs = getFulfillmentStatus(f.farmer_id);
         const remaining = Math.max(0, fs.expected - fs.collected);
-        // Get next pickup date from most recent pickup record
         const farmerPickups = allPickups.filter(p => p.farmer_id === f.farmer_id).sort((a,b) => new Date(b.pickup_date) - new Date(a.pickup_date));
         const nextDate = farmerPickups[0]?.next_pickup_date
-          ? new Date(farmerPickups[0].next_pickup_date).toLocaleDateString('en-IN')
-          : '—';
+          ? new Date(farmerPickups[0].next_pickup_date).toLocaleDateString('en-IN') : '—';
         return `<tr>
           <td><div class="farmer-name">${f.full_name}</div></td>
           <td>${f.village_name||'—'}</td>
@@ -1033,10 +981,9 @@
           <td><strong style="color:var(--red)">${remaining.toLocaleString('en-IN')}</strong></td>
           <td>${nextDate !== '—' ? '<span style="color:var(--primary);font-weight:600;">'+nextDate+'</span>' : '<span style="color:var(--muted);">Not scheduled</span>'}</td>
           <td><span class="badge ${fs.cls}">${fs.label}</span></td>
-          <td><a href="pickup-form.html" class="panel-action" style="font-size:11px;">Record →</a></td>
+          <td><a href="pickup-form.html?farmer_id=${f.farmer_id}" class="panel-action" style="font-size:11px;">Record →</a></td>
         </tr>`;
-      }).join('')}</tbody>
-    </table></div>`;
+      }).join('')}</tbody></table></div>`;
   }
 
   function renderMapTable() {
