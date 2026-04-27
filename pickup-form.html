@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Straw Collector — Record Pickup</title>
+
+  <script>
+    if (!localStorage.getItem('agent')) {
+      window.location.replace('login.html');
+    }
+  </script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --purple:      #6d28d9;
+      --purple-mid:  #a78bfa;
+      --purple-pale: #ede9fe;
+      --purple-dark: #2d1b69;
+      --purple-deep: #4c1d95;
+      --amber:       #f59e0b;
+      --earth:       #b45309;
+      --teal:        #0d9488;
+      --teal-pale:   #ccfbf1;
+      --red:         #dc2626;
+      --red-pale:    #fee2e2;
+      --card:        #ffffff;
+      --muted:       #6b7280;
+      --border:      #e5e0f5;
+      --dark:        #1e1b3a;
+      --radius:      16px;
+      --shadow:      0 4px 24px rgba(109,40,217,0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #f5f3ff;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--dark);
+      min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse at 20% 0%, rgba(167,139,250,0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 100%, rgba(245,158,11,0.08) 0%, transparent 60%);
+      padding-bottom: 120px;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple-deep) 100%);
+      color: #fff; padding: 28px 24px 22px; position: relative; overflow: hidden;
+    }
+    header::before { content:''; position:absolute; right:-40px; top:-40px; width:180px; height:180px; border-radius:50%; background:rgba(167,139,250,0.12); }
+    header::after  { content:''; position:absolute; right:30px; bottom:-60px; width:120px; height:120px; border-radius:50%; background:rgba(167,139,250,0.08); }
+    .header-badge {
+      display:inline-flex; align-items:center; gap:6px;
+      background:rgba(167,139,250,0.2); border:1px solid rgba(167,139,250,0.35);
+      border-radius:20px; padding:4px 12px; font-size:11px; font-weight:500;
+      letter-spacing:.5px; text-transform:uppercase; margin-bottom:10px; color:#c4b5fd;
+    }
+    header h1 { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; line-height:1.15; position:relative; z-index:1; }
+    header p  { font-size:13px; opacity:.7; margin-top:4px; position:relative; z-index:1; }
+
+    .content { padding: 20px 24px; }
+
+    .card { background:var(--card); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); border:1px solid var(--border); margin-bottom:16px; }
+    .card-title { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:var(--purple); margin-bottom:16px; }
+
+    .field { margin-bottom:16px; }
+    .field:last-child { margin-bottom:0; }
+    .field label {
+      display:block; font-size:11px; font-weight:600; text-transform:uppercase;
+      letter-spacing:.5px; color:var(--purple); margin-bottom:6px;
+    }
+    .field input, .field select, .field textarea {
+      width:100%; padding:13px 16px; border:1.5px solid var(--border); border-radius:12px;
+      font-family:'DM Sans',sans-serif; font-size:15px; color:var(--dark); background:#fff;
+      outline:none; transition:border-color .2s,box-shadow .2s; -webkit-appearance:none;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color:var(--purple-mid); box-shadow:0 0 0 3px rgba(167,139,250,0.15);
+    }
+    .field input[readonly] { background:#f5f3ff; color:var(--purple); font-weight:600; border-color:var(--purple-mid); }
+    .field textarea { resize:vertical; min-height:70px; }
+    .field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .field-hint { font-size:11px; color:var(--muted); margin-top:5px; }
+
+    /* Fulfillment box */
+    .fulfillment-box {
+      border-radius:12px; padding:14px 16px; margin-top:12px;
+      border:1.5px solid var(--border); background:#fafafe;
+    }
+    .fulfillment-box.hidden { display:none; }
+    .fulfill-row { display:flex; justify-content:space-between; align-items:center; padding:6px 0; font-size:13px; border-bottom:1px solid var(--border); }
+    .fulfill-row:last-child { border-bottom:none; }
+    .fulfill-label { color:var(--muted); font-size:12px; }
+    .fulfill-value { font-weight:700; font-size:14px; }
+    .badge {
+      display:inline-block; padding:3px 10px; border-radius:20px;
+      font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px;
+    }
+    .badge-red    { background:var(--red-pale);  color:var(--red); }
+    .badge-amber  { background:#fef3c7; color:var(--earth); }
+    .badge-teal   { background:var(--teal-pale); color:var(--teal); }
+
+    /* Labour total auto box */
+    .labour-total {
+      background:var(--purple-pale); border-radius:12px; padding:14px 16px;
+      display:flex; justify-content:space-between; align-items:center; margin-top:12px;
+    }
+    .labour-total-label { font-size:13px; color:var(--purple); font-weight:500; }
+    .labour-total-value { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:var(--purple); }
+
+    /* Nav */
+    .nav-btns {
+      display:flex; gap:12px; padding:16px 24px 32px; position:fixed; bottom:0; left:0; right:0;
+      background:linear-gradient(to top, #f5f3ff 80%, transparent);
+    }
+    .btn-back {
+      flex:1; padding:15px; border-radius:14px; border:1.5px solid var(--border);
+      background:#fff; font-family:'DM Sans',sans-serif; font-size:15px;
+      font-weight:500; color:var(--muted); cursor:pointer; text-decoration:none;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .btn-save {
+      flex:2; padding:15px; border-radius:14px; border:none; background:var(--amber);
+      color:var(--dark); font-family:'Syne',sans-serif; font-size:16px; font-weight:700;
+      cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+      transition:background .2s;
+    }
+    .btn-save:hover { background:#d97706; color:#fff; }
+    .btn-save:disabled { opacity:.6; cursor:not-allowed; }
+
+    /* Success */
+    .success-screen { display:none; padding:48px 24px; text-align:center; }
+    .success-screen.active { display:block; }
+    .success-icon {
+      width:80px; height:80px;
+      background:linear-gradient(135deg, var(--purple-mid), var(--purple));
+      border-radius:50%; display:flex; align-items:center; justify-content:center;
+      font-size:36px; margin:0 auto 20px; box-shadow:0 8px 32px rgba(109,40,217,0.3);
+    }
+    .success-screen h2 { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:var(--purple); margin-bottom:8px; }
+    .success-screen p  { color:var(--muted); font-size:14px; line-height:1.6; margin-bottom:6px; }
+    .btn-another {
+      margin-top:24px; width:100%; padding:16px; border-radius:14px; border:none;
+      background:var(--purple); color:#fff; font-family:'Syne',sans-serif;
+      font-size:16px; font-weight:700; cursor:pointer; margin-bottom:12px;
+    }
+    .btn-dashboard {
+      width:100%; padding:14px; border-radius:14px; border:1.5px solid var(--border);
+      background:#fff; font-family:'DM Sans',sans-serif; font-size:15px;
+      font-weight:500; color:var(--muted); cursor:pointer;
+    }
+
+    .toast {
+      position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(20px);
+      background:var(--dark); color:#fff; padding:10px 20px; border-radius:20px;
+      font-size:13px; font-weight:500; opacity:0; transition:all .3s; z-index:999; white-space:nowrap;
+    }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">🚛 Pickup Form</div>
+  <h1>Record Pickup</h1>
+  <p>Log straw collection from a farmer</p>
+</header>
+
+<div class="content" id="mainContent">
+
+  <!-- FARMER & AGENT -->
+  <div class="card">
+    <div class="card-title">👨‍🌾 Farmer & Agent</div>
+    <div class="field">
+      <label>Select Farmer *</label>
+      <select id="farmer_select" onchange="onFarmerSelect()">
+        <option value="">Loading farmers...</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Agent Name</label>
+      <input type="text" id="agent_name" readonly/>
+    </div>
+
+    <!-- Fulfillment info — shown after farmer selected -->
+    <div class="fulfillment-box hidden" id="fulfillmentBox">
+      <div class="fulfill-row">
+        <span class="fulfill-label">Expected Total</span>
+        <span class="fulfill-value" id="f_expected">—</span>
+      </div>
+      <div class="fulfill-row">
+        <span class="fulfill-label">Already Collected</span>
+        <span class="fulfill-value" id="f_collected">—</span>
+      </div>
+      <div class="fulfill-row">
+        <span class="fulfill-label">Remaining</span>
+        <span class="fulfill-value" id="f_remaining">—</span>
+      </div>
+      <div class="fulfill-row">
+        <span class="fulfill-label">Status</span>
+        <span id="f_status">—</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PICKUP DETAILS -->
+  <div class="card">
+    <div class="card-title">📦 Pickup Details</div>
+    <div class="field-row">
+      <div class="field">
+        <label>Pickup Date *</label>
+        <input type="date" id="pickup_date"/>
+      </div>
+      <div class="field">
+        <label>Straw Qty (kg) *</label>
+        <input type="number" id="straw_qty_kg" placeholder="e.g. 3000" min="0" oninput="updateRemaining()"/>
+      </div>
+    </div>
+    <div class="field">
+      <label>Vehicle Number *</label>
+      <input type="text" id="vehicle_no" placeholder="e.g. CG 07 AB 1234"/>
+    </div>
+  </div>
+
+  <!-- TRANSPORT COST -->
+  <div class="card">
+    <div class="card-title">🚛 Transport Cost</div>
+    <div class="field">
+      <label>Transport Cost (₹)</label>
+      <input type="number" id="transport_cost" placeholder="Enter amount paid to transporter" min="0"/>
+    </div>
+  </div>
+
+  <!-- LABOUR COST -->
+  <div class="card">
+    <div class="card-title">👷 Labour Cost</div>
+    <div class="field-row">
+      <div class="field">
+        <label>No. of Labourers</label>
+        <input type="number" id="labour_count" placeholder="e.g. 4" min="0" oninput="calcLabour()"/>
+      </div>
+      <div class="field">
+        <label>Cost / Labourer (₹)</label>
+        <input type="number" id="labour_cost_per_person" placeholder="e.g. 300" min="0" oninput="calcLabour()"/>
+      </div>
+    </div>
+    <div class="labour-total" id="labourTotal" style="display:none">
+      <span class="labour-total-label">Total Labour Cost</span>
+      <span class="labour-total-value" id="labour_total_val">₹0</span>
+    </div>
+  </div>
+
+  <!-- NEXT PICKUP -->
+  <div class="card">
+    <div class="card-title">📅 Next Pickup</div>
+    <div class="field">
+      <label>Next Pickup Date</label>
+      <input type="date" id="next_pickup_date"/>
+      <div class="field-hint">Leave blank if collection is complete</div>
+    </div>
+  </div>
+
+  <!-- NOTES -->
+  <div class="card">
+    <div class="field">
+      <label>Notes (optional)</label>
+      <textarea id="notes" placeholder="Any special notes about this pickup..."></textarea>
+    </div>
+  </div>
+
+</div>
+
+<!-- SUCCESS SCREEN -->
+<div class="success-screen" id="successScreen">
+  <div class="success-icon">✓</div>
+  <h2>Pickup Recorded!</h2>
+  <p id="successMsg">Straw collection has been saved successfully.</p>
+  <p id="nextPickupMsg" style="font-weight:600; color:var(--purple); margin-top:8px;"></p>
+  <button class="btn-another" onclick="resetForm()">+ Record Another Pickup</button>
+  <button class="btn-dashboard" onclick="window.location.href='dashboard.html'">Go to Dashboard</button>
+</div>
+
+<!-- NAV -->
+<div class="nav-btns" id="navBtns">
+  <a href="dashboard.html" class="btn-back">← Dashboard</a>
+  <button class="btn-save" id="saveBtn" onclick="submitPickup()">💾 Save Pickup</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const API = 'https://straw-app-production.up.railway.app/api';
+
+  let allFarmers = [];
+  let farmerPickups = [];
+  let selectedFarmerData = null;
+
+  // ── INIT ──
+  async function init() {
+    // Set agent name from session
+    try {
+      const agent = JSON.parse(localStorage.getItem('agent'));
+      document.getElementById('agent_name').value = agent.full_name || '';
+    } catch(e) {}
+
+    // Set today's date
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('pickup_date').value = today;
+
+    // Load farmers
+    try {
+      const res = await fetch(`${API}/farmers`);
+      allFarmers = await res.json();
+      const sel = document.getElementById('farmer_select');
+      sel.innerHTML = '<option value="">— Select a farmer —</option>';
+      allFarmers.forEach(f => {
+        const opt = document.createElement('option');
+        opt.value = f.farmer_id;
+        opt.textContent = `${f.full_name} — ${f.village_name || 'No village'}`;
+        sel.appendChild(opt);
+      });
+    } catch(e) {
+      showToast('⚠️ Could not load farmers');
+    }
+  }
+
+  // ── FARMER SELECTED ──
+  async function onFarmerSelect() {
+    const farmerId = document.getElementById('farmer_select').value;
+    const box = document.getElementById('fulfillmentBox');
+
+    if (!farmerId) { box.classList.add('hidden'); selectedFarmerData = null; return; }
+
+    selectedFarmerData = allFarmers.find(f => f.farmer_id == farmerId);
+
+    // Load pickups for this farmer
+    try {
+      const res = await fetch(`${API}/pickups/farmer/${farmerId}`);
+      farmerPickups = await res.json();
+    } catch(e) { farmerPickups = []; }
+
+    // Load expected straw from seasons
+    let expectedKg = 0;
+    try {
+      const res  = await fetch(`${API}/seasons/${farmerId}`);
+      const seasons = await res.json();
+      expectedKg = seasons.reduce((s, x) => s + parseFloat(x.expected_straw_kg || 0), 0);
+    } catch(e) {}
+
+    const collectedKg = farmerPickups.reduce((s, p) => s + parseFloat(p.straw_qty_kg || 0), 0);
+    const remainingKg = Math.max(0, expectedKg - collectedKg);
+
+    selectedFarmerData._expected  = expectedKg;
+    selectedFarmerData._collected = collectedKg;
+    selectedFarmerData._remaining = remainingKg;
+
+    document.getElementById('f_expected').textContent  = expectedKg > 0 ? expectedKg.toLocaleString('en-IN') + ' kg' : 'Not set';
+    document.getElementById('f_collected').textContent = collectedKg.toLocaleString('en-IN') + ' kg';
+    document.getElementById('f_remaining').textContent = remainingKg > 0 ? remainingKg.toLocaleString('en-IN') + ' kg' : '0 kg';
+
+    const statusEl = document.getElementById('f_status');
+    if (expectedKg === 0) {
+      statusEl.innerHTML = '<span class="badge badge-amber">No Target Set</span>';
+    } else if (collectedKg === 0) {
+      statusEl.innerHTML = '<span class="badge badge-red">Not Picked</span>';
+    } else if (collectedKg >= expectedKg) {
+      statusEl.innerHTML = '<span class="badge badge-teal">Complete ✓</span>';
+    } else {
+      statusEl.innerHTML = '<span class="badge badge-amber">Partial</span>';
+    }
+
+    box.classList.remove('hidden');
+    updateRemaining();
+  }
+
+  // ── UPDATE REMAINING after entering qty ──
+  function updateRemaining() {
+    if (!selectedFarmerData) return;
+    const qty = parseFloat(document.getElementById('straw_qty_kg').value) || 0;
+    const newCollected = selectedFarmerData._collected + qty;
+    const newRemaining = Math.max(0, selectedFarmerData._expected - newCollected);
+    document.getElementById('f_remaining').textContent = newRemaining > 0
+      ? newRemaining.toLocaleString('en-IN') + ' kg remaining after this pickup'
+      : '✓ Fully collected after this pickup';
+  }
+
+  // ── LABOUR CALC ──
+  function calcLabour() {
+    const count = parseFloat(document.getElementById('labour_count').value) || 0;
+    const rate  = parseFloat(document.getElementById('labour_cost_per_person').value) || 0;
+    const total = count * rate;
+    const box   = document.getElementById('labourTotal');
+    if (count > 0 && rate > 0) {
+      document.getElementById('labour_total_val').textContent = '₹' + total.toLocaleString('en-IN');
+      box.style.display = 'flex';
+    } else {
+      box.style.display = 'none';
+    }
+  }
+
+  // ── TOAST ──
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ── SUBMIT ──
+  async function submitPickup() {
+    const farmerId   = document.getElementById('farmer_select').value;
+    const pickupDate = document.getElementById('pickup_date').value;
+    const strawQty   = document.getElementById('straw_qty_kg').value;
+    const vehicleNo  = document.getElementById('vehicle_no').value.trim();
+
+    if (!farmerId)   { showToast('⚠️ Please select a farmer'); return; }
+    if (!pickupDate) { showToast('⚠️ Please enter pickup date'); return; }
+    if (!strawQty)   { showToast('⚠️ Please enter straw quantity'); return; }
+    if (!vehicleNo)  { showToast('⚠️ Please enter vehicle number'); return; }
+
+    const btn = document.getElementById('saveBtn');
+    btn.textContent = '⏳ Saving...'; btn.disabled = true;
+
+    try {
+      const agent = JSON.parse(localStorage.getItem('agent'));
+      const labourCount  = document.getElementById('labour_count').value;
+      const labourRate   = document.getElementById('labour_cost_per_person').value;
+      const nextDate     = document.getElementById('next_pickup_date').value;
+
+      const res = await fetch(`${API}/pickups`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          farmer_id:             farmerId,
+          pickup_date:           pickupDate,
+          straw_qty_kg:          strawQty,
+          transport_cost:        document.getElementById('transport_cost').value || null,
+          vehicle_no:            vehicleNo,
+          agent_name:            agent.full_name,
+          notes:                 document.getElementById('notes').value || null,
+          labour_count:          labourCount || null,
+          labour_cost_per_person:labourRate  || null,
+          next_pickup_date:      nextDate    || null,
+        })
+      });
+      const data = await res.json();
+
+      if (data.pickup_id) {
+        // Show success
+        const farmerName = allFarmers.find(f => f.farmer_id == farmerId)?.full_name || 'Farmer';
+        document.getElementById('successMsg').textContent =
+          `${parseFloat(strawQty).toLocaleString('en-IN')} kg collected from ${farmerName}.`;
+
+        if (nextDate) {
+          const d = new Date(nextDate);
+          document.getElementById('nextPickupMsg').textContent =
+            `📅 Next pickup scheduled: ${d.toLocaleDateString('en-IN', {day:'numeric', month:'long', year:'numeric'})}`;
+        } else {
+          document.getElementById('nextPickupMsg').textContent = '';
+        }
+
+        document.getElementById('mainContent').style.display = 'none';
+        document.getElementById('navBtns').style.display = 'none';
+        document.getElementById('successScreen').classList.add('active');
+      } else {
+        showToast('❌ Could not save pickup');
+        btn.textContent = '💾 Save Pickup'; btn.disabled = false;
+      }
+    } catch(e) {
+      showToast('❌ Server error. Please try again.');
+      btn.textContent = '💾 Save Pickup'; btn.disabled = false;
+    }
+  }
+
+  // ── RESET ──
+  function resetForm() {
+    document.getElementById('mainContent').style.display = 'block';
+    document.getElementById('navBtns').style.display = 'flex';
+    document.getElementById('successScreen').classList.remove('active');
+    document.getElementById('farmer_select').value = '';
+    document.getElementById('straw_qty_kg').value  = '';
+    document.getElementById('vehicle_no').value    = '';
+    document.getElementById('transport_cost').value = '';
+    document.getElementById('labour_count').value  = '';
+    document.getElementById('labour_cost_per_person').value = '';
+    document.getElementById('next_pickup_date').value = '';
+    document.getElementById('notes').value = '';
+    document.getElementById('fulfillmentBox').classList.add('hidden');
+    document.getElementById('labourTotal').style.display = 'none';
+    document.getElementById('saveBtn').textContent = '💾 Save Pickup';
+    document.getElementById('saveBtn').disabled = false;
+    selectedFarmerData = null;
+    farmerPickups = [];
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('pickup_date').value = today;
+  }
+
+  init();
+</script>
+
+</body>
+</html>
