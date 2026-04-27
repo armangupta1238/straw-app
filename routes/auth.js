@@ -81,9 +81,13 @@ router.patch('/agents/:id', async (req, res) => {
   }
 });
 
-// Delete agent
+// Delete agent — unlink farmers first to avoid foreign key error
 router.delete('/agents/:id', async (req, res) => {
   try {
+    await pool.query(
+      'UPDATE farmers SET added_by_user_id = NULL, added_by_name = NULL WHERE added_by_user_id = $1',
+      [req.params.id]
+    );
     await pool.query('DELETE FROM users WHERE user_id = $1', [req.params.id]);
     res.json({ message: 'Agent deleted' });
   } catch (err) {
