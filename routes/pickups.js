@@ -6,7 +6,7 @@ const pool = require('../db');
 router.get('/', async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT p.*, f.full_name, v.village_name 
+      `SELECT p.*, f.full_name, v.village_name
        FROM pickups p
        LEFT JOIN farmers f ON p.farmer_id = f.farmer_id
        LEFT JOIN villages v ON f.village_id = v.village_id
@@ -20,15 +20,23 @@ router.get('/', async (req, res) => {
 
 // Add a new pickup
 router.post('/', async (req, res) => {
-  const { farmer_id, pickup_date, straw_qty_kg, transport_cost,
-          vehicle_no, agent_name, pickup_lat, pickup_lng, notes } = req.body;
+  const {
+    farmer_id, pickup_date, straw_qty_kg, transport_cost,
+    vehicle_no, agent_name, pickup_lat, pickup_lng, notes,
+    labour_count, labour_cost_per_person, next_pickup_date
+  } = req.body;
   try {
     const result = await pool.query(
-      `INSERT INTO pickups (farmer_id, pickup_date, straw_qty_kg, transport_cost,
-        vehicle_no, agent_name, pickup_lat, pickup_lng, notes)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
-      [farmer_id, pickup_date, straw_qty_kg, transport_cost,
-       vehicle_no, agent_name, pickup_lat, pickup_lng, notes]
+      `INSERT INTO pickups (
+        farmer_id, pickup_date, straw_qty_kg, transport_cost,
+        vehicle_no, agent_name, pickup_lat, pickup_lng, notes,
+        labour_count, labour_cost_per_person, next_pickup_date
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING *`,
+      [
+        farmer_id, pickup_date, straw_qty_kg, transport_cost,
+        vehicle_no, agent_name, pickup_lat, pickup_lng, notes,
+        labour_count || null, labour_cost_per_person || null, next_pickup_date || null
+      ]
     );
     res.json(result.rows[0]);
   } catch (err) {
