@@ -578,20 +578,27 @@
     const tbody = document.getElementById('allFarmersBody');
     if (!slice.length) { tbody.innerHTML=`<tr><td colspan="13"><div class="empty-state"><div class="empty-icon">🔍</div><p>No farmers match your filters</p></div></td></tr>`; }
     else tbody.innerHTML = slice.map(f=>{
-      const est = f.total_acres&&f.straw_per_acre_kg ? (parseFloat(f.total_acres)*parseFloat(f.straw_per_acre_kg)/1000).toFixed(1)+'T' : '—';
+      const est_kg = parseFloat(f.total_acres||0) * parseFloat(f.straw_per_acre_kg||0);
+      const est = est_kg > 0 ? (est_kg/1000).toFixed(1)+'T' : '—';
+      const t = trips(f);
+      const cpp = costPerTrip(f);
+      const total = totalTransport(f);
       return `<tr>
         <td><div class="farmer-name">${f.full_name}</div><div class="farmer-phone">${f.phone||'—'}</div></td>
-        <td>${f.village_name||'—'}</td><td>${f.district||'—'}</td>
+        <td>${f.village_name||'—'}</td>
+        <td>${f.district||'—'}</td>
         <td>${parseFloat(f.total_acres).toLocaleString('en-IN')} ac</td>
-        <td>${f.straw_per_acre_kg?parseFloat(f.straw_per_acre_kg).toLocaleString('en-IN')+' kg':'—'}</td>
+        <td>${f.straw_per_acre_kg ? parseFloat(f.straw_per_acre_kg).toLocaleString('en-IN')+' kg' : '—'}</td>
         <td><strong>${est}</strong></td>
-        <td>${f.farm_distance_km?f.farm_distance_km+' km':'—'}</td>
-        <td>${f.transport_cost_per_trip?'₹'+parseFloat(f.transport_cost_per_trip).toLocaleString('en-IN'):'—'}</td>
+        <td>${t > 0 ? t+' trip'+(t>1?'s':'') : '—'}</td>
+        <td>${f.farm_distance_km ? f.farm_distance_km+' km' : '—'}</td>
+        <td>${cpp > 0 ? '₹'+cpp.toLocaleString('en-IN') : '—'}</td>
+        <td>${total > 0 ? '<strong>₹'+total.toLocaleString('en-IN')+'</strong>' : '—'}</td>
         <td>${seasonBadges(f)}</td>
         <td><span class="badge badge-purple">${f.added_by_name||'—'}</span></td>
         <td style="white-space:nowrap">
           <button class="btn-edit" onclick="openEditModal(${f.farmer_id})">✏️ Edit</button>
-          <button class="btn-del" onclick="deleteFarmer(${f.farmer_id},'${f.full_name.replace(/'/g,"\\'")}')">🗑</button>
+          <button class="btn-del" onclick="deleteFarmer(${f.farmer_id},'${f.full_name.replace(/'/g,String.fromCharCode(92)+"'")}')">🗑</button>
         </td>
       </tr>`;
     }).join('');
