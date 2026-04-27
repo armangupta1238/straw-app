@@ -74,10 +74,14 @@
     .panel-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; }
     .panel-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
     .panel-action { font-size: 12px; color: var(--primary); font-weight: 600; cursor: pointer; background: var(--primary-pale); padding: 5px 12px; border-radius: 20px; border: none; text-decoration: none; }
+    .panel-action-amber { font-size: 12px; color: var(--earth); font-weight: 600; cursor: pointer; background: var(--accent-pale); padding: 5px 12px; border-radius: 20px; border: none; text-decoration: none; }
+    .panel-action-amber:hover { background: var(--accent); color: #fff; }
 
     .filters { display: flex; gap: 8px; padding: 14px 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
     .filter-select { padding: 7px 12px; border-radius: 8px; border: 1.5px solid var(--border); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--dark); background: #fff; outline: none; cursor: pointer; }
     .filter-select:focus { border-color: var(--primary-lt); }
+    .filter-input { padding: 7px 12px; border-radius: 8px; border: 1.5px solid var(--border); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--dark); background: #fff; outline: none; }
+    .filter-input:focus { border-color: var(--primary-lt); }
 
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 11px; }
@@ -202,10 +206,17 @@
     .ag-farmer-detail { font-size: 11px; color: var(--muted); margin-top: 1px; }
     .ag-expand-icon { font-size: 11px; color: var(--muted); margin-left: auto; padding-left: 12px; }
 
+    /* ──────── PICKUP SUMMARY CARDS ──────── */
+    .pickup-summary { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; padding: 20px; border-bottom: 1px solid var(--border); }
+    .pickup-sum-box { background: var(--bg); border-radius: 12px; padding: 14px 16px; text-align: center; }
+    .pickup-sum-num { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--primary); }
+    .pickup-sum-txt { font-size: 10px; color: var(--muted); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+
     /* ──────── RESPONSIVE ──────── */
     @media (max-width: 1100px) {
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
       .content-grid { grid-template-columns: 1fr; }
+      .pickup-summary { grid-template-columns: repeat(2,1fr); }
     }
     @media (max-width: 768px) {
       .sidebar { position: relative; width: 100%; height: auto; flex-direction: row; flex-wrap: wrap; padding: 16px; gap: 6px; }
@@ -222,6 +233,7 @@
       .search-box input { width: 140px; }
       .modal { padding: 20px; margin: 16px; }
       .modal-grid { grid-template-columns: 1fr; }
+      .pickup-summary { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -332,7 +344,7 @@
     </div>
   </div>
 
-  <!-- FIELD AGENTS — role='agent' only -->
+  <!-- FIELD AGENTS -->
   <div id="section-agents" style="display:none">
     <div class="panel">
       <div class="panel-header">
@@ -356,7 +368,7 @@
     </div>
   </div>
 
-  <!-- PROMOTERS — role='promoter' only -->
+  <!-- PROMOTERS -->
   <div id="section-promoters" style="display:none">
     <div class="panel">
       <div class="panel-header">
@@ -388,10 +400,33 @@
     </div>
   </div>
 
-  <!-- PICKUPS -->
+  <!-- PICKUPS — fully upgraded -->
   <div id="section-pickups" style="display:none">
     <div class="panel">
-      <div class="panel-header"><div class="panel-title">Pickup History</div></div>
+      <div class="panel-header">
+        <div><div class="panel-title">Pickup History</div><div class="panel-sub" id="pickupsCount">All straw collection records</div></div>
+        <a href="pickup-form.html" class="panel-action-amber">🚛 Record Pickup</a>
+      </div>
+
+      <!-- Summary stats -->
+      <div class="pickup-summary">
+        <div class="pickup-sum-box"><div class="pickup-sum-num" id="pu-total">—</div><div class="pickup-sum-txt">Total Pickups</div></div>
+        <div class="pickup-sum-box"><div class="pickup-sum-num" id="pu-straw">—</div><div class="pickup-sum-txt">Total Straw (T)</div></div>
+        <div class="pickup-sum-box"><div class="pickup-sum-num" id="pu-transport">—</div><div class="pickup-sum-txt">Transport Cost (₹)</div></div>
+        <div class="pickup-sum-box"><div class="pickup-sum-num" id="pu-labour">—</div><div class="pickup-sum-txt">Labour Cost (₹)</div></div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filters">
+        <input class="filter-input" type="text" id="pickupSearch" placeholder="Search farmer..." oninput="renderAllPickups()"/>
+        <select class="filter-select" id="pickupStatus" onchange="renderAllPickups()">
+          <option value="">All Status</option>
+          <option value="complete">Complete</option>
+          <option value="partial">Partial</option>
+          <option value="not_picked">Not Picked</option>
+        </select>
+      </div>
+
       <div id="allPickupsContent"><div class="loading"><div class="spinner"></div> Loading...</div></div>
     </div>
   </div>
@@ -754,7 +789,6 @@
     }
 
     const el = document.getElementById(isAgent ? 'agentsList' : 'promotersList');
-
     if (!filtered.length) {
       el.innerHTML = `<div class="empty-state"><div class="empty-icon">${emptyIcon}</div><p>${emptyMsg}</p></div>`;
       return;
@@ -852,19 +886,74 @@
     }</tbody></table></div>`;
   }
 
+  // ── PICKUPS — upgraded ──
+  function getFulfillmentStatus(farmerId) {
+    const farmerSeasons = allSeasons.filter(s => s.farmer_id === farmerId);
+    const expected = farmerSeasons.reduce((s, x) => s + parseFloat(x.expected_straw_kg || 0), 0);
+    const collected = allPickups.filter(p => p.farmer_id === farmerId).reduce((s, p) => s + parseFloat(p.straw_qty_kg || 0), 0);
+    if (expected === 0) return { status: 'no_target', label: 'No Target', cls: 'badge-blue' };
+    if (collected === 0) return { status: 'not_picked', label: 'Not Picked', cls: 'badge-red' };
+    if (collected >= expected) return { status: 'complete', label: 'Complete ✓', cls: 'badge-teal' };
+    return { status: 'partial', label: `Partial (${Math.round(collected/expected*100)}%)`, cls: 'badge-amber' };
+  }
+
   function renderAllPickups() {
-    const el=document.getElementById('allPickupsContent');
-    if (!allPickups.length) { el.innerHTML=`<div class="empty-state"><div class="empty-icon">🚛</div><p>No pickups recorded yet</p></div>`; return; }
-    el.innerHTML=`<div class="table-wrap"><table style="width:100%"><thead><tr><th>Date</th><th>Farmer</th><th>Village</th><th>Straw (kg)</th><th>Transport</th><th>Vehicle</th><th>Agent</th></tr></thead><tbody>${
-      allPickups.map(p=>`<tr>
-        <td>${new Date(p.pickup_date).toLocaleDateString('en-IN')}</td>
-        <td><div class="farmer-name">${p.full_name||'—'}</div></td>
-        <td>${p.village_name||'—'}</td>
-        <td>${p.straw_qty_kg?parseFloat(p.straw_qty_kg).toLocaleString('en-IN'):'—'}</td>
-        <td>${p.transport_cost?'₹'+parseFloat(p.transport_cost).toLocaleString('en-IN'):'—'}</td>
-        <td>${p.vehicle_no||'—'}</td><td>${p.agent_name||'—'}</td>
-      </tr>`).join('')
-    }</tbody></table></div>`;
+    const el = document.getElementById('allPickupsContent');
+    const search = (document.getElementById('pickupSearch')?.value || '').toLowerCase();
+    const statusFilter = document.getElementById('pickupStatus')?.value || '';
+
+    let filtered = allPickups.filter(p => {
+      if (search && !(p.full_name||'').toLowerCase().includes(search) && !(p.village_name||'').toLowerCase().includes(search)) return false;
+      if (statusFilter) {
+        const fs = getFulfillmentStatus(p.farmer_id);
+        if (statusFilter === 'complete'   && fs.status !== 'complete')   return false;
+        if (statusFilter === 'partial'    && fs.status !== 'partial')    return false;
+        if (statusFilter === 'not_picked' && fs.status !== 'not_picked') return false;
+      }
+      return true;
+    });
+
+    // Update summary stats
+    document.getElementById('pu-total').textContent     = allPickups.length.toLocaleString('en-IN');
+    document.getElementById('pu-straw').textContent     = (allPickups.reduce((s,p)=>s+parseFloat(p.straw_qty_kg||0),0)/1000).toFixed(1)+'T';
+    document.getElementById('pu-transport').textContent = '₹'+allPickups.reduce((s,p)=>s+parseFloat(p.transport_cost||0),0).toLocaleString('en-IN');
+    document.getElementById('pu-labour').textContent    = '₹'+allPickups.reduce((s,p)=>s+(parseFloat(p.labour_count||0)*parseFloat(p.labour_cost_per_person||0)),0).toLocaleString('en-IN');
+    document.getElementById('pickupsCount').textContent = `${filtered.length} record${filtered.length!==1?'s':''}`;
+
+    if (!filtered.length) {
+      el.innerHTML = `<div class="empty-state"><div class="empty-icon">🚛</div><p>No pickups found</p></div>`;
+      return;
+    }
+
+    el.innerHTML = `<div class="table-wrap"><table style="width:100%">
+      <thead><tr>
+        <th>Date</th><th>Farmer</th><th>Village</th>
+        <th>Straw (kg)</th><th>Transport (₹)</th>
+        <th>Labourers</th><th>Labour Cost (₹)</th><th>Total Cost (₹)</th>
+        <th>Vehicle</th><th>Agent</th><th>Next Pickup</th><th>Status</th>
+      </tr></thead>
+      <tbody>${filtered.map(p => {
+        const labourTotal = parseFloat(p.labour_count||0) * parseFloat(p.labour_cost_per_person||0);
+        const transport   = parseFloat(p.transport_cost||0);
+        const totalCost   = transport + labourTotal;
+        const fs          = getFulfillmentStatus(p.farmer_id);
+        const nextDate    = p.next_pickup_date ? new Date(p.next_pickup_date).toLocaleDateString('en-IN') : '—';
+        return `<tr>
+          <td>${new Date(p.pickup_date).toLocaleDateString('en-IN')}</td>
+          <td><div class="farmer-name">${p.full_name||'—'}</div></td>
+          <td>${p.village_name||'—'}</td>
+          <td><strong>${p.straw_qty_kg?parseFloat(p.straw_qty_kg).toLocaleString('en-IN'):'—'}</strong></td>
+          <td>${transport > 0 ? '₹'+transport.toLocaleString('en-IN') : '—'}</td>
+          <td>${p.labour_count||'—'}</td>
+          <td>${labourTotal > 0 ? '₹'+labourTotal.toLocaleString('en-IN') : '—'}</td>
+          <td>${totalCost > 0 ? '<strong>₹'+totalCost.toLocaleString('en-IN')+'</strong>' : '—'}</td>
+          <td>${p.vehicle_no||'—'}</td>
+          <td>${p.agent_name||'—'}</td>
+          <td>${nextDate !== '—' ? '<span style="color:var(--primary);font-weight:600;">'+nextDate+'</span>' : '—'}</td>
+          <td><span class="badge ${fs.cls}">${fs.label}</span></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>`;
   }
 
   function renderMapTable() {
