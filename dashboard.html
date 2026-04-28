@@ -1090,9 +1090,9 @@
   let allWarehouses = [];
 
   function parseWarehouseMapsLink() {
-    const link = document.getElementById('wh_maps_link').value;
-    // Try to extract lat/lng from Google Maps URLs
-    // Handles formats: @lat,lng | /place/.../@lat,lng | ?q=lat,lng | ll=lat,lng
+    const link = document.getElementById('wh_maps_link').value.trim();
+    if (!link) return;
+    // First try to parse directly (works for full URLs)
     const patterns = [
       /@(-?\d+\.\d+),(-?\d+\.\d+)/,
       /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,
@@ -1107,8 +1107,30 @@
         return;
       }
     }
-    document.getElementById('wh_lat').value = '';
-    document.getElementById('wh_lng').value = '';
+    // Short URL — resolve via backend
+    document.getElementById('wh_lat').value = '⏳ Resolving...';
+    document.getElementById('wh_lng').value = '⏳ Resolving...';
+    fetch(`${API}/location/resolve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: link })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.lat && data.lng) {
+        document.getElementById('wh_lat').value = data.lat;
+        document.getElementById('wh_lng').value = data.lng;
+      } else {
+        document.getElementById('wh_lat').value = '';
+        document.getElementById('wh_lng').value = '';
+        showToast('⚠️ Could not extract coordinates from this link');
+      }
+    })
+    .catch(() => {
+      document.getElementById('wh_lat').value = '';
+      document.getElementById('wh_lng').value = '';
+      showToast('❌ Failed to resolve location');
+    });
   }
 
   async function loadAndRenderWarehouses() {
