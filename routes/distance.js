@@ -6,6 +6,25 @@ const http = require('http');
 const FACTORY_LAT = 21.419798;
 const FACTORY_LNG = 83.585250;
 
+router.get('/geocode', async (req, res) => {
+  const { place } = req.query;
+  if (!place) return res.status(400).json({ error: 'Missing place' });
+  const KEY = process.env.GOOGLE_MAPS_KEY;
+  try {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(place)}&key=${KEY}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    if (data.status === 'OK' && data.results[0]) {
+      const loc = data.results[0].geometry.location;
+      res.json({ lat: loc.lat, lng: loc.lng, formatted: data.results[0].formatted_address });
+    } else {
+      res.status(422).json({ error: 'Not found', status: data.status });
+    }
+  } catch(err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.get('/resolve', async (req, res) => {
   const { url } = req.query;
   if (!url) return res.status(400).json({ error: 'Missing URL' });

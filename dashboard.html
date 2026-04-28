@@ -1123,18 +1123,16 @@
       }
     }
 
-    // Step 2: short URL — geocode directly via Google Places API
+    // Step 2: short URL — geocode via backend
     status.textContent = '⏳ Resolving location...';
     status.style.color = 'var(--muted)';
-    const GKEY = 'AIzaSyBkeImnE8Rlc9UGjckLXL6jWQ1LMVx6feE';
     try {
-      const gRes = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(link)}&key=${GKEY}`);
-      const geo  = await gRes.json();
-      if (geo.status === 'OK' && geo.results[0]) {
-        const loc = geo.results[0].geometry.location;
-        document.getElementById('wh_lat').value = loc.lat.toFixed(6);
-        document.getElementById('wh_lng').value = loc.lng.toFixed(6);
-        status.textContent = `✅ ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}`;
+      const res  = await fetch(`${API}/distance/geocode?place=${encodeURIComponent(link)}`);
+      const data = await res.json();
+      if (data.lat && data.lng) {
+        document.getElementById('wh_lat').value = parseFloat(data.lat).toFixed(6);
+        document.getElementById('wh_lng').value = parseFloat(data.lng).toFixed(6);
+        status.textContent = `✅ ${parseFloat(data.lat).toFixed(4)}, ${parseFloat(data.lng).toFixed(4)}`;
         status.style.color = 'green';
         return;
       }
@@ -1144,6 +1142,7 @@
     status.style.color = '#dc2626';
     document.getElementById('wh_lat').value = '';
     document.getElementById('wh_lng').value = '';
+  }
   }
 
   async function loadAndRenderWarehouses() {
