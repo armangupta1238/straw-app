@@ -1092,45 +1092,70 @@
   function parseWarehouseMapsLink() {
     const link = document.getElementById('wh_maps_link').value.trim();
     if (!link) return;
-    // First try to parse directly (works for full URLs)
+
+    // Try direct extraction first (works for full URLs)
     const patterns = [
       /@(-?\d+\.\d+),(-?\d+\.\d+)/,
       /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,
+      /\/place\/(-?\d+\.\d+),(-?\d+\.\d+)/,
       /ll=(-?\d+\.\d+),(-?\d+\.\d+)/,
       /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,
     ];
     for (const p of patterns) {
       const m = link.match(p);
       if (m) {
-        document.getElementById('wh_lat').value = m[1];
-        document.getElementById('wh_lng').value = m[2];
+        document.getElementById('wh_lat').value = parseFloat(m[1]).toFixed(6);
+        document.getElementById('wh_lng').value = parseFloat(m[2]).toFixed(6);
         return;
       }
     }
-    // Short URL — resolve via backend
+
+    // Short URL — use the same working resolve route as farmer-form
     document.getElementById('wh_lat').value = '⏳ Resolving...';
     document.getElementById('wh_lng').value = '⏳ Resolving...';
-    fetch(`${API}/location/resolve`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url: link })
-    })
-    .then(r => r.json())
-    .then(data => {
-      if (data.lat && data.lng) {
-        document.getElementById('wh_lat').value = data.lat;
-        document.getElementById('wh_lng').value = data.lng;
-      } else {
+    fetch(`${API}/distance/resolve?url=${encodeURIComponent(link)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.resolved) {
+          for (const p of patterns) {
+            const m = data.resolved.match(p);
+            if (m) {
+              document.getElementById('wh_lat').value = parseFloat(m[1]).toFixed(6);
+              document.getElementById('wh_lng').value = parseFloat(m[2]).toFixed(6);
+              return;
+            }
+          }
+        }
+        // If still no coords, try geocoding the q= param
+        if (data.resolved) {
+          const qMatch = data.resolved.match(/[?&]q=([^&]+)/);
+          if (qMatch) {
+            const place = decodeURIComponent(qMatch[1].replace(/\+/g, ' '));
+            fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(place)}&key=AIzaSyBkeImnE8Rlc9UGjckLXL6jWQ1LMVx6feE`)
+              .then(r => r.json())
+              .then(geo => {
+                if (geo.status === 'OK' && geo.results[0]) {
+                  const loc = geo.results[0].geometry.location;
+                  document.getElementById('wh_lat').value = loc.lat.toFixed(6);
+                  document.getElementById('wh_lng').value = loc.lng.toFixed(6);
+                } else {
+                  document.getElementById('wh_lat').value = '';
+                  document.getElementById('wh_lng').value = '';
+                  showToast('⚠️ Could not extract coordinates');
+                }
+              });
+          }
+        } else {
+          document.getElementById('wh_lat').value = '';
+          document.getElementById('wh_lng').value = '';
+          showToast('⚠️ Could not resolve link');
+        }
+      })
+      .catch(() => {
         document.getElementById('wh_lat').value = '';
         document.getElementById('wh_lng').value = '';
-        showToast('⚠️ Could not extract coordinates from this link');
-      }
-    })
-    .catch(() => {
-      document.getElementById('wh_lat').value = '';
-      document.getElementById('wh_lng').value = '';
-      showToast('❌ Failed to resolve location');
-    });
+        showToast('❌ Failed to resolve location');
+      });
   }
 
   async function loadAndRenderWarehouses() {
