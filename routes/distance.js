@@ -1,15 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const https = require('https');
+const http = require('http');
 
 const FACTORY_LAT = 21.419798;
 const FACTORY_LNG = 83.585250;
 
-// Resolve short Google Maps link by following redirects
 router.get('/resolve', async (req, res) => {
   const { url } = req.query;
   if (!url) return res.status(400).json({ error: 'Missing URL' });
-
   try {
     const resolved = await followRedirects(url);
     res.json({ resolved });
@@ -18,22 +17,32 @@ router.get('/resolve', async (req, res) => {
   }
 });
 
-function followRedirects(url, maxRedirects = 5) {
+function followRedirects(url, maxRedirects = 10) {
   return new Promise((resolve, reject) => {
-    const request = https.get(url, (response) => {
-      if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
+    const lib = url.startsWith('https') ? https : http;
+    const req = lib.get(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15',
+        'Accept': 'text/html,application/xhtml+xml',
+      }
+    }, (res) => {
+      // Must consume body to free socket
+      res.resume();
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
         if (maxRedirects === 0) return reject(new Error('Too many redirects'));
-        followRedirects(response.headers.location, maxRedirects - 1).then(resolve).catch(reject);
+        const next = res.headers.location.startsWith('http')
+          ? res.headers.location
+          : new URL(res.headers.location, url).href;
+        followRedirects(next, maxRedirects - 1).then(resolve).catch(reject);
       } else {
-        resolve(response.headers['x-final-url'] || url);
+        resolve(url);
       }
     });
-    request.on('error', reject);
-    request.setTimeout(5000, () => { request.destroy(); reject(new Error('Timeout')); });
+    req.on('error', reject);
+    req.setTimeout(8000, () => { req.destroy(); reject(new Error('Timeout')); });
   });
 }
 
-// Calculate road distance
 router.get('/', async (req, res) => {
   const { lat, lng } = req.query;
   if (!lat || !lng) return res.status(400).json({ error: 'Missing coordinates' });
