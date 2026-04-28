@@ -443,36 +443,39 @@
 
     <!-- Add Warehouse Form -->
     <div class="panel" style="margin-bottom:20px;">
-      <div class="panel-header">
-        <div><div class="panel-title">🏭 Add Warehouse</div><div class="panel-sub">Enter name and paste a Google Maps link to capture location</div></div>
+      <div class="panel-header" style="cursor:pointer;" onclick="toggleAddWarehouseForm()">
+        <div><div class="panel-title">🏭 Add Warehouse</div><div class="panel-sub">Click to expand</div></div>
+        <span id="whFormToggleIcon" style="font-size:18px;color:var(--primary);font-weight:700;">+</span>
       </div>
-      <div style="padding:20px;background:#fafafe;display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-        <div class="ag-fld" style="grid-column:1/-1">
-          <label class="ag-fld" style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:5px;">Warehouse Name *</label>
-          <input class="ag-input" type="text" id="wh_name" placeholder="e.g. BPCL Factory, Saraipali Depot"/>
-        </div>
-        <div class="ag-fld" style="grid-column:1/-1">
-          <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:5px;display:block;">Google Maps Link</label>
-          <input class="ag-input" type="text" id="wh_maps_link" placeholder="Paste Google Maps link here..." oninput="whLinkDebounce()"/>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">
-            Open Google Maps → long press location → tap coordinates at top → tap <strong>Share → Copy link</strong> → paste here
+      <div id="whFormBody" style="display:none;padding:20px;background:#fafafe;display:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="ag-fld" style="grid-column:1/-1">
+            <label class="ag-fld" style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:5px;">Warehouse Name *</label>
+            <input class="ag-input" type="text" id="wh_name" placeholder="e.g. BPCL Factory, Saraipali Depot"/>
           </div>
-          <div style="font-size:11px;margin-top:4px;" id="wh_link_status"></div>
-        </div>
-        <div class="ag-fld">
-          <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:5px;display:block;">Latitude</label>
-          <input class="ag-input" type="text" id="wh_lat" placeholder="Auto-filled from link" readonly style="background:#f5f3ff;color:var(--primary);font-weight:600;"/>
-        </div>
-        <div class="ag-fld">
-          <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:5px;display:block;">Longitude</label>
-          <input class="ag-input" type="text" id="wh_lng" placeholder="Auto-filled from link" readonly style="background:#f5f3ff;color:var(--primary);font-weight:600;"/>
-        </div>
-        <div class="ag-fld" style="grid-column:1/-1">
-          <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:5px;display:block;">Address / Notes</label>
-          <input class="ag-input" type="text" id="wh_address" placeholder="e.g. NH-49, Saraipali, Chhattisgarh"/>
-        </div>
-        <div style="grid-column:1/-1">
-          <button class="ag-add-btn" id="addWarehouseBtn" onclick="addWarehouse()" style="width:100%;height:46px;font-size:15px;">+ Add Warehouse</button>
+          <div class="ag-fld" style="grid-column:1/-1">
+            <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:5px;display:block;">Google Maps Link</label>
+            <input class="ag-input" type="text" id="wh_maps_link" placeholder="Paste Google Maps link here..." oninput="whLinkDebounce()"/>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px;">
+              Open Google Maps → long press location → tap coordinates at top → tap <strong>Share → Copy link</strong> → paste here
+            </div>
+            <div style="font-size:11px;margin-top:4px;" id="wh_link_status"></div>
+          </div>
+          <div class="ag-fld">
+            <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:5px;display:block;">Latitude</label>
+            <input class="ag-input" type="text" id="wh_lat" placeholder="Auto-filled from link" readonly style="background:#f5f3ff;color:var(--primary);font-weight:600;"/>
+          </div>
+          <div class="ag-fld">
+            <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:5px;display:block;">Longitude</label>
+            <input class="ag-input" type="text" id="wh_lng" placeholder="Auto-filled from link" readonly style="background:#f5f3ff;color:var(--primary);font-weight:600;"/>
+          </div>
+          <div class="ag-fld" style="grid-column:1/-1">
+            <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:5px;display:block;">Address / Notes</label>
+            <input class="ag-input" type="text" id="wh_address" placeholder="e.g. NH-49, Saraipali, Chhattisgarh"/>
+          </div>
+          <div style="grid-column:1/-1">
+            <button class="ag-add-btn" id="addWarehouseBtn" onclick="addWarehouse()" style="width:100%;height:46px;font-size:15px;">+ Add Warehouse</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1091,6 +1094,14 @@
 
   // ── WAREHOUSE ──
   let allWarehouses = [];
+
+  function toggleAddWarehouseForm() {
+    const body = document.getElementById('whFormBody');
+    const icon = document.getElementById('whFormToggleIcon');
+    const isOpen = body.style.display !== 'none';
+    body.style.display = isOpen ? 'none' : 'block';
+    icon.textContent = isOpen ? '+' : '×';
+  }
 
   function whExtractCoords(url) {
     const patterns = [
