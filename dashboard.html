@@ -453,8 +453,11 @@
         </div>
         <div class="ag-fld" style="grid-column:1/-1">
           <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:5px;display:block;">Google Maps Link</label>
-          <input class="ag-input" type="text" id="wh_maps_link" placeholder="Paste Google Maps URL here..." oninput="parseWarehouseMapsLink()"/>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Open Google Maps → right-click location → Copy link → paste here</div>
+          <input class="ag-input" type="text" id="wh_maps_link" placeholder="Paste Google Maps link here..." oninput="parseWarehouseMapsLink()"/>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;">
+            Open Google Maps → long press location → tap coordinates at top → tap <strong>Share → Copy link</strong> → paste here
+          </div>
+          <div style="font-size:11px;margin-top:4px;" id="wh_link_status"></div>
         </div>
         <div class="ag-fld">
           <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:5px;display:block;">Latitude</label>
@@ -1089,11 +1092,11 @@
   // ── WAREHOUSE ──
   let allWarehouses = [];
 
-  function parseWarehouseMapsLink() {
+  async function parseWarehouseMapsLink() {
     const link = document.getElementById('wh_maps_link').value.trim();
-    if (!link) return;
+    const status = document.getElementById('wh_link_status');
+    if (!link) { status.textContent = ''; return; }
 
-    // Try direct extraction first (works for full URLs)
     const patterns = [
       /@(-?\d+\.\d+),(-?\d+\.\d+)/,
       /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,
@@ -1101,61 +1104,40 @@
       /ll=(-?\d+\.\d+),(-?\d+\.\d+)/,
       /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,
     ];
+
+    // Step 1: direct extraction (works for full URLs)
     for (const p of patterns) {
       const m = link.match(p);
       if (m) {
         document.getElementById('wh_lat').value = parseFloat(m[1]).toFixed(6);
         document.getElementById('wh_lng').value = parseFloat(m[2]).toFixed(6);
+        status.textContent = `✅ ${parseFloat(m[1]).toFixed(4)}, ${parseFloat(m[2]).toFixed(4)}`;
+        status.style.color = 'green';
         return;
       }
     }
 
-    // Short URL — use the same working resolve route as farmer-form
-    document.getElementById('wh_lat').value = '⏳ Resolving...';
-    document.getElementById('wh_lng').value = '⏳ Resolving...';
-    fetch(`${API}/distance/resolve?url=${encodeURIComponent(link)}`)
-      .then(r => r.json())
-      .then(data => {
-        if (data.resolved) {
-          for (const p of patterns) {
-            const m = data.resolved.match(p);
-            if (m) {
-              document.getElementById('wh_lat').value = parseFloat(m[1]).toFixed(6);
-              document.getElementById('wh_lng').value = parseFloat(m[2]).toFixed(6);
-              return;
-            }
-          }
-        }
-        // If still no coords, try geocoding the q= param
-        if (data.resolved) {
-          const qMatch = data.resolved.match(/[?&]q=([^&]+)/);
-          if (qMatch) {
-            const place = decodeURIComponent(qMatch[1].replace(/\+/g, ' '));
-            fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(place)}&key=AIzaSyBkeImnE8Rlc9UGjckLXL6jWQ1LMVx6feE`)
-              .then(r => r.json())
-              .then(geo => {
-                if (geo.status === 'OK' && geo.results[0]) {
-                  const loc = geo.results[0].geometry.location;
-                  document.getElementById('wh_lat').value = loc.lat.toFixed(6);
-                  document.getElementById('wh_lng').value = loc.lng.toFixed(6);
-                } else {
-                  document.getElementById('wh_lat').value = '';
-                  document.getElementById('wh_lng').value = '';
-                  showToast('⚠️ Could not extract coordinates');
-                }
-              });
-          }
-        } else {
-          document.getElementById('wh_lat').value = '';
-          document.getElementById('wh_lng').value = '';
-          showToast('⚠️ Could not resolve link');
-        }
-      })
-      .catch(() => {
-        document.getElementById('wh_lat').value = '';
-        document.getElementById('wh_lng').value = '';
-        showToast('❌ Failed to resolve location');
-      });
+    // Step 2: short URL — geocode directly via Google Places API
+    status.textContent = '⏳ Resolving location...';
+    status.style.color = 'var(--muted)';
+    const GKEY = 'AIzaSyBkeImnE8Rlc9UGjckLXL6jWQ1LMVx6feE';
+    try {
+      const gRes = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(link)}&key=${GKEY}`);
+      const geo  = await gRes.json();
+      if (geo.status === 'OK' && geo.results[0]) {
+        const loc = geo.results[0].geometry.location;
+        document.getElementById('wh_lat').value = loc.lat.toFixed(6);
+        document.getElementById('wh_lng').value = loc.lng.toFixed(6);
+        status.textContent = `✅ ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}`;
+        status.style.color = 'green';
+        return;
+      }
+    } catch(e) {}
+
+    status.textContent = '⚠️ Could not read coordinates. Try a full Google Maps link.';
+    status.style.color = '#dc2626';
+    document.getElementById('wh_lat').value = '';
+    document.getElementById('wh_lng').value = '';
   }
 
   async function loadAndRenderWarehouses() {
