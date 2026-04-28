@@ -249,6 +249,7 @@
   <div class="nav-section">Operations</div>
   <a class="nav-item" onclick="showSection('seasons')"><span class="nav-icon">🌾</span><span>Harvest Seasons</span></a>
   <a class="nav-item" onclick="showSection('pickups')"><span class="nav-icon">🚛</span><span>Pickups</span></a>
+  <a class="nav-item" onclick="showSection('warehouse')"><span class="nav-icon">🏭</span><span>Warehouse</span></a>
   <a class="nav-item" onclick="showSection('map')"><span class="nav-icon">🗺️</span><span>Farm Map</span></a>
   <div class="nav-section">People</div>
   <a class="nav-item" onclick="showSection('farmers')"><span class="nav-icon">👨‍🌾</span><span>All Farmers</span></a>
@@ -284,21 +285,21 @@
     <div class="content-grid">
       <div class="panel">
         <div class="panel-header">
-          <div><div class="panel-title">Recent Farmers</div><div class="panel-sub">Latest registrations</div></div>
-          <button class="panel-action" onclick="showSection('farmers')">View All</button>
+          <div><div class="panel-title">Recent Pickups</div><div class="panel-sub">Last collections</div></div>
+          <button class="panel-action" onclick="showSection('pickups')">View All</button>
         </div>
-        <div class="table-wrap"><table>
-          <thead><tr><th>Farmer</th><th>Village</th><th>Acres</th><th>Distance</th><th>Season</th></tr></thead>
-          <tbody id="recentFarmersBody"><tr><td colspan="5"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
-        </table></div>
+        <div id="recentPickups"><div class="loading"><div class="spinner"></div> Loading...</div></div>
       </div>
       <div class="right-col">
         <div class="panel">
           <div class="panel-header">
-            <div><div class="panel-title">Recent Pickups</div><div class="panel-sub">Last collections</div></div>
-            <button class="panel-action" onclick="showSection('pickups')">View All</button>
+            <div><div class="panel-title">Recent Farmers</div><div class="panel-sub">Latest registrations</div></div>
+            <button class="panel-action" onclick="showSection('farmers')">View All</button>
           </div>
-          <div id="recentPickups"><div class="loading"><div class="spinner"></div> Loading...</div></div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Farmer</th><th>Village</th><th>Acres</th><th>Distance</th><th>Season</th></tr></thead>
+            <tbody id="recentFarmersBody"><tr><td colspan="5"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
+          </table></div>
         </div>
         <div class="panel">
           <div class="panel-header"><div><div class="panel-title">Harvest Months</div><div class="panel-sub">Farmers per season</div></div></div>
@@ -437,6 +438,18 @@
     </div>
   </div>
 
+  <!-- WAREHOUSE -->
+  <div id="section-warehouse" style="display:none">
+    <div class="panel">
+      <div class="panel-header"><div><div class="panel-title">Warehouse</div><div class="panel-sub">Stock and inventory management — coming soon</div></div></div>
+      <div class="empty-state" style="padding:60px 20px">
+        <div class="empty-icon">🏭</div>
+        <p style="font-size:15px;font-weight:600;color:var(--dark);margin-bottom:8px;">Warehouse module coming soon</p>
+        <p style="font-size:13px;">Track stock levels, inbound straw, and outbound dispatches.</p>
+      </div>
+    </div>
+  </div>
+
   <!-- MAP -->
   <div id="section-map" style="display:none">
     <div class="panel">
@@ -500,7 +513,7 @@
   let editingFarmerId = null;
   let activePickupTab = 'history';
 
-  const sections = ['dashboard','seasons','pickups','map','farmers','agents','promoters'];
+  const sections = ['dashboard','seasons','pickups','warehouse','map','farmers','agents','promoters'];
   const titles = {
     dashboard: ['Dashboard','Overview of your straw collection network'],
     farmers:   ['All Farmers','Complete farmer registry'],
@@ -508,7 +521,7 @@
     promoters: ['Promoters','Promoters who manage the dashboard and operations'],
     seasons:   ['Harvest Seasons','Upcoming and active harvest seasons'],
     pickups:   ['Pickups','Pickup history and pending collections'],
-    map:       ['Farm Map','GPS locations of all registered farms'],
+    warehouse: ['Warehouse','Stock and inventory at the warehouse'],
   };
 
   function showSection(name) {
