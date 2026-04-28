@@ -281,7 +281,7 @@
       <div class="stat-card amber"><span class="stat-icon">🌾</span><div class="stat-label">Total Acres</div><div class="stat-value" id="stat-acres">—</div><div class="stat-sub">Across all farmers</div></div>
       <div class="stat-card blue"><span class="stat-icon">📦</span><div class="stat-label">Est. Total Straw</div><div class="stat-value" id="stat-straw">—</div><div class="stat-sub">Tonnes available</div></div>
       <div class="stat-card earth"><span class="stat-icon">✅</span><div class="stat-label">Picked Up</div><div class="stat-value" id="stat-picked">—</div><div class="stat-sub">Tonnes collected</div></div>
-      <div class="stat-card teal"><span class="stat-icon">🚛</span><div class="stat-label">Est. Total Trips</div><div class="stat-value" id="stat-trips">—</div><div class="stat-sub">Tractor trips needed</div></div>
+      <div class="stat-card teal"><span class="stat-icon">⏳</span><div class="stat-label">Remaining</div><div class="stat-value" id="stat-remaining">—</div><div class="stat-sub">Yet to be picked</div></div>
     </div>
     <div class="content-grid">
       <div class="panel">
@@ -655,13 +655,13 @@
     const fa = allFarmers.length;
     const ac = allFarmers.reduce((s,f)=>s+parseFloat(f.total_acres||0),0);
     const st = allFarmers.reduce((s,f)=>s+(parseFloat(f.total_acres||0)*parseFloat(f.straw_per_acre_kg||0)),0);
-    const tr = allFarmers.reduce((s,f)=>s+trips(f),0);
     const pk = allPickups.reduce((s,p)=>s+parseFloat(p.straw_qty_kg||0),0);
-    document.getElementById('stat-farmers').textContent = fa.toLocaleString('en-IN');
-    document.getElementById('stat-acres').textContent   = ac.toLocaleString('en-IN',{maximumFractionDigits:1});
-    document.getElementById('stat-straw').textContent   = (st/1000).toLocaleString('en-IN',{maximumFractionDigits:1})+'T';
-    document.getElementById('stat-picked').textContent  = (pk/1000).toLocaleString('en-IN',{maximumFractionDigits:1})+'T';
-    document.getElementById('stat-trips').textContent   = tr.toLocaleString('en-IN');
+    const remaining = Math.max(0, st - pk);
+    document.getElementById('stat-farmers').textContent   = fa.toLocaleString('en-IN');
+    document.getElementById('stat-acres').textContent     = ac.toLocaleString('en-IN',{maximumFractionDigits:1});
+    document.getElementById('stat-straw').textContent     = (st/1000).toLocaleString('en-IN',{maximumFractionDigits:1})+'T';
+    document.getElementById('stat-picked').textContent    = (pk/1000).toLocaleString('en-IN',{maximumFractionDigits:1})+'T';
+    document.getElementById('stat-remaining').textContent = (remaining/1000).toLocaleString('en-IN',{maximumFractionDigits:1})+'T';
   }
 
   // ✏️ CHANGE 2: seasonBadges now shows actual months from season_name
