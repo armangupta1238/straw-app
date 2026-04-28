@@ -109,6 +109,9 @@
     .labour-total-label { font-size:13px; color:var(--purple); font-weight:500; }
     .labour-total-value { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:var(--purple); }
 
+    /* Warehouse status hint */
+    .warehouse-hint { font-size:11px; color:var(--muted); margin-top:5px; font-weight:500; }
+
     /* Nav */
     .nav-btns {
       display:flex; gap:12px; padding:16px 24px 32px; position:fixed; bottom:0; left:0; right:0;
@@ -204,6 +207,19 @@
     </div>
   </div>
 
+  <!-- WAREHOUSE -->
+  <div class="card" id="warehouseCard" style="display:none">
+    <div class="card-title">🏭 Delivery Warehouse</div>
+    <div class="field">
+      <label>Choose Warehouse *</label>
+      <select id="warehouse_select" onchange="onWarehouseChange()">
+        <option value="">— Select warehouse —</option>
+      </select>
+      <div class="warehouse-hint" id="warehouse_hint"></div>
+    </div>
+    <input type="hidden" id="selected_warehouse_id"/>
+  </div>
+
   <!-- PICKUP DETAILS -->
   <div class="card">
     <div class="card-title">📦 Pickup Details</div>
@@ -292,23 +308,20 @@
 <script>
   const API = 'https://straw-app-production.up.railway.app/api';
 
-  let allFarmers = [];
+  let allFarmers   = [];
   let farmerPickups = [];
   let selectedFarmerData = null;
 
   // ── INIT ──
   async function init() {
-    // Set agent name from session
     try {
       const agent = JSON.parse(localStorage.getItem('agent'));
       document.getElementById('agent_name').value = agent.full_name || '';
     } catch(e) {}
 
-    // Set today's date
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('pickup_date').value = today;
 
-    // Load farmers
     try {
       const res = await fetch(`${API}/farmers`);
       allFarmers = await res.json();
@@ -325,13 +338,11 @@
     }
 
     // ── PRE-FILL FARMER FROM URL PARAM ──
-    // e.g. pickup-form.html?farmer_id=12
     const params = new URLSearchParams(window.location.search);
     const preFillId = params.get('farmer_id');
     if (preFillId) {
       const sel = document.getElementById('farmer_select');
       sel.value = preFillId;
-      // Only trigger if the option actually exists
       if (sel.value == preFillId) {
         await onFarmerSelect();
       }
@@ -343,7 +354,12 @@
     const farmerId = document.getElementById('farmer_select').value;
     const box = document.getElementById('fulfillmentBox');
 
-    if (!farmerId) { box.classList.add('hidden'); selectedFarmerData = null; return; }
+    if (!farmerId) {
+      box.classList.add('hidden');
+      document.getElementById('warehouseCard').style.display = 'none';
+      selectedFarmerData = null;
+      return;
+    }
 
     selectedFarmerData = allFarmers.find(f => f.farmer_id == farmerId);
 
@@ -356,7 +372,7 @@
     // Load expected straw from seasons
     let expectedKg = 0;
     try {
-      const res  = await fetch(`${API}/seasons/${farmerId}`);
+      const res     = await fetch(`${API}/seasons/${farmerId}`);
       const seasons = await res.json();
       expectedKg = seasons.reduce((s, x) => s + parseFloat(x.expected_straw_kg || 0), 0);
     } catch(e) {}
@@ -385,6 +401,105 @@
 
     box.classList.remove('hidden');
     updateRemaining();
+
+    // Load warehouse dropdown for this farmer
+    await loadWarehousesSorted(selectedFarmerData);
+  }
+
+  // ── LOAD WAREHOUSES sorted by road distance from farmer's farm ──
+  async function loadWarehousesSorted(farmer) {
+    const card   = document.getElementById('warehouseCard');
+    const select = document.getElementById('warehouse_select');
+    const hint   = document.getElementById('warehouse_hint');
+
+    card.style.display = 'block';
+    select.innerHTML   = '<option value="">⏳ Loading warehouses...</option>';
+    select.disabled    = true;
+    hint.textContent   = 'Calculating road distances...';
+
+    let warehouses = [];
+    try {
+      const res  = await fetch(`${API}/warehouses`);
+      warehouses = await res.json();
+      warehouses = warehouses.filter(w => w.is_active);
+    } catch(e) {
+      hint.textContent = '⚠️ Could not load warehouses';
+      select.innerHTML = '<option value="">— Could not load —</option>';
+      select.disabled  = false;
+      return;
+    }
+
+    if (!warehouses.length) {
+      hint.textContent = '⚠️ No active warehouses found';
+      select.innerHTML = '<option value="">— No warehouses —</option>';
+      select.disabled  = false;
+      return;
+    }
+
+    const farmLat = farmer.farm_lat;
+    const farmLng = farmer.farm_lng;
+
+    let withDistances;
+
+    if (farmLat && farmLng) {
+      // Call /api/distance for each warehouse in parallel
+      withDistances = await Promise.all(warehouses.map(async (w) => {
+        try {
+          const res  = await fetch(`${API}/distance?lat=${farmLat}&lng=${farmLng}&warehouse_lat=${w.lat}&warehouse_lng=${w.lng}`);
+          const data = await res.json();
+          return { ...w, road_km: data.distance_km ? parseFloat(data.distance_km) : null };
+        } catch(e) {
+          return { ...w, road_km: null };
+        }
+      }));
+
+      // Sort nearest first, nulls last
+      withDistances.sort((a, b) => {
+        if (a.road_km === null && b.road_km === null) return 0;
+        if (a.road_km === null) return 1;
+        if (b.road_km === null) return -1;
+        return a.road_km - b.road_km;
+      });
+    } else {
+      // No farm GPS — just show all unsorted
+      withDistances = warehouses.map(w => ({ ...w, road_km: null }));
+    }
+
+    // Build options
+    select.innerHTML = '<option value="">— Choose warehouse —</option>';
+    let defaultWarehouseId = farmer.warehouse_id ? String(farmer.warehouse_id) : null;
+    let firstOptionId = null;
+
+    withDistances.forEach((w, idx) => {
+      const opt  = document.createElement('option');
+      opt.value  = w.warehouse_id;
+      const dist = w.road_km !== null ? ` — ${w.road_km} km` : '';
+      const badge = idx === 0 && w.road_km !== null ? ' ⭐ Nearest' : '';
+      opt.textContent = `${w.name}${dist}${badge}`;
+      if (idx === 0) firstOptionId = String(w.warehouse_id);
+      select.appendChild(opt);
+    });
+
+    select.disabled = false;
+
+    // Default: farmer's assigned warehouse if set, else nearest
+    const autoSelect = defaultWarehouseId || firstOptionId;
+    if (autoSelect) {
+      select.value = autoSelect;
+      document.getElementById('selected_warehouse_id').value = autoSelect;
+    }
+
+    if (farmLat && farmLng) {
+      hint.textContent = `${withDistances.length} warehouse(s) sorted by road distance`;
+    } else {
+      hint.textContent = 'No GPS data for this farmer — showing all warehouses';
+    }
+  }
+
+  // ── WAREHOUSE CHANGE ──
+  function onWarehouseChange() {
+    document.getElementById('selected_warehouse_id').value =
+      document.getElementById('warehouse_select').value;
   }
 
   // ── UPDATE REMAINING after entering qty ──
@@ -435,31 +550,32 @@
     btn.textContent = '⏳ Saving...'; btn.disabled = true;
 
     try {
-      const agent = JSON.parse(localStorage.getItem('agent'));
+      const agent        = JSON.parse(localStorage.getItem('agent'));
       const labourCount  = document.getElementById('labour_count').value;
       const labourRate   = document.getElementById('labour_cost_per_person').value;
       const nextDate     = document.getElementById('next_pickup_date').value;
+      const warehouseId  = document.getElementById('selected_warehouse_id').value;
 
       const res = await fetch(`${API}/pickups`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          farmer_id:             farmerId,
-          pickup_date:           pickupDate,
-          straw_qty_kg:          strawQty,
-          transport_cost:        document.getElementById('transport_cost').value || null,
-          vehicle_no:            vehicleNo,
-          agent_name:            agent.full_name,
-          notes:                 document.getElementById('notes').value || null,
-          labour_count:          labourCount || null,
-          labour_cost_per_person:labourRate  || null,
-          next_pickup_date:      nextDate    || null,
+          farmer_id:              farmerId,
+          pickup_date:            pickupDate,
+          straw_qty_kg:           strawQty,
+          transport_cost:         document.getElementById('transport_cost').value || null,
+          vehicle_no:             vehicleNo,
+          agent_name:             agent.full_name,
+          notes:                  document.getElementById('notes').value || null,
+          labour_count:           labourCount || null,
+          labour_cost_per_person: labourRate  || null,
+          next_pickup_date:       nextDate    || null,
+          warehouse_id:           warehouseId || null,
         })
       });
       const data = await res.json();
 
       if (data.pickup_id) {
-        // Show success
         const farmerName = allFarmers.find(f => f.farmer_id == farmerId)?.full_name || 'Farmer';
         document.getElementById('successMsg').textContent =
           `${parseFloat(strawQty).toLocaleString('en-IN')} kg collected from ${farmerName}.`;
@@ -500,6 +616,10 @@
     document.getElementById('notes').value = '';
     document.getElementById('fulfillmentBox').classList.add('hidden');
     document.getElementById('labourTotal').style.display = 'none';
+    document.getElementById('warehouseCard').style.display = 'none';
+    document.getElementById('warehouse_select').innerHTML = '<option value="">— Select warehouse —</option>';
+    document.getElementById('warehouse_hint').textContent = '';
+    document.getElementById('selected_warehouse_id').value = '';
     document.getElementById('saveBtn').textContent = '💾 Save Pickup';
     document.getElementById('saveBtn').disabled = false;
     selectedFarmerData = null;
