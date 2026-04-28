@@ -323,6 +323,19 @@
     } catch(e) {
       showToast('⚠️ Could not load farmers');
     }
+
+    // ── PRE-FILL FARMER FROM URL PARAM ──
+    // e.g. pickup-form.html?farmer_id=12
+    const params = new URLSearchParams(window.location.search);
+    const preFillId = params.get('farmer_id');
+    if (preFillId) {
+      const sel = document.getElementById('farmer_select');
+      sel.value = preFillId;
+      // Only trigger if the option actually exists
+      if (sel.value == preFillId) {
+        await onFarmerSelect();
+      }
+    }
   }
 
   // ── FARMER SELECTED ──
