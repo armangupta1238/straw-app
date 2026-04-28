@@ -246,16 +246,16 @@
   </div>
   <div class="nav-section">Main</div>
   <a class="nav-item active" onclick="showSection('dashboard')"><span class="nav-icon">📊</span><span>Dashboard</span></a>
-  <a class="nav-item" onclick="showSection('farmers')"><span class="nav-icon">👨‍🌾</span><span>All Farmers</span></a>
-  <div class="nav-section">People</div>
-  <a class="nav-item" onclick="showSection('agents')"><span class="nav-icon">🧑‍💼</span><span>Field Agents</span></a>
-  <a class="nav-item" onclick="showSection('promoters')"><span class="nav-icon">⭐</span><span>Promoters</span></a>
   <div class="nav-section">Operations</div>
   <a class="nav-item" onclick="showSection('seasons')"><span class="nav-icon">🌾</span><span>Harvest Seasons</span></a>
   <a class="nav-item" onclick="showSection('pickups')"><span class="nav-icon">🚛</span><span>Pickups</span></a>
   <a class="nav-item" onclick="showSection('map')"><span class="nav-icon">🗺️</span><span>Farm Map</span></a>
+  <div class="nav-section">People</div>
+  <a class="nav-item" onclick="showSection('farmers')"><span class="nav-icon">👨‍🌾</span><span>All Farmers</span></a>
+  <a class="nav-item" onclick="showSection('agents')"><span class="nav-icon">🧑‍💼</span><span>Field Agents</span></a>
+  <a class="nav-item" onclick="showSection('promoters')"><span class="nav-icon">⭐</span><span>Promoters</span></a>
   <div class="sidebar-bottom">
-    <a href="farmer-form.html" class="add-farmer-btn"><span>+</span><span>Add Farmer</span></a>
+    <button onclick="logout()" class="add-farmer-btn" style="background:#dc2626;color:#fff;">🚪 Logout</button>
   </div>
 </aside>
 
@@ -294,15 +294,15 @@
       </div>
       <div class="right-col">
         <div class="panel">
-          <div class="panel-header"><div><div class="panel-title">Harvest Seasons</div><div class="panel-sub">Farmers per season</div></div></div>
-          <div id="seasonsSummary"><div class="loading"><div class="spinner"></div> Loading...</div></div>
-        </div>
-        <div class="panel">
           <div class="panel-header">
             <div><div class="panel-title">Recent Pickups</div><div class="panel-sub">Last collections</div></div>
             <button class="panel-action" onclick="showSection('pickups')">View All</button>
           </div>
           <div id="recentPickups"><div class="loading"><div class="spinner"></div> Loading...</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div><div class="panel-title">Harvest Months</div><div class="panel-sub">Farmers per season</div></div></div>
+          <div id="seasonsSummary"><div class="loading"><div class="spinner"></div> Loading...</div></div>
         </div>
       </div>
     </div>
@@ -333,8 +333,9 @@
         </select>
       </div>
       <div class="table-wrap"><table>
-        <thead><tr><th>Farmer</th><th>Village</th><th>District</th><th>Acres</th><th>Straw/Acre</th><th>Est. Straw</th><th>Trips</th><th>Distance</th><th>Cost/Trip</th><th>Est. Total Cost</th><th>Seasons</th><th>Added By</th><th>Actions</th></tr></thead>
-        <tbody id="allFarmersBody"><tr><td colspan="11"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
+        <!-- ✏️ CHANGE 1: Removed "Est. Total Cost" column header -->
+        <thead><tr><th>Farmer</th><th>Village</th><th>District</th><th>Acres</th><th>Straw/Acre</th><th>Est. Straw</th><th>Trips</th><th>Distance</th><th>Cost/Trip</th><th>Months</th><th>Added By</th><th>Actions</th></tr></thead>
+        <tbody id="allFarmersBody"><tr><td colspan="12"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
       </table></div>
       <div class="pagination">
         <span id="paginationInfo">—</span>
@@ -499,7 +500,7 @@
   let editingFarmerId = null;
   let activePickupTab = 'history';
 
-  const sections = ['dashboard','farmers','agents','promoters','seasons','pickups','map'];
+  const sections = ['dashboard','seasons','pickups','map','farmers','agents','promoters'];
   const titles = {
     dashboard: ['Dashboard','Overview of your straw collection network'],
     farmers:   ['All Farmers','Complete farmer registry'],
@@ -583,13 +584,19 @@
     document.getElementById('stat-trips').textContent   = tr.toLocaleString('en-IN');
   }
 
+  // ✏️ CHANGE 2: seasonBadges now shows actual months from season_name
+  // season_name is stored as comma-separated months e.g. "October, November, December"
+  // We show each month as its own badge (abbreviated to 3 chars)
   function seasonBadges(farmer) {
-    const s = allSeasons.filter(x=>x.farmer_id===farmer.farmer_id);
+    const s = allSeasons.filter(x => x.farmer_id === farmer.farmer_id);
     if (!s.length) return '<span class="badge badge-red">None</span>';
-    return s.map(x=>{
-      const c = x.season_name==='Kharif'?'badge-amber':x.season_name==='Rabi'?'badge-blue':'badge-teal';
-      return `<span class="badge ${c}">${x.season_name}</span>`;
-    }).join('');
+    const allMonths = s.flatMap(x =>
+      (x.season_name || '').split(',').map(m => m.trim()).filter(Boolean)
+    );
+    if (!allMonths.length) return '<span class="badge badge-red">None</span>';
+    return allMonths.map(m =>
+      `<span class="badge badge-amber">${m.slice(0,3)}</span>`
+    ).join('');
   }
 
   function renderRecentFarmers() {
@@ -606,16 +613,38 @@
   }
 
   function renderSeasonsSummary() {
-    const counts = { kharif: allSeasons.filter(s=>s.season_name==='Kharif').length, rabi: allSeasons.filter(s=>s.season_name==='Rabi').length, zaid: allSeasons.filter(s=>s.season_name==='Zaid').length };
-    document.getElementById('seasonsSummary').innerHTML = [
-      {key:'kharif',icon:'☀️',name:'Kharif',months:'Oct – Nov',count:counts.kharif},
-      {key:'rabi',  icon:'❄️',name:'Rabi',  months:'Mar – Apr',count:counts.rabi},
-      {key:'zaid',  icon:'🌿',name:'Zaid',  months:'Jun – Jul',count:counts.zaid},
-    ].map(s=>`<div class="season-item">
-      <div class="season-dot ${s.key}">${s.icon}</div>
-      <div class="season-info"><div class="season-name">${s.name}</div><div class="season-detail">${s.months}</div></div>
-      <div class="season-count">${s.count}</div>
-    </div>`).join('');
+    // Count unique farmers per season type for the numbers
+    const counts = {
+      kharif: allSeasons.filter(s=>s.season_name==='Kharif').length,
+      rabi:   allSeasons.filter(s=>s.season_name==='Rabi').length,
+      zaid:   allSeasons.filter(s=>s.season_name==='Zaid').length
+    };
+    // Build month frequency map from all season_name values (comma-separated months)
+    const monthCount = {};
+    allSeasons.forEach(s => {
+      (s.season_name || '').split(',').map(m => m.trim()).filter(Boolean).forEach(m => {
+        monthCount[m] = (monthCount[m] || 0) + 1;
+      });
+    });
+    // Sort months chronologically
+    const monthOrder = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const sortedMonths = Object.keys(monthCount).sort((a,b) => monthOrder.indexOf(a) - monthOrder.indexOf(b));
+
+    if (!sortedMonths.length) {
+      document.getElementById('seasonsSummary').innerHTML = `<div class="empty-state"><div class="empty-icon">📅</div><p>No seasons recorded yet</p></div>`;
+      return;
+    }
+    document.getElementById('seasonsSummary').innerHTML = sortedMonths.map(m => {
+      const short = m.slice(0,3);
+      const colors = ['Jan','Feb','Mar','Apr'].includes(short) ? {dot:'rabi',icon:'❄️'} :
+                     ['May','Jun','Jul','Aug'].includes(short) ? {dot:'zaid',icon:'🌿'} :
+                                                                 {dot:'kharif',icon:'☀️'};
+      return `<div class="season-item">
+        <div class="season-dot ${colors.dot}">${colors.icon}</div>
+        <div class="season-info"><div class="season-name">${m}</div><div class="season-detail">${monthCount[m]} farmer${monthCount[m]!==1?'s':''}</div></div>
+        <div class="season-count">${monthCount[m]}</div>
+      </div>`;
+    }).join('');
   }
 
   function renderRecentPickups() {
@@ -671,11 +700,12 @@
     document.getElementById('farmersCount').textContent = `${total} farmer${total!==1?'s':''} found`;
     document.getElementById('paginationInfo').textContent = total ? `Showing ${(currentPage-1)*perPage+1}–${Math.min(currentPage*perPage,total)} of ${total}` : 'No results';
     const tbody = document.getElementById('allFarmersBody');
-    if (!slice.length) { tbody.innerHTML=`<tr><td colspan="13"><div class="empty-state"><div class="empty-icon">🔍</div><p>No farmers match your filters</p></div></td></tr>`; }
+    if (!slice.length) { tbody.innerHTML=`<tr><td colspan="12"><div class="empty-state"><div class="empty-icon">🔍</div><p>No farmers match your filters</p></div></td></tr>`; }
     else tbody.innerHTML = slice.map(f=>{
       const est_kg = parseFloat(f.total_acres||0) * parseFloat(f.straw_per_acre_kg||0);
       const est = est_kg > 0 ? (est_kg/1000).toFixed(1)+'T' : '—';
-      const t = trips(f); const cpp = costPerTrip(f); const total = totalTransport(f);
+      const t = trips(f); const cpp = costPerTrip(f);
+      // ✏️ CHANGE 1: No total cost td, no Est. Total Cost column
       return `<tr>
         <td><div class="farmer-name">${f.full_name}</div><div class="farmer-phone">${f.phone||'—'}</div></td>
         <td>${f.village_name||'—'}</td>
@@ -686,7 +716,6 @@
         <td>${t > 0 ? t+' trip'+(t>1?'s':'') : '—'}</td>
         <td>${f.farm_distance_km ? f.farm_distance_km+' km' : '—'}</td>
         <td>${cpp > 0 ? '₹'+cpp.toLocaleString('en-IN') : '—'}</td>
-        <td>${total > 0 ? '<strong>₹'+total.toLocaleString('en-IN')+'</strong>' : '—'}</td>
         <td>${seasonBadges(f)}</td>
         <td><span class="badge badge-purple">${f.added_by_name||'—'}</span></td>
         <td style="white-space:nowrap">
@@ -1007,6 +1036,11 @@
     const straw_kg = acres * spa;
     const t = straw_kg > 0 ? Math.ceil(straw_kg / 3000) : 1;
     document.getElementById("edit_transport").value = km > 0 ? Math.round(t * km * 2 * 18) : "";
+  }
+
+  function logout() {
+    localStorage.removeItem('agent');
+    window.location.href = 'login.html';
   }
 
   loadAll();
