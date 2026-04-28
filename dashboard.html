@@ -453,7 +453,7 @@
         </div>
         <div class="ag-fld" style="grid-column:1/-1">
           <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:5px;display:block;">Google Maps Link</label>
-          <input class="ag-input" type="text" id="wh_maps_link" placeholder="Paste Google Maps link here..." oninput="parseWarehouseMapsLink()"/>
+          <input class="ag-input" type="text" id="wh_maps_link" placeholder="Paste Google Maps link here..." oninput="whLinkDebounce()"/>
           <div style="font-size:11px;color:var(--muted);margin-top:4px;">
             Open Google Maps → long press location → tap coordinates at top → tap <strong>Share → Copy link</strong> → paste here
           </div>
@@ -1091,6 +1091,12 @@
 
   // ── WAREHOUSE ──
   let allWarehouses = [];
+
+  let _whTimer = null;
+  function whLinkDebounce() {
+    clearTimeout(_whTimer);
+    _whTimer = setTimeout(parseWarehouseMapsLink, 800);
+  }
 
   async function parseWarehouseMapsLink() {
     const link = document.getElementById('wh_maps_link').value.trim();

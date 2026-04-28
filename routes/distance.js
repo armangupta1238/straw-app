@@ -20,26 +20,16 @@ router.get('/resolve', async (req, res) => {
 
 function followRedirects(url, maxRedirects = 5) {
   return new Promise((resolve, reject) => {
-    const options = {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-      }
-    };
-    const request = https.get(url, options, (response) => {
+    const request = https.get(url, (response) => {
       if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
         if (maxRedirects === 0) return reject(new Error('Too many redirects'));
-        const next = response.headers.location.startsWith('http')
-          ? response.headers.location
-          : new URL(response.headers.location, url).href;
-        followRedirects(next, maxRedirects - 1).then(resolve).catch(reject);
+        followRedirects(response.headers.location, maxRedirects - 1).then(resolve).catch(reject);
       } else {
-        // Consume response to free socket
-        response.resume();
-        resolve(url);
+        resolve(response.headers['x-final-url'] || url);
       }
     });
     request.on('error', reject);
-    request.setTimeout(8000, () => { request.destroy(); reject(new Error('Timeout')); });
+    request.setTimeout(5000, () => { request.destroy(); reject(new Error('Timeout')); });
   });
 }
 
