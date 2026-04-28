@@ -35,11 +35,15 @@ function followRedirects(url, maxRedirects = 5) {
 
 // Calculate road distance
 router.get('/', async (req, res) => {
-  const { lat, lng } = req.query;
+  const { lat, lng, warehouse_lat, warehouse_lng } = req.query;
   if (!lat || !lng) return res.status(400).json({ error: 'Missing coordinates' });
+
+  const destLat = warehouse_lat || FACTORY_LAT;
+  const destLng = warehouse_lng || FACTORY_LNG;
+
   const KEY = process.env.GOOGLE_MAPS_KEY;
   try {
-    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${lat},${lng}&destinations=${FACTORY_LAT},${FACTORY_LNG}&mode=driving&key=${KEY}`;
+    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${lat},${lng}&destinations=${destLat},${destLng}&mode=driving&key=${KEY}`;
     const response = await fetch(url);
     const data = await response.json();
     if (data.rows[0].elements[0].status === 'OK') {
