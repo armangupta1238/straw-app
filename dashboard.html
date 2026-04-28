@@ -440,13 +440,46 @@
 
   <!-- WAREHOUSE -->
   <div id="section-warehouse" style="display:none">
-    <div class="panel">
-      <div class="panel-header"><div><div class="panel-title">Warehouse</div><div class="panel-sub">Stock and inventory management — coming soon</div></div></div>
-      <div class="empty-state" style="padding:60px 20px">
-        <div class="empty-icon">🏭</div>
-        <p style="font-size:15px;font-weight:600;color:var(--dark);margin-bottom:8px;">Warehouse module coming soon</p>
-        <p style="font-size:13px;">Track stock levels, inbound straw, and outbound dispatches.</p>
+
+    <!-- Add Warehouse Form -->
+    <div class="panel" style="margin-bottom:20px;">
+      <div class="panel-header">
+        <div><div class="panel-title">🏭 Add Warehouse</div><div class="panel-sub">Enter name and paste a Google Maps link to capture location</div></div>
       </div>
+      <div style="padding:20px;background:#fafafe;display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="ag-fld" style="grid-column:1/-1">
+          <label class="ag-fld" style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:5px;">Warehouse Name *</label>
+          <input class="ag-input" type="text" id="wh_name" placeholder="e.g. BPCL Factory, Saraipali Depot"/>
+        </div>
+        <div class="ag-fld" style="grid-column:1/-1">
+          <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:5px;display:block;">Google Maps Link</label>
+          <input class="ag-input" type="text" id="wh_maps_link" placeholder="Paste Google Maps URL here..." oninput="parseWarehouseMapsLink()"/>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Open Google Maps → right-click location → Copy link → paste here</div>
+        </div>
+        <div class="ag-fld">
+          <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:5px;display:block;">Latitude</label>
+          <input class="ag-input" type="text" id="wh_lat" placeholder="Auto-filled from link" readonly style="background:#f5f3ff;color:var(--primary);font-weight:600;"/>
+        </div>
+        <div class="ag-fld">
+          <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:5px;display:block;">Longitude</label>
+          <input class="ag-input" type="text" id="wh_lng" placeholder="Auto-filled from link" readonly style="background:#f5f3ff;color:var(--primary);font-weight:600;"/>
+        </div>
+        <div class="ag-fld" style="grid-column:1/-1">
+          <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:5px;display:block;">Address / Notes</label>
+          <input class="ag-input" type="text" id="wh_address" placeholder="e.g. NH-49, Saraipali, Chhattisgarh"/>
+        </div>
+        <div style="grid-column:1/-1">
+          <button class="ag-add-btn" id="addWarehouseBtn" onclick="addWarehouse()" style="width:100%;height:46px;font-size:15px;">+ Add Warehouse</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Warehouse List -->
+    <div class="panel">
+      <div class="panel-header">
+        <div><div class="panel-title">All Warehouses</div><div class="panel-sub" id="whCount">Loading...</div></div>
+      </div>
+      <div id="warehouseList"><div class="loading"><div class="spinner"></div> Loading...</div></div>
     </div>
   </div>
 
@@ -522,6 +555,7 @@
     seasons:   ['Harvest Seasons','Upcoming and active harvest seasons'],
     pickups:   ['Pickups','Pickup history and pending collections'],
     warehouse: ['Warehouse','Stock and inventory at the warehouse'],
+    map:       ['Farm Map','GPS locations of all registered farms'],
   };
 
   function showSection(name) {
@@ -529,6 +563,7 @@
     document.querySelectorAll('.nav-item').forEach((el,i) => el.classList.toggle('active', sections[i]===name));
     document.getElementById('pageTitle').textContent = titles[name][0];
     document.getElementById('pageSubtitle').textContent = titles[name][1];
+    if (name==='warehouse') loadAndRenderWarehouses();
     if (name==='map')       renderMapTable();
     if (name==='seasons')   renderAllSeasons();
     if (name==='pickups')   renderAllPickups();
@@ -1049,6 +1084,119 @@
     const straw_kg = acres * spa;
     const t = straw_kg > 0 ? Math.ceil(straw_kg / 3000) : 1;
     document.getElementById("edit_transport").value = km > 0 ? Math.round(t * km * 2 * 18) : "";
+  }
+
+  // ── WAREHOUSE ──
+  let allWarehouses = [];
+
+  function parseWarehouseMapsLink() {
+    const link = document.getElementById('wh_maps_link').value;
+    // Try to extract lat/lng from Google Maps URLs
+    // Handles formats: @lat,lng | /place/.../@lat,lng | ?q=lat,lng | ll=lat,lng
+    const patterns = [
+      /@(-?\d+\.\d+),(-?\d+\.\d+)/,
+      /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,
+      /ll=(-?\d+\.\d+),(-?\d+\.\d+)/,
+      /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,
+    ];
+    for (const p of patterns) {
+      const m = link.match(p);
+      if (m) {
+        document.getElementById('wh_lat').value = m[1];
+        document.getElementById('wh_lng').value = m[2];
+        return;
+      }
+    }
+    document.getElementById('wh_lat').value = '';
+    document.getElementById('wh_lng').value = '';
+  }
+
+  async function loadAndRenderWarehouses() {
+    try {
+      const res = await fetch(`${API}/warehouses`);
+      allWarehouses = await res.json();
+      renderWarehouseList();
+    } catch(e) { showToast('⚠️ Could not load warehouses'); }
+  }
+
+  function renderWarehouseList() {
+    const el = document.getElementById('warehouseList');
+    document.getElementById('whCount').textContent = `${allWarehouses.length} warehouse${allWarehouses.length!==1?'s':''}`;
+    if (!allWarehouses.length) {
+      el.innerHTML = `<div class="empty-state"><div class="empty-icon">🏭</div><p>No warehouses yet. Add one above.</p></div>`;
+      return;
+    }
+    el.innerHTML = allWarehouses.map(w => `
+      <div class="ag-card">
+        <div class="ag-card-top" style="cursor:default;">
+          <div class="ag-avatar" style="background:#f0fdf4;font-size:22px;">🏭</div>
+          <div class="ag-info">
+            <div class="ag-name">${w.name}</div>
+            <div class="ag-uname">${w.address || 'No address'}</div>
+            <div class="ag-meta" style="margin-top:8px;">
+              <div class="ag-meta-i">
+                <div class="ag-meta-v" style="font-size:13px;">${w.lat ? parseFloat(w.lat).toFixed(5) : '—'}</div>
+                <div class="ag-meta-l">Latitude</div>
+              </div>
+              <div class="ag-meta-i">
+                <div class="ag-meta-v" style="font-size:13px;">${w.lng ? parseFloat(w.lng).toFixed(5) : '—'}</div>
+                <div class="ag-meta-l">Longitude</div>
+              </div>
+              ${w.lat && w.lng ? `<div class="ag-meta-i">
+                <a href="https://www.google.com/maps?q=${w.lat},${w.lng}" target="_blank" style="font-size:12px;color:var(--primary);font-weight:600;">📍 View Map</a>
+                <div class="ag-meta-l">Google Maps</div>
+              </div>` : ''}
+            </div>
+          </div>
+          <div class="ag-acts">
+            <span class="ag-status ${w.is_active?'on':'off'}">${w.is_active?'✅ Active':'❌ Inactive'}</span>
+            <button class="ag-tog" onclick="toggleWarehouse(${w.warehouse_id})">${w.is_active?'Deactivate':'Activate'}</button>
+            <button class="ag-del" onclick="deleteWarehouse(${w.warehouse_id},'${w.name.replace(/'/g,"\\'")}')">🗑</button>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  async function addWarehouse() {
+    const name = document.getElementById('wh_name').value.trim();
+    const lat   = document.getElementById('wh_lat').value.trim();
+    const lng   = document.getElementById('wh_lng').value.trim();
+    const address = document.getElementById('wh_address').value.trim();
+    if (!name) { showToast('⚠️ Warehouse name is required'); return; }
+    const btn = document.getElementById('addWarehouseBtn');
+    btn.disabled = true; btn.textContent = 'Adding...';
+    try {
+      const res  = await fetch(`${API}/warehouses`, {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ name, lat: lat||null, lng: lng||null, address: address||null })
+      });
+      const data = await res.json();
+      if (data.warehouse_id) {
+        showToast(`✅ "${name}" added!`);
+        document.getElementById('wh_name').value = '';
+        document.getElementById('wh_maps_link').value = '';
+        document.getElementById('wh_lat').value = '';
+        document.getElementById('wh_lng').value = '';
+        document.getElementById('wh_address').value = '';
+        loadAndRenderWarehouses();
+      } else { showToast('❌ Could not add warehouse'); }
+    } catch(e) { showToast('❌ Server error'); }
+    btn.disabled = false; btn.textContent = '+ Add Warehouse';
+  }
+
+  async function toggleWarehouse(id) {
+    try {
+      await fetch(`${API}/warehouses/${id}`, { method: 'PATCH' });
+      loadAndRenderWarehouses();
+    } catch(e) { showToast('❌ Could not update'); }
+  }
+
+  async function deleteWarehouse(id, name) {
+    try {
+      await fetch(`${API}/warehouses/${id}`, { method: 'DELETE' });
+      showToast(`🗑 "${name}" deleted`);
+      loadAndRenderWarehouses();
+    } catch(e) { showToast('❌ Could not delete'); }
   }
 
   function logout() {
