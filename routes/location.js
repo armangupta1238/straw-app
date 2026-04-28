@@ -2,22 +2,21 @@ const express = require('express');
 const router  = express.Router();
 const https   = require('https');
 
-// Follows a short URL and returns the final redirected URL
-function followRedirect(url) {
+function httpsGet(url) {
   return new Promise((resolve, reject) => {
-    const protocol = url.startsWith('https') ? https : require('http');
-    protocol.get(url, (res) => {
+    https.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (res) => {
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        // Follow the redirect
-        followRedirect(res.headers.location).then(resolve).catch(reject);
+        httpsGet(res.headers.location).then(resolve).catch(reject);
       } else {
-        resolve(url);
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => resolve({ url, data, statusCode: res.statusCode }));
       }
     }).on('error', reject);
   });
 }
 
-function extractCoords(url) {
+function extractCoordsFromUrl(url) {
   const patterns = [
     /@(-?\d+\.\d+),(-?\d+\.\d+)/,
     /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,
@@ -32,39 +31,53 @@ function extractCoords(url) {
   return null;
 }
 
+function geocode(placeQuery, apiKey) {
+  return new Promise((resolve, reject) => {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(placeQuery)}&key=${apiKey}`;
+    https.get(url, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(data);
+          if (json.status === 'OK' && json.results[0]) {
+            const loc = json.results[0].geometry.location;
+            resolve({ lat: loc.lat, lng: loc.lng });
+          } else {
+            resolve(null);
+          }
+        } catch(e) { resolve(null); }
+      });
+    }).on('error', reject);
+  });
+}
+
 // POST /api/location/resolve
-// Body: { url: "https://maps.app.goo.gl/..." }
 router.post('/resolve', async (req, res) => {
   const { url } = req.body;
   if (!url) return res.status(400).json({ error: 'URL required' });
 
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+
   try {
-    const finalUrl = await followRedirect(url);
-    const coords = extractCoords(finalUrl);
-    if (coords) {
-      return res.json({ lat: coords.lat, lng: coords.lng, resolved_url: finalUrl });
+    // Step 1: Follow redirect to get final URL
+    const result = await httpsGet(url);
+    const finalUrl = result.url;
+
+    // Step 2: Try to extract coords directly from URL
+    const direct = extractCoordsFromUrl(finalUrl);
+    if (direct) return res.json({ lat: direct.lat, lng: direct.lng });
+
+    // Step 3: Extract place name from q= param and geocode it
+    const qMatch = finalUrl.match(/[?&]q=([^&]+)/);
+    if (qMatch && apiKey) {
+      const placeQuery = decodeURIComponent(qMatch[1].replace(/\+/g, ' '));
+      const coords = await geocode(placeQuery, apiKey);
+      if (coords) return res.json({ lat: coords.lat, lng: coords.lng, place: placeQuery });
     }
-    // If coords not found in URL, try Google Geocoding as fallback
-    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-    if (apiKey) {
-      const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(finalUrl)}&key=${apiKey}`;
-      https.get(geocodeUrl, (gres) => {
-        let data = '';
-        gres.on('data', chunk => data += chunk);
-        gres.on('end', () => {
-          try {
-            const json = JSON.parse(data);
-            if (json.results && json.results[0]) {
-              const loc = json.results[0].geometry.location;
-              return res.json({ lat: loc.lat, lng: loc.lng, resolved_url: finalUrl });
-            }
-          } catch(e) {}
-          res.status(422).json({ error: 'Could not extract coordinates', resolved_url: finalUrl });
-        });
-      });
-    } else {
-      res.status(422).json({ error: 'Could not extract coordinates', resolved_url: finalUrl });
-    }
+
+    return res.status(422).json({ error: 'Could not extract coordinates', resolved_url: finalUrl });
+
   } catch(e) {
     res.status(500).json({ error: e.message });
   }
