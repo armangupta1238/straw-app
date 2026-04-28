@@ -132,6 +132,14 @@
     .status-msg.err     { color:#dc2626; }
     .status-msg.loading { color:var(--muted); }
 
+    /* Warehouse dropdown */
+    .warehouse-loading {
+      font-size:12px; color:var(--muted); margin-top:6px; font-weight:500;
+    }
+    .field select option.nearest-option {
+      font-weight:700;
+    }
+
     /* ── MONTH GRID ── */
     .month-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; }
     .month-chip {
@@ -310,10 +318,21 @@
       <div class="distance-box" id="distance_display">— Add farm location above first</div>
       <div class="status-msg" id="dist_status"></div>
     </div>
+
+    <!-- ══ WAREHOUSE DROPDOWN ══ -->
+    <div class="field" id="warehouse_field" style="display:none">
+      <label>🏭 Assign Warehouse</label>
+      <select id="warehouse_select" onchange="onWarehouseChange()">
+        <option value="">— Select warehouse —</option>
+      </select>
+      <div class="warehouse-loading" id="warehouse_status"></div>
+    </div>
+
     <input type="hidden" id="farm_lat"/>
     <input type="hidden" id="farm_lng"/>
     <input type="hidden" id="farm_distance_km"/>
     <input type="hidden" id="transport_cost"/>
+    <input type="hidden" id="selected_warehouse_id"/>
   </div>
 </div>
 
@@ -384,6 +403,10 @@
     <div class="summary-row">
       <span class="summary-label">GPS Coordinates</span>
       <span class="summary-value" id="rev_gps">Not captured</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-label">Assigned Warehouse</span>
+      <span class="summary-value" id="rev_warehouse">—</span>
     </div>
   </div>
   <div class="card">
@@ -550,32 +573,97 @@
     document.getElementById('tab_link').className = 'method-tab' + (tab === 'link' ? ' active' : '');
   }
 
-  // ── DISTANCE ──
+  // ── WAREHOUSE: fetch all, calc road distance each, sort, populate dropdown ──
+  async function loadWarehousesSorted(farmLat, farmLng) {
+    const field  = document.getElementById('warehouse_field');
+    const select = document.getElementById('warehouse_select');
+    const status = document.getElementById('warehouse_status');
+
+    field.style.display = 'block';
+    select.innerHTML = '<option value="">⏳ Loading warehouses...</option>';
+    select.disabled  = true;
+    status.textContent = 'Calculating road distance to each warehouse...';
+
+    let warehouses = [];
+    try {
+      const res  = await fetch(`${API}/warehouses`);
+      warehouses = await res.json();
+      warehouses = warehouses.filter(w => w.is_active);
+    } catch(e) {
+      status.textContent = '⚠️ Could not load warehouses';
+      select.innerHTML   = '<option value="">— Could not load —</option>';
+      select.disabled    = false;
+      return;
+    }
+
+    if (!warehouses.length) {
+      status.textContent = '⚠️ No active warehouses found';
+      select.innerHTML   = '<option value="">— No warehouses —</option>';
+      select.disabled    = false;
+      return;
+    }
+
+    // Call /api/distance for each warehouse in parallel
+    const withDistances = await Promise.all(warehouses.map(async (w) => {
+      try {
+        const res  = await fetch(`${API}/distance?lat=${farmLat}&lng=${farmLng}&warehouse_lat=${w.lat}&warehouse_lng=${w.lng}`);
+        const data = await res.json();
+        return { ...w, road_km: data.distance_km ? parseFloat(data.distance_km) : null };
+      } catch(e) {
+        return { ...w, road_km: null };
+      }
+    }));
+
+    // Sort: warehouses with distance first (nearest first), then nulls
+    withDistances.sort((a, b) => {
+      if (a.road_km === null && b.road_km === null) return 0;
+      if (a.road_km === null) return 1;
+      if (b.road_km === null) return -1;
+      return a.road_km - b.road_km;
+    });
+
+    // Build dropdown options
+    select.innerHTML = '<option value="">— Choose warehouse —</option>';
+    withDistances.forEach((w, idx) => {
+      const opt   = document.createElement('option');
+      opt.value   = w.warehouse_id;
+      const dist  = w.road_km !== null ? ` — ${w.road_km} km` : '';
+      const badge = idx === 0 ? ' ⭐ Nearest' : '';
+      opt.textContent = `${w.name}${dist}${badge}`;
+      if (idx === 0) opt.selected = true; // auto-select nearest
+      select.appendChild(opt);
+    });
+
+    select.disabled    = false;
+    status.textContent = `${withDistances.length} warehouse(s) sorted by road distance`;
+
+    // Set hidden field to nearest
+    document.getElementById('selected_warehouse_id').value = withDistances[0].warehouse_id;
+
+    // Update distance box to show nearest warehouse distance
+    if (withDistances[0].road_km !== null) {
+      document.getElementById('farm_distance_km').value = withDistances[0].road_km;
+      document.getElementById('distance_display').textContent = `🛣️ ${withDistances[0].road_km} km by road`;
+      document.getElementById('distance_display').classList.add('success');
+      document.getElementById('dist_status').textContent = `Via road to ${withDistances[0].name}`;
+      document.getElementById('dist_status').className   = 'status-msg ok';
+    }
+  }
+
+  // ── When agent manually changes warehouse selection ──
+  function onWarehouseChange() {
+    const select = document.getElementById('warehouse_select');
+    document.getElementById('selected_warehouse_id').value = select.value;
+  }
+
+  // ── DISTANCE (kept exactly as original, now called only from GPS path) ──
   async function getDistance(lat, lng) {
     const distBox    = document.getElementById('distance_display');
     const distStatus = document.getElementById('dist_status');
     distBox.textContent = '⏳ Calculating road distance...';
     distStatus.textContent = '';
-    try {
-      const res  = await fetch(`${API}/distance?lat=${lat}&lng=${lng}`);
-      const data = await res.json();
-      if (data.distance_km) {
-        document.getElementById('farm_distance_km').value = data.distance_km;
-        document.getElementById('transport_cost').value   = data.transport_cost;
-        distBox.textContent = `🛣️ ${data.distance_km} km by road`;
-        distBox.classList.add('success');
-        distStatus.textContent = 'Via road to Warehouse';
-        distStatus.className   = 'status-msg ok';
-      } else {
-        distBox.textContent    = '— Could not calculate distance';
-        distStatus.textContent = 'Google Maps could not find a route';
-        distStatus.className   = 'status-msg err';
-      }
-    } catch(e) {
-      distBox.textContent    = '— Server error';
-      distStatus.textContent = 'Could not reach server';
-      distStatus.className   = 'status-msg err';
-    }
+    // Now delegate to warehouse loader which handles distance + dropdown
+    await loadWarehousesSorted(lat, lng);
   }
 
   // ── GPS ──
@@ -606,7 +694,7 @@
     );
   }
 
-  // ── GOOGLE MAPS LINK ──
+  // ── GOOGLE MAPS LINK — UNTOUCHED ──
   function extractCoords(url) {
     const patterns = [
       /@(-?\d+\.\d+),(-?\d+\.\d+)/,
@@ -659,6 +747,7 @@
         document.getElementById('distance_display').textContent = '— Add farm location above first';
         document.getElementById('distance_display').classList.remove('success');
         document.getElementById('dist_status').textContent = '';
+        document.getElementById('warehouse_field').style.display = 'none';
         status.textContent = '⚠️ Could not read coordinates. Make sure it\'s a valid Google Maps link.';
         status.className   = 'status-msg err';
       }
@@ -688,6 +777,11 @@
     const sortedMonths = [...selectedMonths].sort((a,b) => a-b).map(i => MONTH_NAMES[i]);
     document.getElementById('rev_months').textContent         = sortedMonths.join(', ') || '—';
     document.getElementById('rev_expected_straw').textContent = expKg ? parseFloat(expKg).toLocaleString('en-IN') + ' kg' : '—';
+
+    // Warehouse review
+    const select = document.getElementById('warehouse_select');
+    const selectedText = select.options[select.selectedIndex] ? select.options[select.selectedIndex].text : '—';
+    document.getElementById('rev_warehouse').textContent = select.value ? selectedText : 'Not assigned';
   }
 
   // ── SUBMIT ──
@@ -724,6 +818,7 @@
           transport_cost_per_trip: document.getElementById('transport_cost').value || null,
           added_by_user_id:        agent.user_id,
           added_by_name:           agent.full_name,
+          warehouse_id:            document.getElementById('selected_warehouse_id').value || null,
         })
       });
       const farmer = await farmerRes.json();
@@ -769,6 +864,10 @@
     document.getElementById('estimate_pill').style.display = 'none';
     document.getElementById('phone_hint').textContent = 'Enter 10-digit mobile number';
     document.getElementById('phone_hint').className   = 'phone-hint';
+    document.getElementById('warehouse_field').style.display = 'none';
+    document.getElementById('warehouse_select').innerHTML = '<option value="">— Select warehouse —</option>';
+    document.getElementById('warehouse_status').textContent = '';
+    document.getElementById('selected_warehouse_id').value = '';
     document.getElementById('nextBtn').disabled = false;
     switchTab('gps');
     showStep(1);
