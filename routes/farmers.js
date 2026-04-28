@@ -21,16 +21,16 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const { full_name, phone, village_id, total_acres, straw_per_acre_kg,
           farm_lat, farm_lng, farm_distance_km, transport_cost_per_trip,
-          added_by_user_id, added_by_name } = req.body;
+          added_by_user_id, added_by_name, warehouse_id } = req.body;
   try {
     const result = await pool.query(
       `INSERT INTO farmers (full_name, phone, village_id, total_acres, straw_per_acre_kg,
         farm_lat, farm_lng, farm_distance_km, transport_cost_per_trip,
-        added_by_user_id, added_by_name)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+        added_by_user_id, added_by_name, warehouse_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`,
       [full_name, phone, village_id, total_acres, straw_per_acre_kg,
        farm_lat, farm_lng, farm_distance_km, transport_cost_per_trip,
-       added_by_user_id || null, added_by_name || null]
+       added_by_user_id || null, added_by_name || null, warehouse_id || null]
     );
     res.json(result.rows[0]);
   } catch (err) {
