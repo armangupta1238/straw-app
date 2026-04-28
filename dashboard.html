@@ -1092,17 +1092,7 @@
   // ── WAREHOUSE ──
   let allWarehouses = [];
 
-  let _whTimer = null;
-  function whLinkDebounce() {
-    clearTimeout(_whTimer);
-    _whTimer = setTimeout(parseWarehouseMapsLink, 800);
-  }
-
-  async function parseWarehouseMapsLink() {
-    const link = document.getElementById('wh_maps_link').value.trim();
-    const status = document.getElementById('wh_link_status');
-    if (!link) { status.textContent = ''; return; }
-
+  function whExtractCoords(url) {
     const patterns = [
       /@(-?\d+\.\d+),(-?\d+\.\d+)/,
       /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,
@@ -1110,38 +1100,53 @@
       /ll=(-?\d+\.\d+),(-?\d+\.\d+)/,
       /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,
     ];
-
-    // Step 1: direct extraction (works for full URLs)
     for (const p of patterns) {
-      const m = link.match(p);
-      if (m) {
-        document.getElementById('wh_lat').value = parseFloat(m[1]).toFixed(6);
-        document.getElementById('wh_lng').value = parseFloat(m[2]).toFixed(6);
-        status.textContent = `✅ ${parseFloat(m[1]).toFixed(4)}, ${parseFloat(m[2]).toFixed(4)}`;
-        status.style.color = 'green';
-        return;
-      }
+      const m = url.match(p);
+      if (m) return { lat: parseFloat(m[1]), lng: parseFloat(m[2]) };
+    }
+    return null;
+  }
+
+  let _whTimer = null;
+  function whLinkDebounce() {
+    clearTimeout(_whTimer);
+    _whTimer = setTimeout(parseWarehouseMapsLink, 800);
+  }
+
+  async function parseWarehouseMapsLink() {
+    const input  = document.getElementById('wh_maps_link').value.trim();
+    const status = document.getElementById('wh_link_status');
+    if (!input) {
+      status.textContent = '';
+      document.getElementById('wh_lat').value = '';
+      document.getElementById('wh_lng').value = '';
+      return;
+    }
+    status.textContent = '⏳ Reading link...';
+    status.style.color = 'var(--muted)';
+
+    let coords = whExtractCoords(input);
+
+    if (!coords) {
+      status.textContent = '⏳ Resolving short link...';
+      try {
+        const res  = await fetch(`${API}/distance/resolve?url=${encodeURIComponent(input)}`);
+        const data = await res.json();
+        if (data.resolved) coords = whExtractCoords(data.resolved);
+      } catch(e) {}
     }
 
-    // Step 2: short URL — geocode via backend
-    status.textContent = '⏳ Resolving location...';
-    status.style.color = 'var(--muted)';
-    try {
-      const res  = await fetch(`${API}/distance/geocode?place=${encodeURIComponent(link)}`);
-      const data = await res.json();
-      if (data.lat && data.lng) {
-        document.getElementById('wh_lat').value = parseFloat(data.lat).toFixed(6);
-        document.getElementById('wh_lng').value = parseFloat(data.lng).toFixed(6);
-        status.textContent = `✅ ${parseFloat(data.lat).toFixed(4)}, ${parseFloat(data.lng).toFixed(4)}`;
-        status.style.color = 'green';
-        return;
-      }
-    } catch(e) {}
-
-    status.textContent = '⚠️ Could not read coordinates. Try a full Google Maps link.';
-    status.style.color = '#dc2626';
-    document.getElementById('wh_lat').value = '';
-    document.getElementById('wh_lng').value = '';
+    if (coords) {
+      document.getElementById('wh_lat').value = coords.lat.toFixed(6);
+      document.getElementById('wh_lng').value = coords.lng.toFixed(6);
+      status.textContent = `✅ Location found: ${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`;
+      status.style.color = 'green';
+    } else {
+      document.getElementById('wh_lat').value = '';
+      document.getElementById('wh_lng').value = '';
+      status.textContent = '⚠️ Could not read coordinates. Make sure it\'s a valid Google Maps link.';
+      status.style.color = '#dc2626';
+    }
   }
   }
 
