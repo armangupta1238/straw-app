@@ -29,6 +29,22 @@ router.post('/', async (req, res) => {
   }
 });
 
+// PUT update warehouse
+router.put('/:id', async (req, res) => {
+  const { name, address, lat, lng, distance_km } = req.body;
+  try {
+    const result = await pool.query(
+      `UPDATE warehouses
+       SET name = $1, address = $2, lat = $3, lng = $4, distance_km = $5
+       WHERE warehouse_id = $6 RETURNING *`,
+      [name, address || null, lat || null, lng || null, distance_km || null, req.params.id]
+    );
+    res.json(result.rows[0]);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // PATCH toggle active
 router.patch('/:id', async (req, res) => {
   try {

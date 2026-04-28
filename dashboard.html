@@ -57,14 +57,14 @@
     .search-box { display: flex; align-items: center; gap: 8px; background: #fff; border: 1.5px solid var(--border); border-radius: 12px; padding: 9px 16px; }
     .search-box input { border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--dark); width: 200px; background: transparent; }
 
-    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-    .stat-card { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
+    .stat-card { background: var(--card); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); position: relative; overflow: hidden; }
     .stat-card::before { content:''; position:absolute; top:0; right:0; width:80px; height:80px; border-radius:0 16px 0 80px; opacity:.1; }
-    .stat-card.purple::before{background:var(--primary)} .stat-card.amber::before{background:var(--accent)} .stat-card.blue::before{background:var(--blue)} .stat-card.teal::before{background:var(--teal)}
-    .stat-icon { font-size: 22px; margin-bottom: 12px; display: block; }
-    .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-bottom: 4px; }
-    .stat-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--dark); line-height: 1; }
-    .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .stat-card.purple::before{background:var(--primary)} .stat-card.amber::before{background:var(--accent)} .stat-card.blue::before{background:var(--blue)} .stat-card.teal::before{background:var(--teal)} .stat-card.earth::before{background:var(--earth)}
+    .stat-icon { font-size: 20px; margin-bottom: 10px; display: block; }
+    .stat-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-bottom: 4px; }
+    .stat-value { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: var(--dark); line-height: 1; }
+    .stat-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
 
     .content-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
     .panel { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--border); overflow: hidden; }
@@ -213,7 +213,7 @@
     .ag-expand-icon { font-size: 11px; color: var(--muted); margin-left: auto; padding-left: 12px; }
 
     @media (max-width: 1100px) {
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .stats-grid { grid-template-columns: repeat(3, 1fr); }
       .content-grid { grid-template-columns: 1fr; }
       .pickup-summary { grid-template-columns: repeat(2,1fr); }
     }
@@ -280,6 +280,7 @@
       <div class="stat-card purple"><span class="stat-icon">👨‍🌾</span><div class="stat-label">Total Farmers</div><div class="stat-value" id="stat-farmers">—</div><div class="stat-sub">Registered</div></div>
       <div class="stat-card amber"><span class="stat-icon">🌾</span><div class="stat-label">Total Acres</div><div class="stat-value" id="stat-acres">—</div><div class="stat-sub">Across all farmers</div></div>
       <div class="stat-card blue"><span class="stat-icon">📦</span><div class="stat-label">Est. Total Straw</div><div class="stat-value" id="stat-straw">—</div><div class="stat-sub">Tonnes available</div></div>
+      <div class="stat-card earth"><span class="stat-icon">✅</span><div class="stat-label">Picked Up</div><div class="stat-value" id="stat-picked">—</div><div class="stat-sub">Tonnes collected</div></div>
       <div class="stat-card teal"><span class="stat-icon">🚛</span><div class="stat-label">Est. Total Trips</div><div class="stat-value" id="stat-trips">—</div><div class="stat-sub">Tractor trips needed</div></div>
     </div>
     <div class="content-grid">
@@ -502,6 +503,29 @@
   </div>
 </main>
 
+<!-- EDIT WAREHOUSE MODAL -->
+<div class="modal-overlay" id="editWarehouseModal">
+  <div class="modal">
+    <h2>Edit Warehouse</h2>
+    <p class="modal-sub">Update warehouse details. Changes save instantly.</p>
+    <div class="modal-grid">
+      <div class="modal-fld full"><label>Warehouse Name *</label><input type="text" id="ewh_name" placeholder="Warehouse name"/></div>
+      <div class="modal-fld full">
+        <label>Google Maps Link</label>
+        <input type="text" id="ewh_maps_link" placeholder="Paste new Google Maps link to update location" oninput="ewhLinkDebounce()"/>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;" id="ewh_link_status">Leave blank to keep current location</div>
+      </div>
+      <div class="modal-fld"><label>Latitude</label><input type="text" id="ewh_lat" readonly style="background:#f5f3ff;color:var(--primary);font-weight:600;"/></div>
+      <div class="modal-fld"><label>Longitude</label><input type="text" id="ewh_lng" readonly style="background:#f5f3ff;color:var(--primary);font-weight:600;"/></div>
+      <div class="modal-fld full"><label>Address / Notes</label><input type="text" id="ewh_address" placeholder="e.g. NH-49, Saraipali"/></div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeEditWarehouseModal()">Cancel</button>
+      <button class="modal-save" id="ewhSaveBtn" onclick="saveEditWarehouse()">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
+
 <!-- EDIT FARMER MODAL -->
 <div class="modal-overlay" id="editModal">
   <div class="modal">
@@ -632,9 +656,11 @@
     const ac = allFarmers.reduce((s,f)=>s+parseFloat(f.total_acres||0),0);
     const st = allFarmers.reduce((s,f)=>s+(parseFloat(f.total_acres||0)*parseFloat(f.straw_per_acre_kg||0)),0);
     const tr = allFarmers.reduce((s,f)=>s+trips(f),0);
+    const pk = allPickups.reduce((s,p)=>s+parseFloat(p.straw_qty_kg||0),0);
     document.getElementById('stat-farmers').textContent = fa.toLocaleString('en-IN');
     document.getElementById('stat-acres').textContent   = ac.toLocaleString('en-IN',{maximumFractionDigits:1});
     document.getElementById('stat-straw').textContent   = (st/1000).toLocaleString('en-IN',{maximumFractionDigits:1})+'T';
+    document.getElementById('stat-picked').textContent  = (pk/1000).toLocaleString('en-IN',{maximumFractionDigits:1})+'T';
     document.getElementById('stat-trips').textContent   = tr.toLocaleString('en-IN');
   }
 
@@ -1095,6 +1121,97 @@
   // ── WAREHOUSE ──
   let allWarehouses = [];
 
+  let editingWarehouseId = null;
+
+  function openEditWarehouse(id) {
+    const w = allWarehouses.find(x => x.warehouse_id === id);
+    if (!w) return;
+    editingWarehouseId = id;
+    document.getElementById('ewh_name').value      = w.name || '';
+    document.getElementById('ewh_address').value   = w.address || '';
+    document.getElementById('ewh_lat').value       = w.lat || '';
+    document.getElementById('ewh_lng').value       = w.lng || '';
+    document.getElementById('ewh_maps_link').value = '';
+    document.getElementById('ewh_link_status').textContent = 'Leave blank to keep current location';
+    document.getElementById('ewh_link_status').style.color = 'var(--muted)';
+    document.getElementById('editWarehouseModal').classList.add('open');
+  }
+
+  function closeEditWarehouseModal() {
+    document.getElementById('editWarehouseModal').classList.remove('open');
+    editingWarehouseId = null;
+  }
+
+  let _ewhTimer = null;
+  function ewhLinkDebounce() {
+    clearTimeout(_ewhTimer);
+    _ewhTimer = setTimeout(parseEditWarehouseMapsLink, 800);
+  }
+
+  async function parseEditWarehouseMapsLink() {
+    const input  = document.getElementById('ewh_maps_link').value.trim();
+    const status = document.getElementById('ewh_link_status');
+    if (!input) {
+      status.textContent = 'Leave blank to keep current location';
+      status.style.color = 'var(--muted)';
+      return;
+    }
+    status.textContent = '⏳ Reading link...';
+    status.style.color = 'var(--muted)';
+
+    let coords = whExtractCoords(input);
+    if (!coords) {
+      status.textContent = '⏳ Resolving short link...';
+      try {
+        const res  = await fetch(`${API}/distance/resolve?url=${encodeURIComponent(input)}`);
+        const data = await res.json();
+        if (data.resolved) coords = whExtractCoords(data.resolved);
+      } catch(e) {}
+    }
+
+    if (coords) {
+      document.getElementById('ewh_lat').value = coords.lat.toFixed(6);
+      document.getElementById('ewh_lng').value = coords.lng.toFixed(6);
+      status.textContent = `✅ Updated: ${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`;
+      status.style.color = 'green';
+    } else {
+      status.textContent = '⚠️ Could not read coordinates from this link';
+      status.style.color = '#dc2626';
+    }
+  }
+
+  async function saveEditWarehouse() {
+    if (!editingWarehouseId) return;
+    const name    = document.getElementById('ewh_name').value.trim();
+    const lat     = document.getElementById('ewh_lat').value.trim();
+    const lng     = document.getElementById('ewh_lng').value.trim();
+    const address = document.getElementById('ewh_address').value.trim();
+    if (!name) { showToast('⚠️ Warehouse name is required'); return; }
+
+    const btn = document.getElementById('ewhSaveBtn');
+    btn.textContent = '⏳ Saving...'; btn.disabled = true;
+    try {
+      const res  = await fetch(`${API}/warehouses/${editingWarehouseId}`, {
+        method: 'PUT',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ name, lat: lat||null, lng: lng||null, address: address||null })
+      });
+      const data = await res.json();
+      if (data.warehouse_id) {
+        showToast(`✅ "${name}" updated!`);
+        closeEditWarehouseModal();
+        loadAndRenderWarehouses();
+      } else {
+        showToast('❌ Could not save changes');
+      }
+    } catch(e) { showToast('❌ Server error'); }
+    btn.textContent = '💾 Save Changes'; btn.disabled = false;
+  }
+
+  document.getElementById('editWarehouseModal').addEventListener('click', function(e) {
+    if (e.target === this) closeEditWarehouseModal();
+  });
+
   function toggleAddWarehouseForm() {
     const body = document.getElementById('whFormBody');
     const icon = document.getElementById('whFormToggleIcon');
@@ -1184,11 +1301,11 @@
             <div class="ag-uname">${w.address || 'No address'}</div>
             <div class="ag-meta" style="margin-top:8px;">
               <div class="ag-meta-i">
-                <div class="ag-meta-v" style="font-size:13px;">${w.lat ? parseFloat(w.lat).toFixed(5) : '—'}</div>
+                <div class="ag-meta-v" style="font-size:13px;font-family:'Syne',sans-serif;">${w.lat ? parseFloat(w.lat).toFixed(5) : '—'}</div>
                 <div class="ag-meta-l">Latitude</div>
               </div>
               <div class="ag-meta-i">
-                <div class="ag-meta-v" style="font-size:13px;">${w.lng ? parseFloat(w.lng).toFixed(5) : '—'}</div>
+                <div class="ag-meta-v" style="font-size:13px;font-family:'Syne',sans-serif;">${w.lng ? parseFloat(w.lng).toFixed(5) : '—'}</div>
                 <div class="ag-meta-l">Longitude</div>
               </div>
               ${w.lat && w.lng ? `<div class="ag-meta-i">
@@ -1199,6 +1316,7 @@
           </div>
           <div class="ag-acts">
             <span class="ag-status ${w.is_active?'on':'off'}">${w.is_active?'✅ Active':'❌ Inactive'}</span>
+            <button class="ag-tog" onclick="openEditWarehouse(${w.warehouse_id})">✏️ Edit</button>
             <button class="ag-tog" onclick="toggleWarehouse(${w.warehouse_id})">${w.is_active?'Deactivate':'Activate'}</button>
             <button class="ag-del" onclick="deleteWarehouse(${w.warehouse_id},'${w.name.replace(/'/g,"\\'")}')">🗑</button>
           </div>
