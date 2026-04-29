@@ -162,8 +162,8 @@
     .modal-fld { display: flex; flex-direction: column; gap: 5px; }
     .modal-fld.full { grid-column: 1 / -1; }
     .modal-fld label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .6px; color: var(--primary); }
-    .modal-fld input { padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--dark); background: #fff; outline: none; }
-    .modal-fld input:focus { border-color: var(--primary-lt); box-shadow: 0 0 0 3px rgba(167,139,250,0.15); }
+    .modal-fld input, .modal-fld select, .modal-fld textarea { padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--dark); background: #fff; outline: none; }
+    .modal-fld input:focus, .modal-fld select:focus, .modal-fld textarea:focus { border-color: var(--primary-lt); box-shadow: 0 0 0 3px rgba(167,139,250,0.15); }
     .modal-btns { display: flex; gap: 10px; margin-top: 24px; }
     .modal-save { flex: 2; padding: 13px; border-radius: 12px; border: none; background: var(--primary); color: #fff; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; }
     .modal-save:hover { background: #5b21b6; }
@@ -212,10 +212,72 @@
     .ag-farmer-detail { font-size: 11px; color: var(--muted); margin-top: 1px; }
     .ag-expand-icon { font-size: 11px; color: var(--muted); margin-left: auto; padding-left: 12px; }
 
+    /* ============== MACHINERY (NEW) ============== */
+    .mch-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .mch-stat { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; box-shadow: var(--shadow); }
+    .mch-stat.purple { background: var(--primary-pale); border-color: var(--primary-lt); }
+    .mch-stat.amber  { background: var(--accent-pale); border-color: #fcd34d; }
+    .mch-stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
+    .mch-stat.purple .mch-stat-label { color: var(--primary); }
+    .mch-stat.amber  .mch-stat-label { color: var(--earth); }
+    .mch-stat-value { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: var(--dark); margin-top: 4px; }
+    .mch-stat.purple .mch-stat-value { color: var(--primary); }
+    .mch-stat.amber  .mch-stat-value { color: var(--earth); }
+
+    .mch-section-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 12px; }
+    .mch-section-title-wrap { display: flex; align-items: center; gap: 12px; }
+    .mch-section-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--primary-pale); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .mch-section-icon.amber { background: var(--accent-pale); }
+    .mch-section-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; }
+    .mch-section-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+    .mch-pills { display: flex; gap: 4px; background: var(--bg); padding: 3px; border-radius: 8px; }
+    .mch-pill { font-size: 11px; font-weight: 600; padding: 6px 14px; border: none; background: transparent; border-radius: 6px; cursor: pointer; color: var(--muted); font-family: 'DM Sans', sans-serif; }
+    .mch-pill.active { background: #fff; color: var(--dark); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+
+    .mch-reg-no { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .mch-owner-firm { color: var(--primary); font-weight: 600; }
+    .mch-owner-name { font-weight: 600; font-size: 12px; }
+    .mch-owner-phone { font-size: 10px; color: var(--muted); margin-top: 1px; }
+    .mch-rent { font-weight: 700; color: var(--earth); }
+    .mch-rent-empty { color: #d1d5db; }
+
+    .mch-loc-cell { display: flex; flex-direction: column; gap: 2px; }
+    .mch-loc-place { font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; gap: 5px; }
+    .mch-loc-time { font-size: 10px; color: var(--muted); }
+    .mch-pulse { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; box-shadow: 0 0 0 0 rgba(13,148,136,0.6); animation: mchPulse 2s infinite; display: inline-block; }
+    @keyframes mchPulse { 0% { box-shadow: 0 0 0 0 rgba(13,148,136,0.6); } 70% { box-shadow: 0 0 0 6px rgba(13,148,136,0); } 100% { box-shadow: 0 0 0 0 rgba(13,148,136,0); } }
+    .mch-loc-empty { color: #c5c5d0; font-style: italic; font-size: 11px; }
+
+    .mch-actions { display: flex; gap: 4px; justify-content: flex-end; flex-wrap: wrap; }
+    .mch-btn { font-size: 11px; padding: 4px 10px; border: 1.5px solid var(--border); background: #fff; border-radius: 6px; cursor: pointer; font-family: 'DM Sans', sans-serif; color: var(--dark); font-weight: 600; }
+    .mch-btn:hover { background: var(--bg); }
+    .mch-btn.refresh { color: var(--teal); border-color: var(--teal-pale); padding: 4px 8px; }
+    .mch-btn.refresh:hover { background: var(--teal-pale); }
+    .mch-btn.track { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .mch-btn.track:hover { background: #5b21b6; }
+    .mch-btn.del { color: var(--red); border-color: var(--red-pale); background: var(--red-pale); }
+    .mch-btn.del:hover { background: var(--red); color: #fff; }
+    .mch-spin { display: inline-block; animation: spin 0.6s linear; }
+
+    /* Add Machine modal extras */
+    .mch-toggle-grp { margin-bottom: 16px; }
+    .mch-toggle-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .6px; color: var(--primary); margin-bottom: 8px; display: block; }
+    .mch-toggle-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .mch-toggle-btn { padding: 10px 14px; border: 1.5px solid var(--border); background: #fff; border-radius: 10px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--dark); display: flex; align-items: center; justify-content: center; gap: 6px; transition: all .15s; }
+    .mch-toggle-btn:hover { border-color: var(--primary-lt); }
+    .mch-toggle-btn.active { border-color: var(--primary); background: var(--primary-pale); color: var(--primary); }
+    .mch-toggle-btn.active.amber { border-color: var(--accent); background: var(--accent-pale); color: var(--earth); }
+    .mch-rental-section { background: var(--accent-pale); border: 1px solid #fcd34d; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+    .mch-rental-section.hidden { display: none; }
+    .mch-rental-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; color: var(--earth); margin-bottom: 10px; }
+    .mch-rent-input-grp { display: grid; grid-template-columns: 1fr 110px; gap: 6px; }
+
     @media (max-width: 1100px) {
       .stats-grid { grid-template-columns: repeat(3, 1fr); }
       .content-grid { grid-template-columns: 1fr; }
       .pickup-summary { grid-template-columns: repeat(2,1fr); }
+      .mch-stats { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 768px) {
       .sidebar { position: relative; width: 100%; height: auto; flex-direction: row; flex-wrap: wrap; padding: 16px; gap: 6px; }
@@ -233,6 +295,7 @@
       .modal { padding: 20px; margin: 16px; }
       .modal-grid { grid-template-columns: 1fr; }
       .pickup-summary { grid-template-columns: 1fr 1fr; }
+      .mch-stats { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -250,6 +313,7 @@
   <a class="nav-item" onclick="showSection('seasons')"><span class="nav-icon">🌾</span><span>Harvest Seasons</span></a>
   <a class="nav-item" onclick="showSection('pickups')"><span class="nav-icon">🚛</span><span>Pickups</span></a>
   <a class="nav-item" onclick="showSection('warehouse')"><span class="nav-icon">🏭</span><span>Warehouse</span></a>
+  <a class="nav-item" onclick="showSection('machinery')"><span class="nav-icon">🚜</span><span>Machinery</span></a>
   <a class="nav-item" onclick="showSection('map')"><span class="nav-icon">🗺️</span><span>Farm Map</span></a>
   <div class="nav-section">People</div>
   <a class="nav-item" onclick="showSection('farmers')"><span class="nav-icon">👨‍🌾</span><span>All Farmers</span></a>
@@ -335,7 +399,6 @@
         </select>
       </div>
       <div class="table-wrap"><table>
-        <!-- ✏️ CHANGE 1: Removed "Est. Total Cost" column header -->
         <thead><tr><th>Farmer</th><th>Village</th><th>District</th><th>Acres</th><th>Straw/Acre</th><th>Est. Straw</th><th>Trips</th><th>Distance</th><th>Cost/Trip</th><th>Months</th><th>Added By</th><th>Actions</th></tr></thead>
         <tbody id="allFarmersBody"><tr><td colspan="12"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
       </table></div>
@@ -490,6 +553,84 @@
     </div>
   </div>
 
+  <!-- MACHINERY (NEW) -->
+  <div id="section-machinery" style="display:none">
+
+    <!-- Stats -->
+    <div class="mch-stats">
+      <div class="mch-stat"><div class="mch-stat-label">Tractors</div><div class="mch-stat-value" id="mchStatTractors">—</div></div>
+      <div class="mch-stat"><div class="mch-stat-label">Balers</div><div class="mch-stat-value" id="mchStatBalers">—</div></div>
+      <div class="mch-stat purple"><div class="mch-stat-label">Owned</div><div class="mch-stat-value" id="mchStatOwned">—</div></div>
+      <div class="mch-stat amber"><div class="mch-stat-label">Rented</div><div class="mch-stat-value" id="mchStatRented">—</div></div>
+    </div>
+
+    <!-- Tractors -->
+    <div class="panel" style="margin-bottom:20px;">
+      <div class="mch-section-head">
+        <div class="mch-section-title-wrap">
+          <div class="mch-section-icon">🚜</div>
+          <div>
+            <div class="mch-section-title">Tractors</div>
+            <div class="mch-section-sub" id="mchTractorsSub">Loading...</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <div class="mch-pills" data-section="tractor">
+            <button class="mch-pill active" data-filter="all">All</button>
+            <button class="mch-pill" data-filter="owned">Owned</button>
+            <button class="mch-pill" data-filter="rented">Rented</button>
+          </div>
+          <button class="panel-action" onclick="openAddMachineModal('tractor')">+ Add Tractor</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Machine</th><th>Type</th><th>Owner</th><th>Rent</th>
+              <th>Base Warehouse</th><th>Last Location</th><th>Status</th>
+              <th style="text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="mchTractorsBody"><tr><td colspan="8"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Balers -->
+    <div class="panel">
+      <div class="mch-section-head">
+        <div class="mch-section-title-wrap">
+          <div class="mch-section-icon amber">📦</div>
+          <div>
+            <div class="mch-section-title">Balers</div>
+            <div class="mch-section-sub" id="mchBalersSub">Loading...</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <div class="mch-pills" data-section="baler">
+            <button class="mch-pill active" data-filter="all">All</button>
+            <button class="mch-pill" data-filter="owned">Owned</button>
+            <button class="mch-pill" data-filter="rented">Rented</button>
+          </div>
+          <button class="panel-action-amber" onclick="openAddMachineModal('baler')">+ Add Baler</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Machine</th><th>Type</th><th>Owner</th><th>Rent</th>
+              <th>Base Warehouse</th><th>Last Location</th><th>Status</th>
+              <th style="text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="mchBalersBody"><tr><td colspan="8"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
   <!-- MAP -->
   <div id="section-map" style="display:none">
     <div class="panel">
@@ -548,6 +689,77 @@
   </div>
 </div>
 
+<!-- ADD/EDIT MACHINE MODAL (NEW) -->
+<div class="modal-overlay" id="machineModal">
+  <div class="modal">
+    <h2 id="mchModalTitle">Add Machine</h2>
+    <p class="modal-sub">Register a tractor or baler in your fleet</p>
+
+    <div class="mch-toggle-grp">
+      <span class="mch-toggle-label">Machine Type *</span>
+      <div class="mch-toggle-row">
+        <button type="button" class="mch-toggle-btn active" data-mch-type="tractor" onclick="mchSelectType('tractor')">🚜 Tractor</button>
+        <button type="button" class="mch-toggle-btn" data-mch-type="baler" onclick="mchSelectType('baler')">📦 Baler</button>
+      </div>
+    </div>
+
+    <div class="mch-toggle-grp">
+      <span class="mch-toggle-label">Ownership *</span>
+      <div class="mch-toggle-row">
+        <button type="button" class="mch-toggle-btn active" data-mch-own="owned" onclick="mchSelectOwnership('owned')">🏢 Owned by us</button>
+        <button type="button" class="mch-toggle-btn amber" data-mch-own="rented" onclick="mchSelectOwnership('rented')">🤝 Rented</button>
+      </div>
+    </div>
+
+    <div class="modal-grid">
+      <div class="modal-fld full"><label>Machine Name *</label><input type="text" id="mch_name" placeholder="e.g. Mahindra 575, Big Baler"/></div>
+      <div class="modal-fld"><label>Registration No</label><input type="text" id="mch_reg" placeholder="CG 04 AB 1234" style="font-family:'Syne',sans-serif;font-weight:600;"/></div>
+      <div class="modal-fld">
+        <label>Status</label>
+        <select id="mch_status">
+          <option value="active">Active</option>
+          <option value="maintenance">Maintenance</option>
+          <option value="idle">Idle</option>
+        </select>
+      </div>
+
+      <div class="modal-fld full">
+        <label>Base Warehouse *</label>
+        <select id="mch_warehouse"><option value="">Select warehouse...</option></select>
+      </div>
+    </div>
+
+    <div class="mch-rental-section hidden" id="mchRentalSection">
+      <div class="mch-rental-title">🤝 Rental Details</div>
+      <div class="modal-grid">
+        <div class="modal-fld"><label>Owner Name *</label><input type="text" id="mch_owner_name" placeholder="e.g. Ramesh Kumar"/></div>
+        <div class="modal-fld"><label>Owner Phone</label><input type="tel" id="mch_owner_phone" placeholder="10 digits" maxlength="10"/></div>
+        <div class="modal-fld full">
+          <label>Rent Amount</label>
+          <div class="mch-rent-input-grp">
+            <input type="number" id="mch_rent_amount" placeholder="1500"/>
+            <select id="mch_rent_unit">
+              <option value="day">per Day</option>
+              <option value="trip">per Trip</option>
+              <option value="month">per Month</option>
+              <option value="season">per Season</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-grid" style="margin-top:14px;">
+      <div class="modal-fld full"><label>Notes</label><textarea id="mch_notes" rows="2" placeholder="Optional — model year, condition, operator name..."></textarea></div>
+    </div>
+
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeMachineModal()">Cancel</button>
+      <button class="modal-save" id="mchSaveBtn" onclick="saveMachine()">💾 Save Machine</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -569,6 +781,7 @@
   })();
 
   const API = 'https://straw-app-production.up.railway.app/api';
+  const FIRM_NAME = 'Straw Collector (Firm)';
   let allFarmers = [], allSeasons = [], allPickups = [], allAgents = [];
   let currentPage = 1;
   const perPage = 10;
@@ -576,7 +789,7 @@
   let editingFarmerId = null;
   let activePickupTab = 'history';
 
-  const sections = ['dashboard','seasons','pickups','warehouse','map','farmers','agents','promoters'];
+  const sections = ['dashboard','seasons','pickups','warehouse','machinery','map','farmers','agents','promoters'];
   const titles = {
     dashboard: ['Dashboard','Overview of your straw collection network'],
     farmers:   ['All Farmers','Complete farmer registry'],
@@ -585,6 +798,7 @@
     seasons:   ['Harvest Seasons','Upcoming and active harvest seasons'],
     pickups:   ['Pickups','Pickup history and pending collections'],
     warehouse: ['Warehouse','Stock and inventory at the warehouse'],
+    machinery: ['Machinery','Tractors and balers — owned and rented'],
     map:       ['Farm Map','GPS locations of all registered farms'],
   };
 
@@ -594,6 +808,7 @@
     document.getElementById('pageTitle').textContent = titles[name][0];
     document.getElementById('pageSubtitle').textContent = titles[name][1];
     if (name==='warehouse') loadAndRenderWarehouses();
+    if (name==='machinery') loadAndRenderMachinery();
     if (name==='map')       renderMapTable();
     if (name==='seasons')   renderAllSeasons();
     if (name==='pickups')   renderAllPickups();
@@ -664,9 +879,6 @@
     document.getElementById('stat-remaining').textContent = (remaining/1000).toLocaleString('en-IN',{maximumFractionDigits:1})+'T';
   }
 
-  // ✏️ CHANGE 2: seasonBadges now shows actual months from season_name
-  // season_name is stored as comma-separated months e.g. "October, November, December"
-  // We show each month as its own badge (abbreviated to 3 chars)
   function seasonBadges(farmer) {
     const s = allSeasons.filter(x => x.farmer_id === farmer.farmer_id);
     if (!s.length) return '<span class="badge badge-red">None</span>';
@@ -693,20 +905,17 @@
   }
 
   function renderSeasonsSummary() {
-    // Count unique farmers per season type for the numbers
     const counts = {
       kharif: allSeasons.filter(s=>s.season_name==='Kharif').length,
       rabi:   allSeasons.filter(s=>s.season_name==='Rabi').length,
       zaid:   allSeasons.filter(s=>s.season_name==='Zaid').length
     };
-    // Build month frequency map from all season_name values (comma-separated months)
     const monthCount = {};
     allSeasons.forEach(s => {
       (s.season_name || '').split(',').map(m => m.trim()).filter(Boolean).forEach(m => {
         monthCount[m] = (monthCount[m] || 0) + 1;
       });
     });
-    // Sort months chronologically
     const monthOrder = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     const sortedMonths = Object.keys(monthCount).sort((a,b) => monthOrder.indexOf(a) - monthOrder.indexOf(b));
 
@@ -785,7 +994,6 @@
       const est_kg = parseFloat(f.total_acres||0) * parseFloat(f.straw_per_acre_kg||0);
       const est = est_kg > 0 ? (est_kg/1000).toFixed(1)+'T' : '—';
       const t = trips(f); const cpp = costPerTrip(f);
-      // ✏️ CHANGE 1: No total cost td, no Est. Total Cost column
       return `<tr>
         <td><div class="farmer-name">${f.full_name}</div><div class="farmer-phone">${f.phone||'—'}</div></td>
         <td>${f.village_name||'—'}</td>
@@ -1363,6 +1571,277 @@
       await fetch(`${API}/warehouses/${id}`, { method: 'DELETE' });
       showToast(`🗑 "${name}" deleted`);
       loadAndRenderWarehouses();
+    } catch(e) { showToast('❌ Could not delete'); }
+  }
+
+  // ============== MACHINERY (NEW) ==============
+  let allMachinery = [];
+  let editingMachineId = null;
+  let mchFormType = 'tractor';
+  let mchFormOwnership = 'owned';
+  const mchFilters = { tractor: 'all', baler: 'all' };
+
+  async function loadAndRenderMachinery() {
+    try {
+      const res = await fetch(`${API}/machinery`);
+      allMachinery = await res.json();
+      renderMachineryStats();
+      renderMachineryTable('tractor');
+      renderMachineryTable('baler');
+    } catch(e) { showToast('⚠️ Could not load machinery'); }
+  }
+
+  function renderMachineryStats() {
+    const tractors = allMachinery.filter(m => m.machine_type === 'tractor');
+    const balers   = allMachinery.filter(m => m.machine_type === 'baler');
+    const owned    = allMachinery.filter(m => m.ownership_type === 'owned');
+    const rented   = allMachinery.filter(m => m.ownership_type === 'rented');
+    document.getElementById('mchStatTractors').textContent = tractors.length;
+    document.getElementById('mchStatBalers').textContent   = balers.length;
+    document.getElementById('mchStatOwned').textContent    = owned.length;
+    document.getElementById('mchStatRented').textContent   = rented.length;
+    document.getElementById('mchTractorsSub').textContent  = `${tractors.length} total`;
+    document.getElementById('mchBalersSub').textContent    = `${balers.length} total`;
+  }
+
+  function mchTimeAgo(timestamp) {
+    if (!timestamp) return '';
+    const ms = Date.now() - new Date(timestamp).getTime();
+    const min = Math.floor(ms / 60000);
+    if (min < 1) return 'just now';
+    if (min < 60) return `${min} min ago`;
+    const hr = Math.floor(min / 60);
+    if (hr < 24) return `${hr} hr ago`;
+    return `${Math.floor(hr/24)} days ago`;
+  }
+
+  function renderMachineryTable(type) {
+    const tbody = document.getElementById(type === 'tractor' ? 'mchTractorsBody' : 'mchBalersBody');
+    const filter = mchFilters[type];
+    let rows = allMachinery.filter(m => m.machine_type === type);
+    if (filter === 'owned')  rows = rows.filter(m => m.ownership_type === 'owned');
+    if (filter === 'rented') rows = rows.filter(m => m.ownership_type === 'rented');
+
+    if (!rows.length) {
+      tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">${type==='tractor'?'🚜':'📦'}</div><p>No ${type}s yet. Click "+ Add ${type === 'tractor' ? 'Tractor' : 'Baler'}" to get started.</p></div></td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = rows.map(m => {
+      const isOwned = m.ownership_type === 'owned';
+      const ownerCell = isOwned
+        ? `<span class="mch-owner-firm">${FIRM_NAME}</span>`
+        : `<div class="mch-owner-name">${m.owner_name || '—'}</div>${m.owner_phone ? `<div class="mch-owner-phone">${m.owner_phone}</div>` : ''}`;
+      const rentCell = isOwned
+        ? `<span class="mch-rent-empty">—</span>`
+        : (m.rent_amount ? `<span class="mch-rent">₹${parseFloat(m.rent_amount).toLocaleString('en-IN')}</span><div style="font-size:10px;color:var(--muted);">per ${m.rent_unit || 'unit'}</div>` : '<span class="mch-rent-empty">—</span>');
+      const ownershipBadge = isOwned
+        ? `<span class="badge badge-purple">Owned</span>`
+        : `<span class="badge badge-amber">Rented</span>`;
+      const statusBadge =
+        m.status === 'active' ? `<span class="badge badge-teal">Active</span>` :
+        m.status === 'maintenance' ? `<span class="badge badge-amber">Maintenance</span>` :
+        `<span class="badge badge-red">Idle</span>`;
+      const locCell = m.current_location_label
+        ? `<div class="mch-loc-cell"><div class="mch-loc-place"><span class="mch-pulse"></span> ${m.current_location_label}</div><div class="mch-loc-time">Updated ${mchTimeAgo(m.last_location_update_at)}</div></div>`
+        : `<span class="mch-loc-empty">No GPS device</span>`;
+      const trackBtn = type === 'tractor'
+        ? `<button class="mch-btn track" onclick="mchTrack(${m.machine_id})">📡 Track</button>`
+        : '';
+      const safeName = (m.name || '').replace(/'/g, "\\'");
+      return `<tr>
+        <td><div class="farmer-name">${m.name}</div>${m.registration_no ? `<div class="mch-reg-no">${m.registration_no}</div>` : ''}</td>
+        <td>${ownershipBadge}</td>
+        <td>${ownerCell}</td>
+        <td>${rentCell}</td>
+        <td>${m.warehouse_name || '—'}</td>
+        <td>${locCell}</td>
+        <td>${statusBadge}</td>
+        <td><div class="mch-actions">
+          <button class="mch-btn refresh" onclick="mchRefresh(${m.machine_id}, this)" title="Refresh location">🔄</button>
+          ${trackBtn}
+          <button class="mch-btn" onclick="openEditMachineModal(${m.machine_id})">✏️</button>
+          <button class="mch-btn del" onclick="deleteMachine(${m.machine_id},'${safeName}')">🗑</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Filter pill click handler — attached once after DOM ready
+  document.querySelectorAll('.mch-pills').forEach(group => {
+    const type = group.dataset.section;
+    group.querySelectorAll('.mch-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        group.querySelectorAll('.mch-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        mchFilters[type] = btn.dataset.filter;
+        renderMachineryTable(type);
+      });
+    });
+  });
+
+  async function mchRefresh(id, btnEl) {
+    if (btnEl) {
+      btnEl.classList.add('mch-spin');
+      setTimeout(() => btnEl.classList.remove('mch-spin'), 600);
+    }
+    try {
+      const res = await fetch(`${API}/machinery/${id}/location`, { method: 'PATCH', headers:{'Content-Type':'application/json'}, body: '{}' });
+      const data = await res.json();
+      if (data.machine_id) {
+        const idx = allMachinery.findIndex(m => m.machine_id === id);
+        if (idx !== -1) allMachinery[idx] = { ...allMachinery[idx], ...data };
+        renderMachineryTable(allMachinery[idx].machine_type);
+        showToast('🔄 Location refreshed');
+      }
+    } catch(e) { showToast('❌ Refresh failed'); }
+  }
+
+  function mchTrack(id) {
+    const m = allMachinery.find(x => x.machine_id === id);
+    if (!m) return;
+    if (m.current_lat && m.current_lng) {
+      window.open(`https://www.google.com/maps?q=${m.current_lat},${m.current_lng}`, '_blank');
+    } else {
+      showToast('📡 GPS device not yet connected. Live tracking will work once a GPS unit is installed.');
+    }
+  }
+
+  function mchSelectType(type) {
+    mchFormType = type;
+    document.querySelectorAll('[data-mch-type]').forEach(b => {
+      b.classList.toggle('active', b.dataset.mchType === type);
+    });
+  }
+
+  function mchSelectOwnership(own) {
+    mchFormOwnership = own;
+    document.querySelectorAll('[data-mch-own]').forEach(b => {
+      b.classList.toggle('active', b.dataset.mchOwn === own);
+    });
+    document.getElementById('mchRentalSection').classList.toggle('hidden', own !== 'rented');
+  }
+
+  async function openAddMachineModal(presetType) {
+    editingMachineId = null;
+    document.getElementById('mchModalTitle').textContent = 'Add Machine';
+    document.getElementById('mchSaveBtn').textContent = '💾 Save Machine';
+    // reset form
+    document.getElementById('mch_name').value = '';
+    document.getElementById('mch_reg').value = '';
+    document.getElementById('mch_status').value = 'active';
+    document.getElementById('mch_owner_name').value = '';
+    document.getElementById('mch_owner_phone').value = '';
+    document.getElementById('mch_rent_amount').value = '';
+    document.getElementById('mch_rent_unit').value = 'day';
+    document.getElementById('mch_notes').value = '';
+    mchSelectType(presetType || 'tractor');
+    mchSelectOwnership('owned');
+
+    // Populate warehouse dropdown
+    await loadWarehousesForDropdown();
+    document.getElementById('machineModal').classList.add('open');
+  }
+
+  async function openEditMachineModal(id) {
+    const m = allMachinery.find(x => x.machine_id === id);
+    if (!m) return;
+    editingMachineId = id;
+    document.getElementById('mchModalTitle').textContent = 'Edit Machine';
+    document.getElementById('mchSaveBtn').textContent = '💾 Save Changes';
+
+    document.getElementById('mch_name').value         = m.name || '';
+    document.getElementById('mch_reg').value          = m.registration_no || '';
+    document.getElementById('mch_status').value       = m.status || 'active';
+    document.getElementById('mch_owner_name').value   = m.owner_name || '';
+    document.getElementById('mch_owner_phone').value  = m.owner_phone || '';
+    document.getElementById('mch_rent_amount').value  = m.rent_amount || '';
+    document.getElementById('mch_rent_unit').value    = m.rent_unit || 'day';
+    document.getElementById('mch_notes').value        = m.notes || '';
+    mchSelectType(m.machine_type);
+    mchSelectOwnership(m.ownership_type);
+
+    await loadWarehousesForDropdown(m.warehouse_id);
+    document.getElementById('machineModal').classList.add('open');
+  }
+
+  async function loadWarehousesForDropdown(selectedId) {
+    try {
+      if (!allWarehouses.length) {
+        const res = await fetch(`${API}/warehouses`);
+        allWarehouses = await res.json();
+      }
+      const select = document.getElementById('mch_warehouse');
+      select.innerHTML = '<option value="">Select warehouse...</option>' +
+        allWarehouses.filter(w => w.is_active !== false).map(w =>
+          `<option value="${w.warehouse_id}" ${selectedId == w.warehouse_id ? 'selected' : ''}>${w.name}</option>`
+        ).join('');
+    } catch(e) { /* silent — dropdown will just be empty */ }
+  }
+
+  function closeMachineModal() {
+    document.getElementById('machineModal').classList.remove('open');
+    editingMachineId = null;
+  }
+
+  document.getElementById('machineModal').addEventListener('click', function(e) {
+    if (e.target === this) closeMachineModal();
+  });
+
+  async function saveMachine() {
+    const name = document.getElementById('mch_name').value.trim();
+    if (!name) { showToast('⚠️ Machine name is required'); return; }
+
+    const warehouse_id = document.getElementById('mch_warehouse').value;
+    if (!warehouse_id) { showToast('⚠️ Please select a base warehouse'); return; }
+
+    if (mchFormOwnership === 'rented') {
+      const ownerName = document.getElementById('mch_owner_name').value.trim();
+      if (!ownerName) { showToast('⚠️ Owner name required for rented machines'); return; }
+    }
+
+    const body = {
+      machine_type:    mchFormType,
+      name:            name,
+      registration_no: document.getElementById('mch_reg').value.trim() || null,
+      ownership_type:  mchFormOwnership,
+      owner_name:      document.getElementById('mch_owner_name').value.trim() || null,
+      owner_phone:     document.getElementById('mch_owner_phone').value.trim() || null,
+      rent_amount:     document.getElementById('mch_rent_amount').value || null,
+      rent_unit:       document.getElementById('mch_rent_unit').value || null,
+      warehouse_id:    warehouse_id,
+      status:          document.getElementById('mch_status').value,
+      notes:           document.getElementById('mch_notes').value.trim() || null,
+    };
+
+    const btn = document.getElementById('mchSaveBtn');
+    const originalText = btn.textContent;
+    btn.textContent = '⏳ Saving...'; btn.disabled = true;
+
+    try {
+      const url = editingMachineId ? `${API}/machinery/${editingMachineId}` : `${API}/machinery`;
+      const method = editingMachineId ? 'PUT' : 'POST';
+      const res = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+      const data = await res.json();
+      if (data.machine_id) {
+        showToast(`✅ "${name}" ${editingMachineId ? 'updated' : 'added'}!`);
+        closeMachineModal();
+        loadAndRenderMachinery();
+      } else {
+        showToast('❌ ' + (data.error || 'Could not save machine'));
+      }
+    } catch(e) { showToast('❌ Server error'); }
+    btn.textContent = originalText; btn.disabled = false;
+  }
+
+  async function deleteMachine(id, name) {
+    try {
+      await fetch(`${API}/machinery/${id}`, { method: 'DELETE' });
+      allMachinery = allMachinery.filter(m => m.machine_id !== id);
+      showToast(`🗑 "${name}" deleted`);
+      renderMachineryStats();
+      renderMachineryTable('tractor');
+      renderMachineryTable('baler');
     } catch(e) { showToast('❌ Could not delete'); }
   }
 
