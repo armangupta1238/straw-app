@@ -235,24 +235,24 @@
     .mch-pill { font-size: 11px; font-weight: 600; padding: 6px 14px; border: none; background: transparent; border-radius: 6px; cursor: pointer; color: var(--muted); font-family: 'DM Sans', sans-serif; }
     .mch-pill.active { background: #fff; color: var(--dark); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
 
-    .mch-reg-no { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; color: var(--muted); margin-top: 1px; }
-    .mch-owner-firm { color: var(--primary); font-weight: 600; }
-    .mch-owner-name { font-weight: 600; font-size: 12px; }
-    .mch-owner-phone { font-size: 10px; color: var(--muted); margin-top: 1px; }
-    .mch-rent { font-weight: 700; color: var(--earth); }
-    .mch-rent-empty { color: #d1d5db; }
+    .mch-reg-no { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .mch-owner-firm { color: var(--primary); font-weight: 600; font-size: 13px; }
+    .mch-owner-name { font-weight: 600; font-size: 13px; }
+    .mch-owner-phone { font-size: 12px; color: var(--muted); margin-top: 2px; font-family: 'Syne', sans-serif; }
+    .mch-rent { font-weight: 700; color: var(--earth); font-size: 13px; }
+    .mch-rent-empty { color: #d1d5db; font-size: 13px; }
 
-    .mch-loc-cell { display: flex; flex-direction: column; gap: 2px; }
-    .mch-loc-place { font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; gap: 5px; }
-    .mch-loc-time { font-size: 10px; color: var(--muted); }
-    .mch-pulse { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; box-shadow: 0 0 0 0 rgba(13,148,136,0.6); animation: mchPulse 2s infinite; display: inline-block; }
+    .mch-loc-cell { display: flex; flex-direction: column; gap: 3px; }
+    .mch-loc-place { font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
+    .mch-loc-time { font-size: 11px; color: var(--muted); }
+    .mch-pulse { width: 7px; height: 7px; background: var(--teal); border-radius: 50%; box-shadow: 0 0 0 0 rgba(13,148,136,0.6); animation: mchPulse 2s infinite; display: inline-block; }
     @keyframes mchPulse { 0% { box-shadow: 0 0 0 0 rgba(13,148,136,0.6); } 70% { box-shadow: 0 0 0 6px rgba(13,148,136,0); } 100% { box-shadow: 0 0 0 0 rgba(13,148,136,0); } }
-    .mch-loc-empty { color: #c5c5d0; font-style: italic; font-size: 11px; }
+    .mch-loc-empty { color: #c5c5d0; font-style: italic; font-size: 12px; }
 
-    .mch-actions { display: flex; gap: 4px; justify-content: flex-end; flex-wrap: wrap; }
-    .mch-btn { font-size: 11px; padding: 4px 10px; border: 1.5px solid var(--border); background: #fff; border-radius: 6px; cursor: pointer; font-family: 'DM Sans', sans-serif; color: var(--dark); font-weight: 600; }
+    .mch-actions { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; }
+    .mch-btn { font-size: 13px; padding: 7px 14px; border: 1.5px solid var(--border); background: #fff; border-radius: 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; color: var(--dark); font-weight: 600; }
     .mch-btn:hover { background: var(--bg); }
-    .mch-btn.refresh { color: var(--teal); border-color: var(--teal-pale); padding: 4px 8px; }
+    .mch-btn.refresh { color: var(--teal); border-color: var(--teal-pale); padding: 7px 11px; }
     .mch-btn.refresh:hover { background: var(--teal-pale); }
     .mch-btn.track { background: var(--primary); color: #fff; border-color: var(--primary); }
     .mch-btn.track:hover { background: #5b21b6; }
@@ -272,6 +272,13 @@
     .mch-rental-section.hidden { display: none; }
     .mch-rental-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; color: var(--earth); margin-bottom: 10px; }
     .mch-rent-input-grp { display: grid; grid-template-columns: 1fr 110px; gap: 6px; }
+
+    /* Bigger fonts in machinery tables */
+    #section-machinery table { font-size: 13px; }
+    #section-machinery thead th { font-size: 11px; padding: 10px 12px; }
+    #section-machinery tbody td { padding: 12px 12px; }
+    #section-machinery .farmer-name { font-size: 14px; }
+    #section-machinery .badge { font-size: 11px; padding: 3px 9px; }
 
     @media (max-width: 1100px) {
       .stats-grid { grid-template-columns: repeat(3, 1fr); }
@@ -556,6 +563,12 @@
   <!-- MACHINERY (NEW) -->
   <div id="section-machinery" style="display:none">
 
+    <!-- Page header with single Add Machine button -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px;">
+      <div style="font-size:13px;color:var(--muted);">Tractors and balers — owned and rented</div>
+      <button class="ag-add-btn" onclick="openAddMachineModal('tractor')" style="font-size:14px;padding:11px 22px;height:auto;">+ Add Machine</button>
+    </div>
+
     <!-- Stats -->
     <div class="mch-stats">
       <div class="mch-stat"><div class="mch-stat-label">Tractors</div><div class="mch-stat-value" id="mchStatTractors">—</div></div>
@@ -580,7 +593,6 @@
             <button class="mch-pill" data-filter="owned">Owned</button>
             <button class="mch-pill" data-filter="rented">Rented</button>
           </div>
-          <button class="panel-action" onclick="openAddMachineModal('tractor')">+ Add Tractor</button>
         </div>
       </div>
       <div class="table-wrap">
@@ -613,7 +625,6 @@
             <button class="mch-pill" data-filter="owned">Owned</button>
             <button class="mch-pill" data-filter="rented">Rented</button>
           </div>
-          <button class="panel-action-amber" onclick="openAddMachineModal('baler')">+ Add Baler</button>
         </div>
       </div>
       <div class="table-wrap">
@@ -712,8 +723,8 @@
     </div>
 
     <div class="modal-grid">
-      <div class="modal-fld full"><label>Machine Name *</label><input type="text" id="mch_name" placeholder="e.g. Mahindra 575, Big Baler"/></div>
-      <div class="modal-fld"><label>Registration No</label><input type="text" id="mch_reg" placeholder="CG 04 AB 1234" style="font-family:'Syne',sans-serif;font-weight:600;"/></div>
+      <div class="modal-fld full"><label>Machine Name *</label><input type="text" id="mch_name" placeholder="e.g. MAHINDRA 575, BIG BALER" oninput="this.value=this.value.toUpperCase()"/></div>
+      <div class="modal-fld"><label>Registration No</label><input type="text" id="mch_reg" placeholder="CG 04 AB 1234" style="font-family:'Syne',sans-serif;font-weight:600;" oninput="this.value=this.value.toUpperCase()"/></div>
       <div class="modal-fld">
         <label>Status</label>
         <select id="mch_status">
@@ -732,8 +743,8 @@
     <div class="mch-rental-section hidden" id="mchRentalSection">
       <div class="mch-rental-title">🤝 Rental Details</div>
       <div class="modal-grid">
-        <div class="modal-fld"><label>Owner Name *</label><input type="text" id="mch_owner_name" placeholder="e.g. Ramesh Kumar"/></div>
-        <div class="modal-fld"><label>Owner Phone</label><input type="tel" id="mch_owner_phone" placeholder="10 digits" maxlength="10"/></div>
+        <div class="modal-fld"><label>Owner Name *</label><input type="text" id="mch_owner_name" placeholder="e.g. Ramesh Kumar" oninput="mchTitleCase(this)"/></div>
+        <div class="modal-fld"><label>Owner Phone</label><input type="tel" id="mch_owner_phone" placeholder="10 digits" maxlength="10" inputmode="numeric" oninput="mchDigitsOnly(this)"/></div>
         <div class="modal-fld full">
           <label>Rent Amount</label>
           <div class="mch-rent-input-grp">
@@ -1580,6 +1591,20 @@
   let mchFormType = 'tractor';
   let mchFormOwnership = 'owned';
   const mchFilters = { tractor: 'all', baler: 'all' };
+
+  // Auto-format helpers for the Add/Edit Machine form
+  function mchTitleCase(input) {
+    // Preserve cursor position
+    const cursor = input.selectionStart;
+    input.value = input.value.replace(/\b\w/g, c => c.toUpperCase());
+    try { input.setSelectionRange(cursor, cursor); } catch(e) {}
+  }
+  function mchDigitsOnly(input) {
+    const cursor = input.selectionStart;
+    const cleaned = input.value.replace(/\D/g, '').slice(0, 10);
+    input.value = cleaned;
+    try { input.setSelectionRange(Math.min(cursor, cleaned.length), Math.min(cursor, cleaned.length)); } catch(e) {}
+  }
 
   async function loadAndRenderMachinery() {
     try {
