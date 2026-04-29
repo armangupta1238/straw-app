@@ -15,6 +15,7 @@ const distanceRouter   = require('./routes/distance');
 const authRouter       = require('./routes/auth');
 const warehousesRouter = require('./routes/warehouses');
 const locationRouter   = require('./routes/location');
+const machineryRouter  = require('./routes/machinery');
 
 app.use('/api/farmers',    farmersRouter);
 app.use('/api/villages',   villagesRouter);
@@ -24,6 +25,7 @@ app.use('/api/distance',   distanceRouter);
 app.use('/api/auth',       authRouter);
 app.use('/api/warehouses', warehousesRouter);
 app.use('/api/location',   locationRouter);
+app.use('/api/machinery',  machineryRouter);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Straw App Backend is running!' });
