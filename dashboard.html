@@ -415,16 +415,25 @@
         <a href="farmer-form.html" class="panel-action">+ Add New</a>
       </div>
       <div class="filters">
-        <select class="filter-select" id="filterDistrict" onchange="filterFarmers()"><option value="">All Districts</option></select>
-        <select class="filter-select" id="filterVillage" onchange="filterFarmers()"><option value="">All Villages</option></select>
+        <select class="filter-select" id="filterDistrict" onchange="filterFarmers()"><option value="">Districts</option></select>
+        <select class="filter-select" id="filterVillage" onchange="filterFarmers()"><option value="">Villages</option></select>
         <select class="filter-select" id="filterSeason" onchange="filterFarmers()">
-          <option value="">All Seasons</option>
-          <option value="Kharif">Kharif</option>
-          <option value="Rabi">Rabi</option>
-          <option value="Zaid">Zaid</option>
+          <option value="">Months</option>
+          <option value="January">January</option>
+          <option value="February">February</option>
+          <option value="March">March</option>
+          <option value="April">April</option>
+          <option value="May">May</option>
+          <option value="June">June</option>
+          <option value="July">July</option>
+          <option value="August">August</option>
+          <option value="September">September</option>
+          <option value="October">October</option>
+          <option value="November">November</option>
+          <option value="December">December</option>
         </select>
         <select class="filter-select" id="filterDistance" onchange="filterFarmers()">
-          <option value="">Any Distance</option>
+          <option value="">Distance</option>
           <option value="0-30">0–30 km</option>
           <option value="30-60">30–60 km</option>
           <option value="60-100">60–100 km</option>
@@ -995,22 +1004,36 @@
   function populateFilters() {
     const dSel = document.getElementById('filterDistrict');
     const vSel = document.getElementById('filterVillage');
-    if (dSel.options.length > 1) return;
+    // Always rebuild from current allFarmers so deleted farmers don't appear
+    const currentDistrict = dSel.value;
+    const currentVillage  = vSel.value;
+    dSel.innerHTML = '<option value="">Districts</option>';
+    vSel.innerHTML = '<option value="">Villages</option>';
     [...new Set(allFarmers.map(f=>f.district).filter(Boolean))].sort().forEach(d=>{ dSel.innerHTML+=`<option value="${d}">${d}</option>`; });
     [...new Set(allFarmers.map(f=>f.village_name).filter(Boolean))].sort().forEach(v=>{ vSel.innerHTML+=`<option value="${v}">${v}</option>`; });
+    // Restore selections if still valid
+    if (currentDistrict) dSel.value = currentDistrict;
+    if (currentVillage)  vSel.value = currentVillage;
   }
 
   function filterFarmers() {
     const search   = (document.getElementById('globalSearch').value||'').toLowerCase();
     const district = (document.getElementById('filterDistrict')?.value)||'';
     const village  = (document.getElementById('filterVillage')?.value)||'';
-    const season   = (document.getElementById('filterSeason')?.value)||'';
+    const month    = (document.getElementById('filterSeason')?.value)||'';
     const distance = (document.getElementById('filterDistance')?.value)||'';
     lastFiltered = allFarmers.filter(f=>{
       if (search && !f.full_name.toLowerCase().includes(search) && !(f.village_name||'').toLowerCase().includes(search) && !(f.district||'').toLowerCase().includes(search)) return false;
       if (district && f.district!==district) return false;
       if (village  && f.village_name!==village) return false;
-      if (season && !allSeasons.some(s=>s.farmer_id===f.farmer_id&&s.season_name===season)) return false;
+      if (month) {
+        // season_name is stored as comma-separated month names e.g. "May, June, July"
+        const hasMonth = allSeasons.some(s =>
+          s.farmer_id === f.farmer_id &&
+          (s.season_name || '').split(',').map(m => m.trim()).includes(month)
+        );
+        if (!hasMonth) return false;
+      }
       if (distance) {
         const km=parseFloat(f.farm_distance_km||0);
         if (distance==='0-30'&&!(km>=0&&km<30)) return false;
@@ -1072,6 +1095,7 @@
       allFarmers = allFarmers.filter(f => f.farmer_id !== id);
       allSeasons = allSeasons.filter(s => s.farmer_id !== id);
       showToast(`🗑 "${name}" deleted`);
+      populateFilters();
       renderAllFarmers(lastFiltered ? lastFiltered.filter(f=>f.farmer_id!==id) : allFarmers);
       renderStats();
     } catch(e) { showToast('❌ Could not delete farmer'); }
