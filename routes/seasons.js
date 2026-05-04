@@ -30,6 +30,21 @@ router.post('/', async (req, res) => {
   }
 });
 
+// Update expected_straw_kg for a season
+router.patch('/:season_id', async (req, res) => {
+  const { expected_straw_kg } = req.body;
+  try {
+    const result = await pool.query(
+      `UPDATE harvest_seasons SET expected_straw_kg = $1 WHERE season_id = $2 RETURNING *`,
+      [expected_straw_kg, req.params.season_id]
+    );
+    if (!result.rows.length) return res.status(404).json({ error: 'Season not found' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Delete a season
 router.delete('/:season_id', async (req, res) => {
   try {

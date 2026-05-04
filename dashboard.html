@@ -1098,6 +1098,28 @@
       if (data.farmer_id) {
         const idx = allFarmers.findIndex(f => f.farmer_id === editingFarmerId);
         if (idx !== -1) allFarmers[idx] = { ...allFarmers[idx], ...body, village_name: body.village_name, district: body.district };
+
+        // Recalculate expected_straw_kg for all seasons of this farmer
+        // Formula: total_acres × straw_per_acre_kg
+        const newAcres = parseFloat(body.total_acres) || 0;
+        const newSpa   = parseFloat(body.straw_per_acre_kg) || 0;
+        const newExpected = newAcres > 0 && newSpa > 0 ? Math.round(newAcres * newSpa) : null;
+
+        if (newExpected !== null) {
+          const farmerSeasons = allSeasons.filter(s => s.farmer_id === editingFarmerId);
+          await Promise.all(farmerSeasons.map(async s => {
+            try {
+              await fetch(`${API}/seasons/${s.season_id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ expected_straw_kg: newExpected })
+              });
+              // Update local allSeasons array too
+              s.expected_straw_kg = newExpected;
+            } catch(e) {}
+          }));
+        }
+
         showToast(`✅ "${body.full_name}" updated!`);
         closeModal();
         renderAllFarmers(lastFiltered || allFarmers);
