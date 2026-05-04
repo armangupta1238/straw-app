@@ -30,13 +30,22 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Update expected_straw_kg for a season
+// Update season fields (season_name, month_start, month_end, expected_straw_kg)
 router.patch('/:season_id', async (req, res) => {
-  const { expected_straw_kg } = req.body;
+  const { expected_straw_kg, season_name, month_start, month_end } = req.body;
   try {
+    const fields = [];
+    const values = [];
+    let idx = 1;
+    if (expected_straw_kg !== undefined) { fields.push(`expected_straw_kg = $${idx++}`); values.push(expected_straw_kg); }
+    if (season_name       !== undefined) { fields.push(`season_name = $${idx++}`);       values.push(season_name); }
+    if (month_start       !== undefined) { fields.push(`month_start = $${idx++}`);       values.push(month_start); }
+    if (month_end         !== undefined) { fields.push(`month_end = $${idx++}`);         values.push(month_end); }
+    if (fields.length === 0) return res.status(400).json({ error: 'No fields to update' });
+    values.push(req.params.season_id);
     const result = await pool.query(
-      `UPDATE harvest_seasons SET expected_straw_kg = $1 WHERE season_id = $2 RETURNING *`,
-      [expected_straw_kg, req.params.season_id]
+      `UPDATE harvest_seasons SET ${fields.join(', ')} WHERE season_id = $${idx} RETURNING *`,
+      values
     );
     if (!result.rows.length) return res.status(404).json({ error: 'Season not found' });
     res.json(result.rows[0]);

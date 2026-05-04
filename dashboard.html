@@ -316,6 +316,17 @@
       .pickup-summary { grid-template-columns: 1fr 1fr; }
       .mch-stats { grid-template-columns: 1fr 1fr; }
     }
+
+    /* ── EDIT FARMER MONTH PICKER ── */
+    .edit-month-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 7px; margin-top: 4px; }
+    .edit-month-chip {
+      padding: 8px 4px; border-radius: 8px; border: 1.5px solid var(--border);
+      background: #fff; text-align: center; cursor: pointer; font-size: 12px;
+      font-weight: 600; color: var(--muted); transition: all .2s; user-select: none;
+    }
+    .edit-month-chip.selected {
+      border-color: var(--primary); background: var(--primary-pale); color: var(--primary);
+    }
   </style>
 </head>
 <body>
@@ -704,6 +715,11 @@
       <div class="modal-fld"><label>Transport Cost (₹) — auto</label><input type="number" id="edit_transport" placeholder="Auto calculated" readonly style="background:#f5f3ff;color:var(--primary);font-weight:600;"/></div>
       <div class="modal-fld"><label>Village</label><input type="text" id="edit_village" placeholder="Village name"/></div>
       <div class="modal-fld"><label>District</label><input type="text" id="edit_district" placeholder="District name"/></div>
+      <div class="modal-fld full">
+        <label>Pickup Months</label>
+        <div class="edit-month-grid" id="editMonthGrid"></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:5px;">Select all months straw can be collected from this farmer</div>
+      </div>
     </div>
     <div class="modal-btns">
       <button class="modal-cancel" onclick="closeModal()">Cancel</button>
@@ -1058,6 +1074,39 @@
     } catch(e) { showToast('❌ Could not delete farmer'); }
   }
 
+  const EDIT_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const EDIT_MONTHS_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  let editSelectedMonths = new Set();
+
+  function buildEditMonthGrid(preselectedMonths) {
+    editSelectedMonths = new Set();
+    const grid = document.getElementById('editMonthGrid');
+    grid.innerHTML = '';
+    // preselectedMonths: comma-separated month names string from season_name
+    const preNames = (preselectedMonths || '').split(',').map(m => m.trim().toLowerCase());
+    EDIT_MONTHS.forEach((m, i) => {
+      const chip = document.createElement('div');
+      chip.className = 'edit-month-chip';
+      chip.textContent = m;
+      const fullLower = EDIT_MONTHS_FULL[i].toLowerCase();
+      const shortLower = m.toLowerCase();
+      if (preNames.some(p => p === fullLower || p === shortLower)) {
+        chip.classList.add('selected');
+        editSelectedMonths.add(i);
+      }
+      chip.onclick = () => {
+        if (editSelectedMonths.has(i)) {
+          editSelectedMonths.delete(i);
+          chip.classList.remove('selected');
+        } else {
+          editSelectedMonths.add(i);
+          chip.classList.add('selected');
+        }
+      };
+      grid.appendChild(chip);
+    });
+  }
+
   function openEditModal(id) {
     const f = allFarmers.find(x => x.farmer_id === id);
     if (!f) return;
@@ -1070,6 +1119,12 @@
     document.getElementById('edit_transport').value      = f.transport_cost_per_trip || '';
     document.getElementById('edit_village').value        = f.village_name || '';
     document.getElementById('edit_district').value       = f.district || '';
+
+    // Pre-fill months from farmer's existing seasons
+    const farmerSeasons = allSeasons.filter(s => s.farmer_id === id);
+    const allMonthNames = farmerSeasons.map(s => s.season_name || '').join(', ');
+    buildEditMonthGrid(allMonthNames);
+
     document.getElementById('editModal').classList.add('open');
   }
 
@@ -1093,37 +1148,83 @@
         village_name:            document.getElementById('edit_village').value.trim(),
         district:                document.getElementById('edit_district').value.trim(),
       };
+
       const res  = await fetch(`${API}/farmers/${editingFarmerId}`, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
       const data = await res.json();
-      if (data.farmer_id) {
-        const idx = allFarmers.findIndex(f => f.farmer_id === editingFarmerId);
-        if (idx !== -1) allFarmers[idx] = { ...allFarmers[idx], ...body, village_name: body.village_name, district: body.district };
 
-        // Recalculate expected_straw_kg for all seasons of this farmer
-        // Formula: total_acres × straw_per_acre_kg
-        const newAcres = parseFloat(body.total_acres) || 0;
-        const newSpa   = parseFloat(body.straw_per_acre_kg) || 0;
+      if (data.farmer_id) {
+        // Update allFarmers in memory
+        const idx = allFarmers.findIndex(f => f.farmer_id === editingFarmerId);
+        if (idx !== -1) allFarmers[idx] = { ...allFarmers[idx], ...body };
+
+        // Recalculate expected_straw_kg
+        const newAcres    = parseFloat(body.total_acres) || 0;
+        const newSpa      = parseFloat(body.straw_per_acre_kg) || 0;
         const newExpected = newAcres > 0 && newSpa > 0 ? Math.round(newAcres * newSpa) : null;
 
-        if (newExpected !== null) {
-          const farmerSeasons = allSeasons.filter(s => s.farmer_id === editingFarmerId);
-          await Promise.all(farmerSeasons.map(async s => {
+        // Build new season_name from selected months
+        const sortedIdx    = [...editSelectedMonths].sort((a, b) => a - b);
+        const newSeasonName = sortedIdx.map(i => EDIT_MONTHS_FULL[i]).join(', ');
+        const newMonthStart = sortedIdx.length > 0 ? sortedIdx[0] + 1 : null;
+        const newMonthEnd   = sortedIdx.length > 0 ? sortedIdx[sortedIdx.length - 1] + 1 : null;
+
+        // Update all existing seasons for this farmer
+        const farmerSeasons = allSeasons.filter(s => s.farmer_id === editingFarmerId);
+
+        if (farmerSeasons.length > 0) {
+          // Update the first season with new months + expected straw
+          // (most farmers have one season — update it fully)
+          await Promise.all(farmerSeasons.map(async (s, i) => {
+            const patchBody = {};
+            if (newExpected !== null) patchBody.expected_straw_kg = newExpected;
+            if (i === 0 && newSeasonName) {
+              patchBody.season_name  = newSeasonName;
+              patchBody.month_start  = newMonthStart;
+              patchBody.month_end    = newMonthEnd;
+            }
+            if (Object.keys(patchBody).length === 0) return;
             try {
               await fetch(`${API}/seasons/${s.season_id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ expected_straw_kg: newExpected })
+                body: JSON.stringify(patchBody)
               });
-              // Update local allSeasons array too
-              s.expected_straw_kg = newExpected;
+              // Mirror update in local allSeasons
+              if (newExpected !== null) s.expected_straw_kg = newExpected;
+              if (i === 0 && newSeasonName) {
+                s.season_name  = newSeasonName;
+                s.month_start  = newMonthStart;
+                s.month_end    = newMonthEnd;
+              }
             } catch(e) {}
           }));
+        } else if (newSeasonName) {
+          // Farmer had no season recorded yet — create one
+          try {
+            const newSeason = await fetch(`${API}/seasons`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                farmer_id:         editingFarmerId,
+                season_name:       newSeasonName,
+                month_start:       newMonthStart,
+                month_end:         newMonthEnd,
+                expected_straw_kg: newExpected
+              })
+            }).then(r => r.json());
+            // Add to local allSeasons
+            newSeason.farmer_name  = body.full_name;
+            newSeason.village_name = body.village_name;
+            allSeasons.push(newSeason);
+          } catch(e) {}
         }
 
         showToast(`✅ "${body.full_name}" updated!`);
         closeModal();
         renderAllFarmers(lastFiltered || allFarmers);
         renderStats();
+        renderSeasonsSummary();
+        renderAllSeasons();
       } else { showToast('❌ Could not save changes'); }
     } catch(e) { showToast('❌ Server error'); }
     btn.textContent = '💾 Save Changes'; btn.disabled = false;
