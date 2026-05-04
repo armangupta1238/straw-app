@@ -150,6 +150,11 @@
     } else if (totalSynced > 0 && totalFailed > 0) {
       showSyncToast(`⚠️ ${totalSynced} synced, ${totalFailed} failed — will retry`, 'amber');
     }
+
+    // Notify any page listening so they can update their queue UI
+    window.dispatchEvent(new CustomEvent('offlineSyncComplete', {
+      detail: { totalSynced, totalFailed }
+    }));
   }
 
   // ── EXPOSED GLOBALLY ──
