@@ -403,6 +403,7 @@
     <input type="hidden" id="farm_distance_km"/>
     <input type="hidden" id="transport_cost"/>
     <input type="hidden" id="selected_warehouse_id"/>
+    <input type="hidden" id="unresolved_maps_url"/>
   </div>
 </div>
 
@@ -725,10 +726,23 @@
     linkTimer = setTimeout(async () => {
       const input  = document.getElementById('maps_link').value.trim();
       const status = document.getElementById('link_status');
+      document.getElementById('unresolved_maps_url').value = '';
       if (!input) { status.textContent = ''; document.getElementById('farm_lat').value = ''; document.getElementById('farm_lng').value = ''; return; }
       status.textContent = '⏳ Reading link...'; status.className = 'status-msg loading';
       let coords = extractCoords(input);
       if (!coords) {
+        if (!navigator.onLine) {
+          // Can't resolve short link offline — store raw URL for sync to resolve later
+          document.getElementById('unresolved_maps_url').value = input;
+          document.getElementById('farm_lat').value = '';
+          document.getElementById('farm_lng').value = '';
+          document.getElementById('distance_display').textContent = '🔗 Link saved — coordinates will be resolved on sync';
+          document.getElementById('dist_status').textContent = 'Distance will be calculated when back online';
+          document.getElementById('dist_status').className = 'status-msg loading';
+          status.textContent = '✅ Link saved — will resolve when back online';
+          status.className   = 'status-msg ok';
+          return;
+        }
         status.textContent = '⏳ Resolving short link...';
         try {
           const res  = await fetch(`${API}/distance/resolve?url=${encodeURIComponent(input)}`);
@@ -739,6 +753,7 @@
       if (coords) {
         document.getElementById('farm_lat').value = coords.lat.toFixed(6);
         document.getElementById('farm_lng').value = coords.lng.toFixed(6);
+        document.getElementById('unresolved_maps_url').value = '';
         status.textContent = `✅ Location found: ${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`;
         status.className   = 'status-msg ok';
         if (navigator.onLine) await getDistance(coords.lat, coords.lng);
@@ -808,6 +823,7 @@
         added_by_user_id:        agent.user_id,
         added_by_name:           agent.full_name,
         warehouse_id:            document.getElementById('selected_warehouse_id').value || null,
+        _unresolved_maps_url:    document.getElementById('unresolved_maps_url').value || null,
       },
       season: {
         season_name:       sortedMonths.map(i => MONTH_FULL[i]).join(', '),
@@ -894,6 +910,7 @@
     document.getElementById('warehouse_status').textContent = '';
     document.getElementById('selected_warehouse_id').value = '';
     document.getElementById('nextBtn').disabled = false;
+    document.getElementById('unresolved_maps_url').value = '';
     switchTab('gps');
     showStep(1);
   }

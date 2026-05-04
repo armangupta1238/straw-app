@@ -81,6 +81,36 @@
 
         // If farmer has GPS but no distance, calculate it now that we're online
         let farmerPayload = { ...entry.farmer, village_id: village.village_id };
+
+        // If a short Maps URL was saved offline, resolve it now to get coords
+        if (farmerPayload._unresolved_maps_url && !farmerPayload.farm_lat) {
+          try {
+            const resolveRes = await fetch(`${API}/distance/resolve?url=${encodeURIComponent(farmerPayload._unresolved_maps_url)}`);
+            const resolveData = await resolveRes.json();
+            if (resolveData.resolved) {
+              const patterns = [
+                /@(-?\d+\.\d+),(-?\d+\.\d+)/,
+                /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,
+                /\/place\/(-?\d+\.\d+),(-?\d+\.\d+)/,
+                /ll=(-?\d+\.\d+),(-?\d+\.\d+)/,
+                /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,
+              ];
+              for (const p of patterns) {
+                const m = resolveData.resolved.match(p);
+                if (m) {
+                  farmerPayload.farm_lat = parseFloat(m[1]).toFixed(6);
+                  farmerPayload.farm_lng = parseFloat(m[2]).toFixed(6);
+                  farmerPayload.village_lat = farmerPayload.farm_lat;
+                  farmerPayload.village_lng = farmerPayload.farm_lng;
+                  break;
+                }
+              }
+            }
+          } catch(e) {
+            console.warn('[OfflineSync] Could not resolve maps URL', e.message);
+          }
+        }
+        delete farmerPayload._unresolved_maps_url;
         if (farmerPayload.farm_lat && farmerPayload.farm_lng && !farmerPayload.farm_distance_km) {
           try {
             const warehouseRes = await fetch(`${API}/warehouses`);
