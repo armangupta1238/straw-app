@@ -268,43 +268,50 @@
       }
       .right::before { display: none; }
 
-      /* ── LEFT (banner) — compact strip at bottom ── */
+      /* ── LEFT (banner) — clean compact strip ── */
       .left {
         flex: none;
         min-height: auto;
         padding: 28px 28px 0;
         justify-content: flex-start;
-        gap: 12px;
+        gap: 0;
       }
+
+      .left-top {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding-bottom: 0;
+      }
+
+      .badge { margin-bottom: 0; font-size: 10px; padding: 4px 12px; }
 
       .left h1 {
-        font-size: 28px;
-        white-space: nowrap;  /* Harvest. Track. Collect. on one visual line */
+        font-size: 22px;
+        line-height: 1.2;
+        letter-spacing: -0.5px;
+        /* keep all three lines but compact */
       }
-
-      /* hide the h1 line-breaks on mobile — show inline */
-      .left h1 br { display: none; }
-
-      .badge { margin-bottom: 10px; }
 
       .stats { display: none; }
 
-      /* Shrink field art dramatically on mobile */
+      /* Shrink field art — keep it decorative, not dominant */
       .field-art {
-        position: relative;    /* take it out of absolute so it doesn't overlap */
-        height: 90px;
+        position: relative;
+        height: 80px;
         bottom: auto; left: auto; right: auto;
-        margin: 0 -28px;       /* bleed to edges */
+        margin: 12px -28px 0;
         overflow: hidden;
       }
 
-      .stalk::after { font-size: 14px; top: -18px; }
+      .stalk::after { font-size: 13px; top: -16px; }
 
       .left-bottom { padding-bottom: 0; }
 
       .glow {
-        width: 280px; height: 280px;
-        top: -60px; left: -80px;
+        width: 220px; height: 220px;
+        top: -40px; left: -60px;
+        opacity: 0.6;
       }
     }
   </style>
