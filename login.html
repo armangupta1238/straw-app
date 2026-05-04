@@ -260,41 +260,84 @@
         overflow-x: hidden;
       }
 
-      /* ── LEFT — tall dark hero at top ── */
+      /* ── LEFT — hero: text block + stalk strip ── */
       .left {
         flex: none;
         width: 100%;
-        min-height: 280px;
-        padding: 44px 28px 0;
+        padding: 48px 28px 0;
         justify-content: flex-start;
-        overflow: visible;
+        overflow: hidden;
+        min-height: auto;
       }
 
       .glow {
-        width: 300px; height: 300px;
-        top: -80px; left: -80px;
-        opacity: 0.7;
+        width: 260px; height: 260px;
+        top: -60px; left: -60px;
+        opacity: 0.5;
       }
 
-      .badge { margin-bottom: 16px; font-size: 10px; padding: 5px 14px; }
+      /* badge hidden on mobile — shown at bottom of hero instead via .mobile-badge */
+      .badge { display: none; }
 
-      .left h1 { font-size: 40px; line-height: 1.05; letter-spacing: -1px; }
+      .left h1 {
+        font-size: 42px;
+        line-height: 1.05;
+        letter-spacing: -1.5px;
+        position: relative;
+        z-index: 2;
+        margin-bottom: 0;
+      }
 
       .stats { display: none; }
 
-      .left-bottom { padding-bottom: 0; }
+      .left-bottom {
+        padding-bottom: 0;
+        margin-top: 0;
+      }
 
-      /* field art — absolute, anchored to bottom of .left hero */
+      /* stalk strip — sits BELOW text, never overlaps */
       .field-art {
+        position: relative;
+        bottom: auto; left: auto; right: auto;
+        height: 110px;
+        margin: 20px -28px 0;
+        overflow: hidden;
+        z-index: 1;
+      }
+
+      /* fade the top of the stalk strip so it blends up */
+      .field-art::before {
+        content: '';
         position: absolute;
-        bottom: 0; left: 0; right: 0;
-        height: 130px;
+        top: 0; left: 0; right: 0;
+        height: 40px;
+        background: linear-gradient(to bottom, var(--dark), transparent);
+        z-index: 2;
+        pointer-events: none;
       }
 
       .stalk { width: 2px; }
-      .stalk::after { font-size: 16px; top: -20px; }
+      .stalk::after { font-size: 15px; top: -18px; }
 
-      /* ── RIGHT — clean white form below ── */
+      /* mobile badge shown below stalk strip */
+      .mobile-badge {
+        display: flex !important;
+        align-items: center;
+        gap: 6px;
+        background: rgba(167,139,250,0.12);
+        border: 1px solid rgba(167,139,250,0.25);
+        border-radius: 100px;
+        padding: 6px 14px;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: var(--purple-mid);
+        width: fit-content;
+        margin: 14px 0 20px;
+      }
+
+      /* ── RIGHT — form ── */
       .right {
         width: 100%;
         flex-shrink: 0;
@@ -330,6 +373,7 @@
       </div>
       <!-- field art moved here on mobile so it sits at bottom of banner -->
       <div class="field-art" id="fieldArt"></div>
+      <div class="mobile-badge" style="display:none"><span>🌾</span> Straw Collector Portal</div>
     </div>
   </div>
 
