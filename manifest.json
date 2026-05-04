@@ -1,7 +1,7 @@
 {
   "name": "Straw Collector",
   "short_name": "Straw",
-  "description": "Straw collection operations portal — field agents and promoters",
+  "description": "Straw collection operations portal \u2014 field agents and promoters",
   "start_url": "/home.html",
   "display": "standalone",
   "orientation": "portrait",
@@ -19,6 +19,13 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/splash-1170x2532.png",
+      "sizes": "1170x2532",
+      "type": "image/png"
     }
   ]
 }

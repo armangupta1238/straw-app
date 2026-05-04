@@ -9,6 +9,12 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="Straw"/>
   <link rel="apple-touch-icon" href="/icon-192.png"/>
+  <link rel="apple-touch-startup-image" href="/splash-1290x2796.png" media="(device-width: 645px) and (device-height: 1398px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="/splash-1179x2556.png" media="(device-width: 589px) and (device-height: 1278px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="/splash-1170x2532.png" media="(device-width: 585px) and (device-height: 1266px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="/splash-1125x2436.png" media="(device-width: 562px) and (device-height: 1218px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="/splash-828x1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="/splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
   <title>Straw Collector — Record Pickup</title>
 
   <script>
@@ -710,5 +716,14 @@
   init();
 </script>
 
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .catch(err => console.log('SW registration failed:', err));
+      });
+    }
+  </script>
 </body>
 </html>
