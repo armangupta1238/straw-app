@@ -79,9 +79,39 @@
         if (!villageRes.ok) throw new Error('Village POST failed');
         const village = await villageRes.json();
 
+        // If farmer has GPS but no distance, calculate it now that we're online
+        let farmerPayload = { ...entry.farmer, village_id: village.village_id };
+        if (farmerPayload.farm_lat && farmerPayload.farm_lng && !farmerPayload.farm_distance_km) {
+          try {
+            const warehouseRes = await fetch(`${API}/warehouses`);
+            const warehouses = (await warehouseRes.json()).filter(w => w.is_active);
+            if (warehouses.length) {
+              const withDist = await Promise.all(warehouses.map(async w => {
+                try {
+                  const r = await fetch(`${API}/distance?lat=${farmerPayload.farm_lat}&lng=${farmerPayload.farm_lng}&warehouse_lat=${w.lat}&warehouse_lng=${w.lng}`);
+                  const d = await r.json();
+                  return { ...w, road_km: d.distance_km ? parseFloat(d.distance_km) : null };
+                } catch(e) { return { ...w, road_km: null }; }
+              }));
+              withDist.sort((a, b) => {
+                if (a.road_km === null) return 1;
+                if (b.road_km === null) return -1;
+                return a.road_km - b.road_km;
+              });
+              const nearest = withDist[0];
+              if (nearest.road_km !== null) {
+                farmerPayload.farm_distance_km = nearest.road_km;
+                farmerPayload.warehouse_id = nearest.warehouse_id;
+              }
+            }
+          } catch(e) {
+            console.warn('[OfflineSync] Distance calc failed, continuing without it');
+          }
+        }
+
         const farmerRes = await fetch(`${API}/farmers`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...entry.farmer, village_id: village.village_id })
+          body: JSON.stringify(farmerPayload)
         });
         if (!farmerRes.ok) throw new Error('Farmer POST failed');
         const farmer = await farmerRes.json();
