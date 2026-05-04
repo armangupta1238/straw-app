@@ -42,16 +42,33 @@
 
     header {
       background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple-deep) 100%);
-      color: #fff; padding: 28px 24px 22px; position: relative; overflow: hidden;
+      color: #fff; padding: 20px 24px 22px; position: relative; overflow: hidden;
     }
     header::before { content:''; position:absolute; right:-40px; top:-40px; width:180px; height:180px; border-radius:50%; background:rgba(167,139,250,0.12); }
     header::after  { content:''; position:absolute; right:30px; bottom:-60px; width:120px; height:120px; border-radius:50%; background:rgba(167,139,250,0.08); }
+
+    .header-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 10px; position: relative; z-index: 1;
+    }
     .header-badge {
       display:inline-flex; align-items:center; gap:6px;
       background:rgba(167,139,250,0.2); border:1px solid rgba(167,139,250,0.35);
       border-radius:20px; padding:4px 12px; font-size:11px; font-weight:500;
-      letter-spacing:.5px; text-transform:uppercase; margin-bottom:10px; color:#c4b5fd;
+      letter-spacing:.5px; text-transform:uppercase; color:#c4b5fd;
     }
+    .btn-home {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);
+      color: #fff; border-radius: 10px; padding: 7px 14px;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+      cursor: pointer; text-decoration: none;
+      transition: background 0.2s, border-color 0.2s;
+      position: relative; z-index: 1;
+    }
+    .btn-home:hover { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.4); }
+    .btn-home svg { width: 14px; height: 14px; }
+
     header h1 { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; line-height:1.15; position:relative; z-index:1; }
     header p  { font-size:13px; opacity:.7; margin-top:4px; position:relative; z-index:1; }
 
@@ -132,7 +149,6 @@
     .status-msg.err     { color:#dc2626; }
     .status-msg.loading { color:var(--muted); }
 
-    /* Warehouse dropdown */
     .warehouse-loading {
       font-size:12px; color:var(--muted); margin-top:6px; font-weight:500;
     }
@@ -151,7 +167,6 @@
       border-color:var(--purple); background:rgba(109,40,217,0.08); color:var(--purple);
     }
 
-    /* auto-filled field style */
     .field input.auto-filled {
       background:#f5f3ff; color:var(--purple); font-weight:600;
       border-color:var(--purple-mid);
@@ -209,10 +224,18 @@
     }
     .success-screen h2 { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:var(--purple); margin-bottom:8px; }
     .success-screen p  { color:var(--muted); font-size:14px; line-height:1.6; }
+    .success-actions { display:flex; flex-direction:column; gap:12px; margin-top:32px; }
     .btn-add-another {
-      margin-top:32px; width:100%; padding:16px; border-radius:14px; border:none;
+      width:100%; padding:16px; border-radius:14px; border:none;
       background:var(--purple); color:#fff; font-family:'Syne',sans-serif;
       font-size:16px; font-weight:700; cursor:pointer;
+    }
+    .btn-go-home {
+      width:100%; padding:15px; border-radius:14px;
+      border:1.5px solid var(--border); background:#fff;
+      font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600;
+      color:var(--muted); cursor:pointer; text-decoration:none;
+      display:block; text-align:center;
     }
 
     .toast {
@@ -226,7 +249,15 @@
 <body>
 
 <header>
-  <div class="header-badge">🌾 Field Agent App</div>
+  <div class="header-top">
+    <div class="header-badge">🌾 Field Agent App</div>
+    <a href="home.html" class="btn-home">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+      </svg>
+      Home
+    </a>
+  </div>
   <h1>Straw Collector</h1>
   <p>Register a new farmer &amp; farm details</p>
 </header>
@@ -426,7 +457,10 @@
   <div class="success-icon">✓</div>
   <h2>Farmer Saved!</h2>
   <p>Successfully added to the Straw Collector database.</p>
-  <button class="btn-add-another" onclick="resetForm()">+ Add Another Farmer</button>
+  <div class="success-actions">
+    <button class="btn-add-another" onclick="resetForm()">+ Add Another Farmer</button>
+    <a href="home.html" class="btn-go-home">← Back to Home</a>
+  </div>
 </div>
 
 <!-- NAV -->
@@ -547,7 +581,7 @@
   }
   function prevStep() { if (currentStep > 1) showStep(currentStep - 1); }
 
-  // ── ESTIMATE — auto-fills expected straw in Step 3 ──
+  // ── ESTIMATE ──
   function updateEstimate() {
     const acres = parseFloat(document.getElementById('total_acres').value) || 0;
     const spa   = parseFloat(document.getElementById('straw_per_acre').value) || 0;
@@ -573,7 +607,7 @@
     document.getElementById('tab_link').className = 'method-tab' + (tab === 'link' ? ' active' : '');
   }
 
-  // ── WAREHOUSE: fetch all, calc road distance each, sort, populate dropdown ──
+  // ── WAREHOUSE ──
   async function loadWarehousesSorted(farmLat, farmLng) {
     const field  = document.getElementById('warehouse_field');
     const select = document.getElementById('warehouse_select');
@@ -603,7 +637,6 @@
       return;
     }
 
-    // Call /api/distance for each warehouse in parallel
     const withDistances = await Promise.all(warehouses.map(async (w) => {
       try {
         const res  = await fetch(`${API}/distance?lat=${farmLat}&lng=${farmLng}&warehouse_lat=${w.lat}&warehouse_lng=${w.lng}`);
@@ -614,7 +647,6 @@
       }
     }));
 
-    // Sort: warehouses with distance first (nearest first), then nulls
     withDistances.sort((a, b) => {
       if (a.road_km === null && b.road_km === null) return 0;
       if (a.road_km === null) return 1;
@@ -622,7 +654,6 @@
       return a.road_km - b.road_km;
     });
 
-    // Build dropdown options
     select.innerHTML = '<option value="">— Choose warehouse —</option>';
     withDistances.forEach((w, idx) => {
       const opt   = document.createElement('option');
@@ -630,17 +661,15 @@
       const dist  = w.road_km !== null ? ` — ${w.road_km} km` : '';
       const badge = idx === 0 ? ' ⭐ Nearest' : '';
       opt.textContent = `${w.name}${dist}${badge}`;
-      if (idx === 0) opt.selected = true; // auto-select nearest
+      if (idx === 0) opt.selected = true;
       select.appendChild(opt);
     });
 
     select.disabled    = false;
     status.textContent = `${withDistances.length} warehouse(s) sorted by road distance`;
 
-    // Set hidden field to nearest
     document.getElementById('selected_warehouse_id').value = withDistances[0].warehouse_id;
 
-    // Update distance box to show nearest warehouse distance
     if (withDistances[0].road_km !== null) {
       document.getElementById('farm_distance_km').value = withDistances[0].road_km;
       document.getElementById('distance_display').textContent = `🛣️ ${withDistances[0].road_km} km by road`;
@@ -650,19 +679,16 @@
     }
   }
 
-  // ── When agent manually changes warehouse selection ──
   function onWarehouseChange() {
     const select = document.getElementById('warehouse_select');
     document.getElementById('selected_warehouse_id').value = select.value;
   }
 
-  // ── DISTANCE (kept exactly as original, now called only from GPS path) ──
   async function getDistance(lat, lng) {
     const distBox    = document.getElementById('distance_display');
     const distStatus = document.getElementById('dist_status');
     distBox.textContent = '⏳ Calculating road distance...';
     distStatus.textContent = '';
-    // Now delegate to warehouse loader which handles distance + dropdown
     await loadWarehousesSorted(lat, lng);
   }
 
@@ -694,7 +720,7 @@
     );
   }
 
-  // ── GOOGLE MAPS LINK — UNTOUCHED ──
+  // ── GOOGLE MAPS LINK ──
   function extractCoords(url) {
     const patterns = [
       /@(-?\d+\.\d+),(-?\d+\.\d+)/,
@@ -778,7 +804,6 @@
     document.getElementById('rev_months').textContent         = sortedMonths.join(', ') || '—';
     document.getElementById('rev_expected_straw').textContent = expKg ? parseFloat(expKg).toLocaleString('en-IN') + ' kg' : '—';
 
-    // Warehouse review
     const select = document.getElementById('warehouse_select');
     const selectedText = select.options[select.selectedIndex] ? select.options[select.selectedIndex].text : '—';
     document.getElementById('rev_warehouse').textContent = select.value ? selectedText : 'Not assigned';

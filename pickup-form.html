@@ -46,16 +46,33 @@
 
     header {
       background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple-deep) 100%);
-      color: #fff; padding: 28px 24px 22px; position: relative; overflow: hidden;
+      color: #fff; padding: 20px 24px 22px; position: relative; overflow: hidden;
     }
     header::before { content:''; position:absolute; right:-40px; top:-40px; width:180px; height:180px; border-radius:50%; background:rgba(167,139,250,0.12); }
     header::after  { content:''; position:absolute; right:30px; bottom:-60px; width:120px; height:120px; border-radius:50%; background:rgba(167,139,250,0.08); }
+
+    .header-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 10px; position: relative; z-index: 1;
+    }
     .header-badge {
       display:inline-flex; align-items:center; gap:6px;
       background:rgba(167,139,250,0.2); border:1px solid rgba(167,139,250,0.35);
       border-radius:20px; padding:4px 12px; font-size:11px; font-weight:500;
-      letter-spacing:.5px; text-transform:uppercase; margin-bottom:10px; color:#c4b5fd;
+      letter-spacing:.5px; text-transform:uppercase; color:#c4b5fd;
     }
+    .btn-home {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);
+      color: #fff; border-radius: 10px; padding: 7px 14px;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+      cursor: pointer; text-decoration: none;
+      transition: background 0.2s, border-color 0.2s;
+      position: relative; z-index: 1;
+    }
+    .btn-home:hover { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.4); }
+    .btn-home svg { width: 14px; height: 14px; }
+
     header h1 { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; line-height:1.15; position:relative; z-index:1; }
     header p  { font-size:13px; opacity:.7; margin-top:4px; position:relative; z-index:1; }
 
@@ -109,6 +126,17 @@
     .labour-total-label { font-size:13px; color:var(--purple); font-weight:500; }
     .labour-total-value { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:var(--purple); }
 
+    /* Farmer compensation box */
+    .compensation-box {
+      background: linear-gradient(135deg, rgba(13,148,136,0.06) 0%, rgba(13,148,136,0.02) 100%);
+      border: 1.5px solid rgba(13,148,136,0.2);
+      border-radius: 12px; padding: 14px 16px; margin-top: 12px;
+      display: none;
+    }
+    .compensation-box.show { display: flex; justify-content: space-between; align-items: center; }
+    .compensation-label { font-size: 13px; color: var(--teal); font-weight: 500; }
+    .compensation-value { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--teal); }
+
     /* Warehouse status hint */
     .warehouse-hint { font-size:11px; color:var(--muted); margin-top:5px; font-weight:500; }
 
@@ -143,15 +171,17 @@
     }
     .success-screen h2 { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:var(--purple); margin-bottom:8px; }
     .success-screen p  { color:var(--muted); font-size:14px; line-height:1.6; margin-bottom:6px; }
+    .success-actions { display:flex; flex-direction:column; gap:12px; margin-top:24px; }
     .btn-another {
-      margin-top:24px; width:100%; padding:16px; border-radius:14px; border:none;
+      width:100%; padding:16px; border-radius:14px; border:none;
       background:var(--purple); color:#fff; font-family:'Syne',sans-serif;
-      font-size:16px; font-weight:700; cursor:pointer; margin-bottom:12px;
+      font-size:16px; font-weight:700; cursor:pointer;
     }
-    .btn-dashboard {
+    .btn-go-home {
       width:100%; padding:14px; border-radius:14px; border:1.5px solid var(--border);
       background:#fff; font-family:'DM Sans',sans-serif; font-size:15px;
-      font-weight:500; color:var(--muted); cursor:pointer;
+      font-weight:500; color:var(--muted); cursor:pointer; text-decoration:none;
+      display:block; text-align:center;
     }
 
     .toast {
@@ -165,7 +195,15 @@
 <body>
 
 <header>
-  <div class="header-badge">🚛 Pickup Form</div>
+  <div class="header-top">
+    <div class="header-badge">🚛 Pickup Form</div>
+    <a href="home.html" class="btn-home">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+      </svg>
+      Home
+    </a>
+  </div>
   <h1>Record Pickup</h1>
   <p>Log straw collection from a farmer</p>
 </header>
@@ -248,6 +286,20 @@
     </div>
   </div>
 
+  <!-- FARMER COMPENSATION -->
+  <div class="card">
+    <div class="card-title">💰 Farmer Compensation</div>
+    <div class="field">
+      <label>Amount Paid to Farmer (₹)</label>
+      <input type="number" id="farmer_compensation" placeholder="Enter amount paid to farmer" min="0" inputmode="numeric" oninput="calcCompensation()"/>
+      <div class="field-hint">Optional — only enter if payment was made during this pickup</div>
+    </div>
+    <div class="compensation-box" id="compensationBox">
+      <span class="compensation-label">Farmer Payment</span>
+      <span class="compensation-value" id="compensation_val">₹0</span>
+    </div>
+  </div>
+
   <!-- LABOUR COST -->
   <div class="card">
     <div class="card-title">👷 Labour Cost</div>
@@ -293,13 +345,15 @@
   <h2>Pickup Recorded!</h2>
   <p id="successMsg">Straw collection has been saved successfully.</p>
   <p id="nextPickupMsg" style="font-weight:600; color:var(--purple); margin-top:8px;"></p>
-  <button class="btn-another" onclick="resetForm()">+ Record Another Pickup</button>
-  <button class="btn-dashboard" onclick="window.location.href='dashboard.html'">Go to Dashboard</button>
+  <div class="success-actions">
+    <button class="btn-another" onclick="resetForm()">+ Record Another Pickup</button>
+    <a href="home.html" class="btn-go-home">← Back to Home</a>
+  </div>
 </div>
 
 <!-- NAV -->
 <div class="nav-btns" id="navBtns">
-  <a href="dashboard.html" class="btn-back">← Dashboard</a>
+  <a href="home.html" class="btn-back">← Home</a>
   <button class="btn-save" id="saveBtn" onclick="submitPickup()">💾 Save Pickup</button>
 </div>
 
@@ -527,6 +581,21 @@
     }
   }
 
+  // ── FARMER COMPENSATION CALC ──
+  function calcCompensation() {
+    const input = document.getElementById('farmer_compensation');
+    // Strip non-numeric characters except decimal point
+    input.value = input.value.replace(/[^0-9.]/g, '');
+    const amount = parseFloat(input.value) || 0;
+    const box    = document.getElementById('compensationBox');
+    if (amount > 0) {
+      document.getElementById('compensation_val').textContent = '₹' + amount.toLocaleString('en-IN');
+      box.classList.add('show');
+    } else {
+      box.classList.remove('show');
+    }
+  }
+
   // ── TOAST ──
   function showToast(msg) {
     const t = document.getElementById('toast');
@@ -555,6 +624,7 @@
       const labourRate   = document.getElementById('labour_cost_per_person').value;
       const nextDate     = document.getElementById('next_pickup_date').value;
       const warehouseId  = document.getElementById('selected_warehouse_id').value;
+      const compensation = document.getElementById('farmer_compensation').value;
 
       const res = await fetch(`${API}/pickups`, {
         method: 'POST',
@@ -567,10 +637,11 @@
           vehicle_no:             vehicleNo,
           agent_name:             agent.full_name,
           notes:                  document.getElementById('notes').value || null,
-          labour_count:           labourCount || null,
-          labour_cost_per_person: labourRate  || null,
-          next_pickup_date:       nextDate    || null,
-          warehouse_id:           warehouseId || null,
+          labour_count:           labourCount  || null,
+          labour_cost_per_person: labourRate   || null,
+          next_pickup_date:       nextDate     || null,
+          warehouse_id:           warehouseId  || null,
+          farmer_compensation:    compensation || null,
         })
       });
       const data = await res.json();
@@ -610,12 +681,14 @@
     document.getElementById('straw_qty_kg').value  = '';
     document.getElementById('vehicle_no').value    = '';
     document.getElementById('transport_cost').value = '';
+    document.getElementById('farmer_compensation').value = '';
     document.getElementById('labour_count').value  = '';
     document.getElementById('labour_cost_per_person').value = '';
     document.getElementById('next_pickup_date').value = '';
     document.getElementById('notes').value = '';
     document.getElementById('fulfillmentBox').classList.add('hidden');
     document.getElementById('labourTotal').style.display = 'none';
+    document.getElementById('compensationBox').classList.remove('show');
     document.getElementById('warehouseCard').style.display = 'none';
     document.getElementById('warehouse_select').innerHTML = '<option value="">— Select warehouse —</option>';
     document.getElementById('warehouse_hint').textContent = '';
