@@ -235,6 +235,22 @@
       color: #bbb0a0; text-align: center; line-height: 1.6;
     }
 
+    /* ── OFFLINE QUEUE PILL ── */
+    .queue-pill {
+      display: none;
+      align-items: center; justify-content: space-between;
+      background: #ccfbf1; border: 1.5px solid #99f6e4;
+      border-radius: 12px; padding: 12px 16px;
+      margin-bottom: 16px; gap: 10px;
+    }
+    .queue-pill.visible { display: flex; }
+    .queue-pill-left { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #0d9488; }
+    .queue-pill-sync {
+      background: #0d9488; color: #fff; border: none; border-radius: 8px;
+      padding: 5px 12px; font-family: 'DM Sans', sans-serif;
+      font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;
+    }
+
     /* ── LOADING STATE ── */
     .loading-screen {
       display: flex; flex-direction: column;
@@ -289,6 +305,9 @@
   </style>
 </head>
 <body>
+
+  <!-- shared sync engine -->
+  <script src="/offline-sync.js"></script>
 
   <!-- LEFT PANEL -->
   <div class="left">
@@ -389,6 +408,10 @@
         </div>
 
         <div class="choices">
+          <div class="queue-pill" id="queuePill">
+            <div class="queue-pill-left"><span>🕐</span><span id="queuePillText">farmers waiting to sync</span></div>
+            <button class="queue-pill-sync" onclick="OfflineSync.syncNow(true)">Sync Now</button>
+          </div>
           ${dashboardBtn}
           <a href="farmer-form.html" class="choice-btn">
             <div class="choice-icon">👨‍🌾</div>
@@ -412,7 +435,23 @@
       `;
 
       document.getElementById('homeWrap').innerHTML = html;
+
+      // show pending offline farmers if any
+      updateQueuePill();
     }
+
+    function updateQueuePill() {
+      // OfflineSync may not be loaded yet on very first paint — guard it
+      if (typeof OfflineSync === 'undefined') return;
+      const count = OfflineSync.queueCount();
+      const pill = document.getElementById('queuePill');
+      if (!pill) return;
+      document.getElementById('queuePillText').textContent =
+        `${count} farmer${count !== 1 ? 's' : ''} waiting to sync`;
+      pill.classList.toggle('visible', count > 0);
+    }
+
+    window.addEventListener('online', updateQueuePill);
 
     // Check session
     try {

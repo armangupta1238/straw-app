@@ -196,15 +196,63 @@
       display:block; text-align:center;
     }
 
+    /* ── OFFLINE BANNER ── */
+    .offline-banner {
+      display: none; background: #78350f; color: #fef3c7;
+      padding: 10px 24px; font-size: 13px; font-weight: 500;
+      text-align: center; align-items: center; justify-content: center; gap: 8px;
+    }
+    .offline-banner.visible { display: flex; }
+
+    /* ── QUEUE BADGE ── */
+    .queue-badge {
+      display: none; background: #ccfbf1; border-bottom: 1px solid #99f6e4;
+      color: #0d9488; padding: 10px 24px; font-size: 13px; font-weight: 600;
+      align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .queue-badge.visible { display: flex; }
+    .queue-badge-left { display: flex; align-items: center; gap: 8px; }
+    .btn-sync-now {
+      background: #0d9488; color: #fff; border: none; border-radius: 8px;
+      padding: 5px 12px; font-family: 'DM Sans', sans-serif;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+
+    /* offline success variant */
+    .success-screen.offline-save .success-icon {
+      background: linear-gradient(135deg, #0d9488, #0f766e);
+      box-shadow: 0 8px 32px rgba(13,148,136,0.3);
+    }
+    .success-screen.offline-save h2 { color: #0d9488; }
+
     .toast {
       position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(20px);
       background:var(--dark); color:#fff; padding:10px 20px; border-radius:20px;
       font-size:13px; font-weight:500; opacity:0; transition:all .3s; z-index:999; white-space:nowrap;
     }
     .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+    .toast.teal  { background: #0d9488; }
+    .toast.amber { background: #92400e; }
   </style>
 </head>
 <body>
+
+<!-- shared sync engine — load first -->
+<script src="/offline-sync.js"></script>
+
+<!-- OFFLINE BANNER -->
+<div class="offline-banner" id="offlineBanner">
+  📵 You're offline — pickups will be saved locally and synced when you reconnect
+</div>
+
+<!-- QUEUE BADGE -->
+<div class="queue-badge" id="queueBadge">
+  <div class="queue-badge-left">
+    <span>🕐</span>
+    <span id="queueBadgeText">0 pickups waiting to sync</span>
+  </div>
+  <button class="btn-sync-now" onclick="OfflineSync.syncNow(true)">Sync Now</button>
+</div>
 
 <header>
   <div class="header-top">
@@ -354,7 +402,7 @@
 <!-- SUCCESS SCREEN -->
 <div class="success-screen" id="successScreen">
   <div class="success-icon">✓</div>
-  <h2>Pickup Recorded!</h2>
+  <h2 id="successTitle">Pickup Recorded!</h2>
   <p id="successMsg">Straw collection has been saved successfully.</p>
   <p id="nextPickupMsg" style="font-weight:600; color:var(--purple); margin-top:8px;"></p>
   <div class="success-actions">
@@ -608,10 +656,25 @@
     }
   }
 
+  // ── OFFLINE UI ──
+  function updateOfflineBanner() {
+    document.getElementById('offlineBanner').classList.toggle('visible', !navigator.onLine);
+  }
+  function updateQueueBadge() {
+    const count = OfflineSync.pickupQueueCount();
+    document.getElementById('queueBadgeText').textContent =
+      `${count} pickup${count !== 1 ? 's' : ''} waiting to sync`;
+    document.getElementById('queueBadge').classList.toggle('visible', count > 0);
+  }
+  window.addEventListener('online',  () => { updateOfflineBanner(); updateQueueBadge(); });
+  window.addEventListener('offline', () => { updateOfflineBanner(); });
+
   // ── TOAST ──
-  function showToast(msg) {
+  function showToast(msg, type) {
     const t = document.getElementById('toast');
-    t.textContent = msg; t.classList.add('show');
+    t.textContent = msg;
+    t.className = 'toast' + (type ? ' ' + type : '');
+    t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
   }
 
@@ -630,39 +693,63 @@
     const btn = document.getElementById('saveBtn');
     btn.textContent = '⏳ Saving...'; btn.disabled = true;
 
-    try {
-      const agent        = JSON.parse(localStorage.getItem('agent'));
-      const labourCount  = document.getElementById('labour_count').value;
-      const labourRate   = document.getElementById('labour_cost_per_person').value;
-      const nextDate     = document.getElementById('next_pickup_date').value;
-      const warehouseId  = document.getElementById('selected_warehouse_id').value;
-      const compensation = document.getElementById('farmer_compensation').value;
+    const agent        = JSON.parse(localStorage.getItem('agent'));
+    const labourCount  = document.getElementById('labour_count').value;
+    const labourRate   = document.getElementById('labour_cost_per_person').value;
+    const nextDate     = document.getElementById('next_pickup_date').value;
+    const warehouseId  = document.getElementById('selected_warehouse_id').value;
+    const compensation = document.getElementById('farmer_compensation').value;
 
+    const pickupPayload = {
+      farmer_id:              farmerId,
+      pickup_date:            pickupDate,
+      straw_qty_kg:           strawQty,
+      transport_cost:         document.getElementById('transport_cost').value || null,
+      vehicle_no:             vehicleNo,
+      agent_name:             agent.full_name,
+      notes:                  document.getElementById('notes').value || null,
+      labour_count:           labourCount  || null,
+      labour_cost_per_person: labourRate   || null,
+      next_pickup_date:       nextDate     || null,
+      warehouse_id:           warehouseId  || null,
+      farmer_compensation:    compensation || null,
+    };
+
+    // ── OFFLINE PATH ──
+    if (!navigator.onLine) {
+      OfflineSync.addPickupToQueue({ pickup: pickupPayload });
+      updateQueueBadge();
+      const farmerName = allFarmers.find(f => f.farmer_id == farmerId)?.full_name || 'Farmer';
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('navBtns').style.display = 'none';
+      const screen = document.getElementById('successScreen');
+      screen.classList.add('active', 'offline-save');
+      document.getElementById('successTitle').textContent = 'Saved Offline!';
+      document.getElementById('successMsg').textContent =
+        `${parseFloat(strawQty).toLocaleString('en-IN')} kg from ${farmerName} saved locally. Will sync when you reconnect.`;
+      document.getElementById('nextPickupMsg').textContent = '';
+      return;
+    }
+
+    // ── ONLINE PATH ──
+    try {
       const res = await fetch(`${API}/pickups`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          farmer_id:              farmerId,
-          pickup_date:            pickupDate,
-          straw_qty_kg:           strawQty,
-          transport_cost:         document.getElementById('transport_cost').value || null,
-          vehicle_no:             vehicleNo,
-          agent_name:             agent.full_name,
-          notes:                  document.getElementById('notes').value || null,
-          labour_count:           labourCount  || null,
-          labour_cost_per_person: labourRate   || null,
-          next_pickup_date:       nextDate     || null,
-          warehouse_id:           warehouseId  || null,
-          farmer_compensation:    compensation || null,
-        })
+        body: JSON.stringify(pickupPayload)
       });
       const data = await res.json();
 
       if (data.pickup_id) {
         const farmerName = allFarmers.find(f => f.farmer_id == farmerId)?.full_name || 'Farmer';
+        document.getElementById('mainContent').style.display = 'none';
+        document.getElementById('navBtns').style.display = 'none';
+        const screen = document.getElementById('successScreen');
+        screen.classList.remove('offline-save');
+        screen.classList.add('active');
+        document.getElementById('successTitle').textContent = 'Pickup Recorded!';
         document.getElementById('successMsg').textContent =
           `${parseFloat(strawQty).toLocaleString('en-IN')} kg collected from ${farmerName}.`;
-
         if (nextDate) {
           const d = new Date(nextDate);
           document.getElementById('nextPickupMsg').textContent =
@@ -670,10 +757,6 @@
         } else {
           document.getElementById('nextPickupMsg').textContent = '';
         }
-
-        document.getElementById('mainContent').style.display = 'none';
-        document.getElementById('navBtns').style.display = 'none';
-        document.getElementById('successScreen').classList.add('active');
       } else {
         showToast('❌ Could not save pickup');
         btn.textContent = '💾 Save Pickup'; btn.disabled = false;
@@ -688,7 +771,7 @@
   function resetForm() {
     document.getElementById('mainContent').style.display = 'block';
     document.getElementById('navBtns').style.display = 'flex';
-    document.getElementById('successScreen').classList.remove('active');
+    document.getElementById('successScreen').classList.remove('active', 'offline-save');
     document.getElementById('farmer_select').value = '';
     document.getElementById('straw_qty_kg').value  = '';
     document.getElementById('vehicle_no').value    = '';
@@ -714,6 +797,8 @@
   }
 
   init();
+  updateOfflineBanner();
+  updateQueueBadge();
 </script>
 
 

@@ -40,6 +40,8 @@
       --dark:        #1e1b3a;
       --radius:      16px;
       --shadow:      0 4px 24px rgba(109,40,217,0.08);
+      --teal:        #0d9488;
+      --teal-light:  #ccfbf1;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -84,6 +86,28 @@
     header h1 { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; line-height:1.15; position:relative; z-index:1; }
     header p  { font-size:13px; opacity:.7; margin-top:4px; position:relative; z-index:1; }
 
+    /* ── OFFLINE BANNER ── */
+    .offline-banner {
+      display: none; background: #78350f; color: #fef3c7;
+      padding: 10px 24px; font-size: 13px; font-weight: 500;
+      text-align: center; align-items: center; justify-content: center; gap: 8px;
+    }
+    .offline-banner.visible { display: flex; }
+
+    /* ── QUEUE BADGE ── */
+    .queue-badge {
+      display: none; background: var(--teal-light); border-bottom: 1px solid #99f6e4;
+      color: var(--teal); padding: 10px 24px; font-size: 13px; font-weight: 600;
+      align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .queue-badge.visible { display: flex; }
+    .queue-badge-left { display: flex; align-items: center; gap: 8px; }
+    .btn-sync-now {
+      background: var(--teal); color: #fff; border: none; border-radius: 8px;
+      padding: 5px 12px; font-family: 'DM Sans', sans-serif; font-size: 12px;
+      font-weight: 600; cursor: pointer;
+    }
+
     .progress-bar { display:flex; gap:6px; padding:18px 24px 0; background:#fff; }
     .progress-step { flex:1; height:4px; border-radius:4px; background:var(--border); transition:background .3s; }
     .progress-step.active { background:var(--purple-mid); }
@@ -124,7 +148,6 @@
     .phone-hint.error { color:#dc2626; }
     .phone-hint.ok    { color:var(--purple); }
 
-    /* Location tabs */
     .method-tabs { display:flex; gap:8px; margin-bottom:14px; }
     .method-tab {
       flex:1; padding:11px 8px; border-radius:12px; border:1.5px solid var(--border);
@@ -144,8 +167,8 @@
 
     .maps-hint {
       background:rgba(109,40,217,0.05); border:1px solid rgba(109,40,217,0.12);
-      border-radius:12px; padding:12px 14px;
-      font-size:12px; color:var(--muted); line-height:1.7; margin-bottom:10px;
+      border-radius:12px; padding:12px 14px; font-size:12px; color:var(--muted);
+      line-height:1.7; margin-bottom:10px;
     }
     .maps-hint strong { color:var(--purple); }
 
@@ -161,30 +184,19 @@
     .status-msg.err     { color:#dc2626; }
     .status-msg.loading { color:var(--muted); }
 
-    .warehouse-loading {
-      font-size:12px; color:var(--muted); margin-top:6px; font-weight:500;
-    }
-    .field select option.nearest-option {
-      font-weight:700;
-    }
+    .warehouse-loading { font-size:12px; color:var(--muted); margin-top:6px; font-weight:500; }
+    .field select option.nearest-option { font-weight:700; }
 
-    /* ── MONTH GRID ── */
     .month-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; }
     .month-chip {
       padding:12px 4px; border-radius:10px; border:1.5px solid var(--border);
       background:#fff; text-align:center; cursor:pointer; font-size:13px;
       font-weight:600; color:var(--muted); transition:all .2s;
     }
-    .month-chip.selected {
-      border-color:var(--purple); background:rgba(109,40,217,0.08); color:var(--purple);
-    }
+    .month-chip.selected { border-color:var(--purple); background:rgba(109,40,217,0.08); color:var(--purple); }
 
-    .field input.auto-filled {
-      background:#f5f3ff; color:var(--purple); font-weight:600;
-      border-color:var(--purple-mid);
-    }
+    .field input.auto-filled { background:#f5f3ff; color:var(--purple); font-weight:600; border-color:var(--purple-mid); }
 
-    /* Review */
     .summary-row { display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid var(--border); font-size:14px; }
     .summary-row:last-child { border-bottom:none; }
     .summary-label { color:var(--muted); font-size:12px; font-weight:500; }
@@ -204,7 +216,6 @@
       color:var(--earth); margin-top:10px;
     }
 
-    /* Nav */
     .nav-btns {
       display:flex; gap:12px; padding:16px 24px 32px; position:sticky; bottom:0;
       background:linear-gradient(to top, #f5f3ff 80%, transparent);
@@ -225,7 +236,6 @@
     .btn-next.submit { background:var(--amber); color:var(--dark); }
     .btn-next.submit:hover { background:#d97706; color:#fff; }
 
-    /* Success */
     .success-screen { display:none; padding:48px 24px; text-align:center; animation:fadeUp .4s ease; }
     .success-screen.active { display:block; }
     .success-icon {
@@ -243,22 +253,44 @@
       font-size:16px; font-weight:700; cursor:pointer;
     }
     .btn-go-home {
-      width:100%; padding:15px; border-radius:14px;
-      border:1.5px solid var(--border); background:#fff;
-      font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600;
-      color:var(--muted); cursor:pointer; text-decoration:none;
-      display:block; text-align:center;
+      width:100%; padding:15px; border-radius:14px; border:1.5px solid var(--border);
+      background:#fff; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600;
+      color:var(--muted); cursor:pointer; text-decoration:none; display:block; text-align:center;
     }
+    .success-screen.offline-save .success-icon {
+      background: linear-gradient(135deg, #0d9488, #0f766e);
+      box-shadow: 0 8px 32px rgba(13,148,136,0.3);
+    }
+    .success-screen.offline-save h2 { color: var(--teal); }
 
     .toast {
       position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px);
       background:var(--dark); color:#fff; padding:10px 20px; border-radius:20px;
       font-size:13px; font-weight:500; opacity:0; transition:all .3s; z-index:999; white-space:nowrap;
     }
-    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+    .toast.show  { opacity:1; transform:translateX(-50%) translateY(0); }
+    .toast.teal  { background: var(--teal); }
+    .toast.amber { background: #92400e; }
   </style>
 </head>
 <body>
+
+<!-- shared sync engine — load first -->
+<script src="/offline-sync.js"></script>
+
+<!-- OFFLINE BANNER -->
+<div class="offline-banner" id="offlineBanner">
+  📵 You're offline — farmers will be saved locally and synced when you reconnect
+</div>
+
+<!-- QUEUE BADGE -->
+<div class="queue-badge" id="queueBadge">
+  <div class="queue-badge-left">
+    <span>🕐</span>
+    <span id="queueBadgeText">0 farmers waiting to sync</span>
+  </div>
+  <button class="btn-sync-now" onclick="OfflineSync.syncNow(true)">Sync Now</button>
+</div>
 
 <header>
   <div class="header-top">
@@ -318,7 +350,6 @@
 <div class="section" id="step2">
   <p class="section-title">Farm Location</p>
   <p class="section-sub">Village, district &amp; farm coordinates</p>
-
   <div class="card">
     <div class="field">
       <label>Village Name *</label>
@@ -329,7 +360,6 @@
       <input type="text" id="district" placeholder="e.g. Mahasamund"/>
     </div>
   </div>
-
   <div class="card">
     <div class="field">
       <label>📍 Add Farm Location</label>
@@ -361,8 +391,6 @@
       <div class="distance-box" id="distance_display">— Add farm location above first</div>
       <div class="status-msg" id="dist_status"></div>
     </div>
-
-    <!-- ══ WAREHOUSE DROPDOWN ══ -->
     <div class="field" id="warehouse_field" style="display:none">
       <label>🏭 Assign Warehouse</label>
       <select id="warehouse_select" onchange="onWarehouseChange()">
@@ -370,7 +398,6 @@
       </select>
       <div class="warehouse-loading" id="warehouse_status"></div>
     </div>
-
     <input type="hidden" id="farm_lat"/>
     <input type="hidden" id="farm_lng"/>
     <input type="hidden" id="farm_distance_km"/>
@@ -383,14 +410,12 @@
 <div class="section" id="step3">
   <p class="section-title">Pickup Months</p>
   <p class="section-sub">Which months can straw be collected from this farmer?</p>
-
   <div class="card">
     <div class="field">
       <label>Select Available Months *</label>
       <div class="month-grid" id="monthGrid"></div>
     </div>
   </div>
-
   <div class="card">
     <div class="field">
       <label>Total Expected Straw (kg) *</label>
@@ -398,7 +423,6 @@
       <div class="phone-hint" id="straw_hint" style="color:var(--purple);">Auto-filled from Step 1 — you can edit if needed</div>
     </div>
   </div>
-
   <div class="card">
     <div class="field">
       <label>Additional Notes</label>
@@ -417,58 +441,28 @@
     <div class="hl-sub"  id="rev_phone">—</div>
   </div>
   <div class="card">
-    <div class="summary-row">
-      <span class="summary-label">Total Acres</span>
-      <span class="summary-value" id="rev_acres">—</span>
-    </div>
-    <div class="summary-row">
-      <span class="summary-label">Straw per Acre</span>
-      <span class="summary-value" id="rev_straw">—</span>
-    </div>
-    <div class="summary-row">
-      <span class="summary-label">Est. Total Straw</span>
-      <span class="summary-value" id="rev_total_straw">—</span>
-    </div>
+    <div class="summary-row"><span class="summary-label">Total Acres</span><span class="summary-value" id="rev_acres">—</span></div>
+    <div class="summary-row"><span class="summary-label">Straw per Acre</span><span class="summary-value" id="rev_straw">—</span></div>
+    <div class="summary-row"><span class="summary-label">Est. Total Straw</span><span class="summary-value" id="rev_total_straw">—</span></div>
   </div>
   <div class="card">
-    <div class="summary-row">
-      <span class="summary-label">Village</span>
-      <span class="summary-value" id="rev_village">—</span>
-    </div>
-    <div class="summary-row">
-      <span class="summary-label">District</span>
-      <span class="summary-value" id="rev_district">—</span>
-    </div>
-    <div class="summary-row">
-      <span class="summary-label">Road Distance</span>
-      <span class="summary-value" id="rev_distance">—</span>
-    </div>
-    <div class="summary-row">
-      <span class="summary-label">GPS Coordinates</span>
-      <span class="summary-value" id="rev_gps">Not captured</span>
-    </div>
-    <div class="summary-row">
-      <span class="summary-label">Assigned Warehouse</span>
-      <span class="summary-value" id="rev_warehouse">—</span>
-    </div>
+    <div class="summary-row"><span class="summary-label">Village</span><span class="summary-value" id="rev_village">—</span></div>
+    <div class="summary-row"><span class="summary-label">District</span><span class="summary-value" id="rev_district">—</span></div>
+    <div class="summary-row"><span class="summary-label">Road Distance</span><span class="summary-value" id="rev_distance">—</span></div>
+    <div class="summary-row"><span class="summary-label">GPS Coordinates</span><span class="summary-value" id="rev_gps">Not captured</span></div>
+    <div class="summary-row"><span class="summary-label">Assigned Warehouse</span><span class="summary-value" id="rev_warehouse">—</span></div>
   </div>
   <div class="card">
-    <div class="summary-row">
-      <span class="summary-label">Pickup Months</span>
-      <span class="summary-value" id="rev_months">—</span>
-    </div>
-    <div class="summary-row">
-      <span class="summary-label">Expected Straw</span>
-      <span class="summary-value" id="rev_expected_straw">—</span>
-    </div>
+    <div class="summary-row"><span class="summary-label">Pickup Months</span><span class="summary-value" id="rev_months">—</span></div>
+    <div class="summary-row"><span class="summary-label">Expected Straw</span><span class="summary-value" id="rev_expected_straw">—</span></div>
   </div>
 </div>
 
 <!-- SUCCESS -->
 <div class="success-screen" id="successScreen">
   <div class="success-icon">✓</div>
-  <h2>Farmer Saved!</h2>
-  <p>Successfully added to the Straw Collector database.</p>
+  <h2 id="successTitle">Farmer Saved!</h2>
+  <p id="successMsg">Successfully added to the Straw Collector database.</p>
   <div class="success-actions">
     <button class="btn-add-another" onclick="resetForm()">+ Add Another Farmer</button>
     <a href="home.html" class="btn-go-home">← Back to Home</a>
@@ -492,7 +486,20 @@
   const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const MONTH_FULL  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-  // ── BUILD MONTH GRID ──
+  // ── OFFLINE UI ──
+  function updateOfflineBanner() {
+    document.getElementById('offlineBanner').classList.toggle('visible', !navigator.onLine);
+  }
+  function updateQueueBadge() {
+    const count = OfflineSync.queueCount();
+    document.getElementById('queueBadgeText').textContent =
+      `${count} farmer${count !== 1 ? 's' : ''} waiting to sync`;
+    document.getElementById('queueBadge').classList.toggle('visible', count > 0);
+  }
+  window.addEventListener('online',  () => { updateOfflineBanner(); updateQueueBadge(); });
+  window.addEventListener('offline', () => { updateOfflineBanner(); });
+
+  // ── MONTH GRID ──
   function buildMonthGrid() {
     const grid = document.getElementById('monthGrid');
     grid.innerHTML = '';
@@ -504,50 +511,36 @@
       grid.appendChild(chip);
     });
   }
-
   function toggleMonth(idx, chip) {
-    if (selectedMonths.has(idx)) {
-      selectedMonths.delete(idx);
-      chip.classList.remove('selected');
-    } else {
-      selectedMonths.add(idx);
-      chip.classList.add('selected');
-    }
+    if (selectedMonths.has(idx)) { selectedMonths.delete(idx); chip.classList.remove('selected'); }
+    else { selectedMonths.add(idx); chip.classList.add('selected'); }
   }
 
   // ── TOAST ──
-  function showToast(msg) {
+  function showToast(msg, type) {
     const t = document.getElementById('toast');
-    t.textContent = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
+    t.textContent = msg;
+    t.className = 'toast' + (type ? ' ' + type : '');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
   }
 
-  // ── PHONE HANDLER ──
+  // ── PHONE ──
   function handlePhone(input) {
     input.value = input.value.replace(/\D/g, '');
     if (input.value.length > 10) input.value = input.value.slice(0, 10);
     const hint = document.getElementById('phone_hint');
     const len  = input.value.length;
-    if (len === 0) {
-      hint.textContent = 'Enter 10-digit mobile number';
-      hint.className   = 'phone-hint';
-      input.classList.remove('input-error');
-    } else if (len < 10) {
-      hint.textContent = `${len}/10 digits entered`;
-      hint.className   = 'phone-hint error';
-      input.classList.add('input-error');
-    } else {
-      hint.textContent = '✓ Valid mobile number';
-      hint.className   = 'phone-hint ok';
-      input.classList.remove('input-error');
-    }
+    if (len === 0) { hint.textContent = 'Enter 10-digit mobile number'; hint.className = 'phone-hint'; input.classList.remove('input-error'); }
+    else if (len < 10) { hint.textContent = `${len}/10 digits entered`; hint.className = 'phone-hint error'; input.classList.add('input-error'); }
+    else { hint.textContent = '✓ Valid mobile number'; hint.className = 'phone-hint ok'; input.classList.remove('input-error'); }
   }
 
   // ── PROGRESS ──
   function updateProgress() {
     for (let i = 1; i <= totalSteps; i++) {
-      const el = document.getElementById('p' + i);
-      el.className = 'progress-step' + (i < currentStep ? ' done' : i === currentStep ? ' active' : '');
+      document.getElementById('p' + i).className =
+        'progress-step' + (i < currentStep ? ' done' : i === currentStep ? ' active' : '');
     }
     document.getElementById('backBtn').style.display = currentStep > 1 ? 'block' : 'none';
     const nb = document.getElementById('nextBtn');
@@ -568,11 +561,7 @@
       if (!document.getElementById('full_name').value.trim()) { showToast('⚠️ Please enter the farmer\'s name'); return false; }
       if (!document.getElementById('total_acres').value)      { showToast('⚠️ Please enter total acres'); return false; }
       const phone = document.getElementById('phone').value;
-      if (phone.length > 0 && phone.length !== 10) {
-        showToast('⚠️ Mobile number must be exactly 10 digits');
-        document.getElementById('phone').classList.add('input-error');
-        return false;
-      }
+      if (phone.length > 0 && phone.length !== 10) { showToast('⚠️ Mobile number must be exactly 10 digits'); document.getElementById('phone').classList.add('input-error'); return false; }
     }
     if (currentStep === 2) {
       if (!document.getElementById('village_name').value.trim()) { showToast('⚠️ Please enter the village name'); return false; }
@@ -602,13 +591,9 @@
     if (acres > 0 && spa > 0) {
       const total = Math.round(acres * spa);
       document.getElementById('est_val').textContent = total.toLocaleString('en-IN');
-      expField.value = total;
-      expField.classList.add('auto-filled');
+      expField.value = total; expField.classList.add('auto-filled');
       pill.style.display = 'block';
-    } else {
-      pill.style.display = 'none';
-      expField.classList.remove('auto-filled');
-    }
+    } else { pill.style.display = 'none'; expField.classList.remove('auto-filled'); }
   }
 
   // ── TAB SWITCH ──
@@ -624,64 +609,47 @@
     const field  = document.getElementById('warehouse_field');
     const select = document.getElementById('warehouse_select');
     const status = document.getElementById('warehouse_status');
-
     field.style.display = 'block';
     select.innerHTML = '<option value="">⏳ Loading warehouses...</option>';
-    select.disabled  = true;
+    select.disabled = true;
     status.textContent = 'Calculating road distance to each warehouse...';
-
     let warehouses = [];
     try {
-      const res  = await fetch(`${API}/warehouses`);
-      warehouses = await res.json();
-      warehouses = warehouses.filter(w => w.is_active);
+      const res = await fetch(`${API}/warehouses`);
+      warehouses = (await res.json()).filter(w => w.is_active);
     } catch(e) {
       status.textContent = '⚠️ Could not load warehouses';
-      select.innerHTML   = '<option value="">— Could not load —</option>';
-      select.disabled    = false;
-      return;
+      select.innerHTML = '<option value="">— Could not load —</option>';
+      select.disabled = false; return;
     }
-
     if (!warehouses.length) {
       status.textContent = '⚠️ No active warehouses found';
-      select.innerHTML   = '<option value="">— No warehouses —</option>';
-      select.disabled    = false;
-      return;
+      select.innerHTML = '<option value="">— No warehouses —</option>';
+      select.disabled = false; return;
     }
-
     const withDistances = await Promise.all(warehouses.map(async (w) => {
       try {
         const res  = await fetch(`${API}/distance?lat=${farmLat}&lng=${farmLng}&warehouse_lat=${w.lat}&warehouse_lng=${w.lng}`);
         const data = await res.json();
         return { ...w, road_km: data.distance_km ? parseFloat(data.distance_km) : null };
-      } catch(e) {
-        return { ...w, road_km: null };
-      }
+      } catch(e) { return { ...w, road_km: null }; }
     }));
-
     withDistances.sort((a, b) => {
       if (a.road_km === null && b.road_km === null) return 0;
-      if (a.road_km === null) return 1;
-      if (b.road_km === null) return -1;
+      if (a.road_km === null) return 1; if (b.road_km === null) return -1;
       return a.road_km - b.road_km;
     });
-
     select.innerHTML = '<option value="">— Choose warehouse —</option>';
     withDistances.forEach((w, idx) => {
-      const opt   = document.createElement('option');
-      opt.value   = w.warehouse_id;
-      const dist  = w.road_km !== null ? ` — ${w.road_km} km` : '';
-      const badge = idx === 0 ? ' ⭐ Nearest' : '';
-      opt.textContent = `${w.name}${dist}${badge}`;
+      const opt = document.createElement('option');
+      opt.value = w.warehouse_id;
+      opt.textContent = `${w.name}${w.road_km !== null ? ` — ${w.road_km} km` : ''}${idx === 0 ? ' ⭐ Nearest' : ''}`;
       if (idx === 0) opt.selected = true;
       select.appendChild(opt);
     });
-
-    select.disabled    = false;
+    select.disabled = false;
     status.textContent = `${withDistances.length} warehouse(s) sorted by road distance`;
-
     document.getElementById('selected_warehouse_id').value = withDistances[0].warehouse_id;
-
     if (withDistances[0].road_km !== null) {
       document.getElementById('farm_distance_km').value = withDistances[0].road_km;
       document.getElementById('distance_display').textContent = `🛣️ ${withDistances[0].road_km} km by road`;
@@ -692,15 +660,12 @@
   }
 
   function onWarehouseChange() {
-    const select = document.getElementById('warehouse_select');
-    document.getElementById('selected_warehouse_id').value = select.value;
+    document.getElementById('selected_warehouse_id').value = document.getElementById('warehouse_select').value;
   }
 
   async function getDistance(lat, lng) {
-    const distBox    = document.getElementById('distance_display');
-    const distStatus = document.getElementById('dist_status');
-    distBox.textContent = '⏳ Calculating road distance...';
-    distStatus.textContent = '';
+    document.getElementById('distance_display').textContent = '⏳ Calculating road distance...';
+    document.getElementById('dist_status').textContent = '';
     await loadWarehousesSorted(lat, lng);
   }
 
@@ -721,9 +686,15 @@
         disp.textContent = `📍 ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
         btnIcon.textContent = '✅'; btnText.textContent = 'Location Captured!';
         btn.classList.add('captured'); btn.disabled = false;
-        await getDistance(lat, lng);
+        if (navigator.onLine) {
+          await getDistance(lat, lng);
+        } else {
+          document.getElementById('distance_display').textContent = '📍 GPS saved — distance calculated on sync';
+          document.getElementById('dist_status').textContent = 'Warehouse will be assigned when back online';
+          document.getElementById('dist_status').className = 'status-msg loading';
+        }
       },
-      err => {
+      () => {
         btnIcon.textContent = '📡'; btnText.textContent = 'Capture My Location';
         btn.disabled = false;
         showToast('Could not get GPS. Please enable location and try again.');
@@ -754,14 +725,8 @@
     linkTimer = setTimeout(async () => {
       const input  = document.getElementById('maps_link').value.trim();
       const status = document.getElementById('link_status');
-      if (!input) {
-        status.textContent = '';
-        document.getElementById('farm_lat').value = '';
-        document.getElementById('farm_lng').value = '';
-        return;
-      }
-      status.textContent = '⏳ Reading link...';
-      status.className   = 'status-msg loading';
+      if (!input) { status.textContent = ''; document.getElementById('farm_lat').value = ''; document.getElementById('farm_lng').value = ''; return; }
+      status.textContent = '⏳ Reading link...'; status.className = 'status-msg loading';
       let coords = extractCoords(input);
       if (!coords) {
         status.textContent = '⏳ Resolving short link...';
@@ -776,7 +741,7 @@
         document.getElementById('farm_lng').value = coords.lng.toFixed(6);
         status.textContent = `✅ Location found: ${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`;
         status.className   = 'status-msg ok';
-        await getDistance(coords.lat, coords.lng);
+        if (navigator.onLine) await getDistance(coords.lat, coords.lng);
       } else {
         document.getElementById('farm_lat').value = '';
         document.getElementById('farm_lng').value = '';
@@ -800,7 +765,6 @@
     const lng   = document.getElementById('farm_lng').value;
     const dist  = document.getElementById('farm_distance_km').value;
     const expKg = document.getElementById('expected_straw_kg').value;
-
     document.getElementById('rev_name').textContent     = document.getElementById('full_name').value || '—';
     document.getElementById('rev_phone').textContent    = document.getElementById('phone').value || 'No phone';
     document.getElementById('rev_acres').textContent    = acres ? acres + ' acres' : '—';
@@ -811,71 +775,95 @@
     document.getElementById('rev_gps').textContent      = lat && lng ? `${lat}, ${lng}` : 'Not captured';
     document.getElementById('rev_total_straw').textContent = acres && spa
       ? (parseFloat(acres) * parseFloat(spa)).toLocaleString('en-IN') + ' kg' : '—';
-
     const sortedMonths = [...selectedMonths].sort((a,b) => a-b).map(i => MONTH_NAMES[i]);
     document.getElementById('rev_months').textContent         = sortedMonths.join(', ') || '—';
     document.getElementById('rev_expected_straw').textContent = expKg ? parseFloat(expKg).toLocaleString('en-IN') + ' kg' : '—';
-
     const select = document.getElementById('warehouse_select');
-    const selectedText = select.options[select.selectedIndex] ? select.options[select.selectedIndex].text : '—';
-    document.getElementById('rev_warehouse').textContent = select.value ? selectedText : 'Not assigned';
+    document.getElementById('rev_warehouse').textContent = select.value ? select.options[select.selectedIndex].text : 'Not assigned';
+  }
+
+  // ── BUILD PAYLOAD ──
+  function buildPayload() {
+    const agent = JSON.parse(localStorage.getItem('agent'));
+    const sortedMonths = [...selectedMonths].sort((a,b) => a-b);
+    const expKg = document.getElementById('expected_straw_kg').value;
+    return {
+      village: {
+        village_name: document.getElementById('village_name').value,
+        district:     document.getElementById('district').value,
+        distance_km:  document.getElementById('farm_distance_km').value || null,
+        transport_cost_per_ton: null,
+        village_lat:  document.getElementById('farm_lat').value || null,
+        village_lng:  document.getElementById('farm_lng').value || null,
+      },
+      farmer: {
+        full_name:               document.getElementById('full_name').value,
+        phone:                   document.getElementById('phone').value || null,
+        total_acres:             document.getElementById('total_acres').value,
+        straw_per_acre_kg:       document.getElementById('straw_per_acre').value || null,
+        farm_lat:                document.getElementById('farm_lat').value || null,
+        farm_lng:                document.getElementById('farm_lng').value || null,
+        farm_distance_km:        document.getElementById('farm_distance_km').value || null,
+        transport_cost_per_trip: document.getElementById('transport_cost').value || null,
+        added_by_user_id:        agent.user_id,
+        added_by_name:           agent.full_name,
+        warehouse_id:            document.getElementById('selected_warehouse_id').value || null,
+      },
+      season: {
+        season_name:       sortedMonths.map(i => MONTH_FULL[i]).join(', '),
+        month_start:       sortedMonths[0] + 1,
+        month_end:         sortedMonths[sortedMonths.length - 1] + 1,
+        expected_straw_kg: expKg || null,
+      }
+    };
   }
 
   // ── SUBMIT ──
   async function submitForm() {
     const nextBtn = document.getElementById('nextBtn');
     nextBtn.textContent = '⏳ Saving...'; nextBtn.disabled = true;
-    try {
-      const agent = JSON.parse(localStorage.getItem('agent'));
 
+    // OFFLINE PATH
+    if (!navigator.onLine) {
+      OfflineSync.addToQueue(buildPayload());
+      updateQueueBadge();
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById('navBtns').style.display = 'none';
+      const screen = document.getElementById('successScreen');
+      screen.classList.add('active', 'offline-save');
+      document.getElementById('successTitle').textContent = 'Saved Offline!';
+      document.getElementById('successMsg').textContent =
+        'No internet right now. Details saved locally and will sync automatically when you reconnect.';
+      return;
+    }
+
+    // ONLINE PATH
+    try {
+      const payload = buildPayload();
       const villageRes = await fetch(`${API}/villages`, {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({
-          village_name: document.getElementById('village_name').value,
-          district:     document.getElementById('district').value,
-          distance_km:  document.getElementById('farm_distance_km').value || null,
-          transport_cost_per_ton: null,
-          village_lat:  document.getElementById('farm_lat').value || null,
-          village_lng:  document.getElementById('farm_lng').value || null,
-        })
+        body: JSON.stringify(payload.village)
       });
       const village = await villageRes.json();
 
       const farmerRes = await fetch(`${API}/farmers`, {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({
-          full_name:               document.getElementById('full_name').value,
-          phone:                   document.getElementById('phone').value || null,
-          village_id:              village.village_id,
-          total_acres:             document.getElementById('total_acres').value,
-          straw_per_acre_kg:       document.getElementById('straw_per_acre').value || null,
-          farm_lat:                document.getElementById('farm_lat').value || null,
-          farm_lng:                document.getElementById('farm_lng').value || null,
-          farm_distance_km:        document.getElementById('farm_distance_km').value || null,
-          transport_cost_per_trip: document.getElementById('transport_cost').value || null,
-          added_by_user_id:        agent.user_id,
-          added_by_name:           agent.full_name,
-          warehouse_id:            document.getElementById('selected_warehouse_id').value || null,
-        })
+        body: JSON.stringify({ ...payload.farmer, village_id: village.village_id })
       });
       const farmer = await farmerRes.json();
 
-      const sortedMonths = [...selectedMonths].sort((a,b) => a-b).map(i => MONTH_FULL[i]);
-      const expKg = document.getElementById('expected_straw_kg').value;
       await fetch(`${API}/seasons`, {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({
-          farmer_id:         farmer.farmer_id,
-          season_name:       sortedMonths.join(', '),
-          month_start:       [...selectedMonths].sort((a,b)=>a-b)[0] + 1,
-          month_end:         [...selectedMonths].sort((a,b)=>a-b).slice(-1)[0] + 1,
-          expected_straw_kg: expKg || null,
-        })
+        body: JSON.stringify({ ...payload.season, farmer_id: farmer.farmer_id })
       });
 
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
       document.getElementById('navBtns').style.display = 'none';
-      document.getElementById('successScreen').classList.add('active');
+      const screen = document.getElementById('successScreen');
+      screen.classList.remove('offline-save');
+      screen.classList.add('active');
+      document.getElementById('successTitle').textContent = 'Farmer Saved!';
+      document.getElementById('successMsg').textContent = 'Successfully added to the Straw Collector database.';
     } catch(err) {
       showToast('❌ Error saving. Please try again.');
       nextBtn.textContent = '💾 Save Farmer'; nextBtn.disabled = false;
@@ -884,7 +872,7 @@
 
   // ── RESET ──
   function resetForm() {
-    document.getElementById('successScreen').classList.remove('active');
+    document.getElementById('successScreen').classList.remove('active', 'offline-save');
     document.getElementById('navBtns').style.display = 'flex';
     document.querySelectorAll('input, textarea, select').forEach(el => el.value = '');
     selectedMonths.clear();
@@ -910,18 +898,20 @@
     showStep(1);
   }
 
+  // ── INIT ──
   buildMonthGrid();
   updateProgress();
+  updateOfflineBanner();
+  updateQueueBadge();
 </script>
 
-
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .catch(err => console.log('SW registration failed:', err));
-      });
-    }
-  </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .catch(err => console.log('SW registration failed:', err));
+    });
+  }
+</script>
 </body>
 </html>
