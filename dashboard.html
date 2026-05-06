@@ -355,6 +355,7 @@
   <a class="nav-item" onclick="showSection('promoters')"><span class="nav-icon">⭐</span><span>Promoters</span></a>
   <div class="sidebar-bottom">
     <a href="home.html" class="add-farmer-btn" style="display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(255,255,255,0.1);color:#fff;text-decoration:none;margin-bottom:8px;">🏠 Home</a>
+    <button onclick="refreshDashboard()" class="add-farmer-btn" style="background:rgba(255,255,255,0.15);color:#fff;margin-bottom:8px;">🔄 Refresh</button>
     <button onclick="logout()" class="add-farmer-btn" style="background:#dc2626;color:#fff;">🚪 Logout</button>
   </div>
 </aside>
@@ -458,13 +459,14 @@
     <div class="panel">
       <div class="panel-header">
         <div><div class="panel-title">Field Agents</div><div class="panel-sub" id="agentsCount">Loading...</div></div>
+        <button class="panel-action" onclick="toggleAgentForm('agent')">➕ Add New Agent</button>
       </div>
       <div class="ag-stats">
         <div class="ag-stat-box"><div class="ag-stat-num" id="agStatTotal">—</div><div class="ag-stat-txt">Total Agents</div></div>
         <div class="ag-stat-box"><div class="ag-stat-num" id="agStatActive">—</div><div class="ag-stat-txt">Active</div></div>
         <div class="ag-stat-box"><div class="ag-stat-num" id="agStatFarmers">—</div><div class="ag-stat-txt">Farmers Added</div></div>
       </div>
-      <div class="ag-form" id="agentFormSection">
+      <div class="ag-form" id="agentFormSection" style="display:none;">
         <h3 id="agentFormTitle">➕ Add New Agent</h3>
         <input type="hidden" id="editingAgentId" value=""/>
         <div class="ag-grid-3">
@@ -485,13 +487,14 @@
     <div class="panel">
       <div class="panel-header">
         <div><div class="panel-title">Promoters</div><div class="panel-sub" id="promotersCount">Loading...</div></div>
+        <button class="panel-action" onclick="toggleAgentForm('promoter')">➕ Add New Promoter</button>
       </div>
       <div class="ag-stats">
         <div class="ag-stat-box"><div class="ag-stat-num" id="prStatTotal">—</div><div class="ag-stat-txt">Total Promoters</div></div>
         <div class="ag-stat-box"><div class="ag-stat-num" id="prStatActive">—</div><div class="ag-stat-txt">Active</div></div>
         <div class="ag-stat-box"><div class="ag-stat-num" id="prStatFarmers">—</div><div class="ag-stat-txt">Farmers Added</div></div>
       </div>
-      <div class="ag-form" id="promoterFormSection">
+      <div class="ag-form" id="promoterFormSection" style="display:none;">
         <h3 id="promoterFormTitle">➕ Add New Promoter</h3>
         <input type="hidden" id="editingPromoterId" value=""/>
         <div class="ag-grid-3">
@@ -1351,6 +1354,26 @@
     if (el) el.classList.toggle('open');
   }
 
+  /* ---- Toggle Add Agent/Promoter form visibility ---- */
+  function toggleAgentForm(role) {
+    const isAgent = role === 'agent';
+    const formEl = document.getElementById(isAgent ? 'agentFormSection' : 'promoterFormSection');
+    if (formEl.style.display === 'none') {
+      formEl.style.display = '';
+      cancelEditAgent(role); // reset to fresh Add mode
+      formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      formEl.style.display = 'none';
+      cancelEditAgent(role);
+    }
+  }
+
+  /* ---- Refresh dashboard ---- */
+  function refreshDashboard() {
+    showToast('🔄 Refreshing...');
+    loadAll();
+  }
+
   /* ---- Agent/Promoter auto-fill helpers ---- */
   function agentPhoneInput(el, role) {
     // Allow only digits, max 10
@@ -1387,6 +1410,10 @@
     const isAgent = role === 'agent';
     const a = allAgents.find(x => x.user_id === id);
     if (!a) return;
+
+    // Ensure form is visible
+    const formEl = document.getElementById(isAgent ? 'agentFormSection' : 'promoterFormSection');
+    formEl.style.display = '';
 
     // Set edit mode
     document.getElementById(isAgent ? 'editingAgentId' : 'editingPromoterId').value = id;
@@ -1446,6 +1473,7 @@
         if (data.user_id || data.success) {
           showToast(`✅ ${isAgent ? 'Agent' : 'Promoter'} "${name}" updated!`);
           cancelEditAgent(role);
+          document.getElementById(isAgent ? 'agentFormSection' : 'promoterFormSection').style.display = 'none';
           loadAndRenderUsers(role);
         } else { showToast('❌ ' + (data.error||'Could not update user')); }
       } else {
@@ -1455,6 +1483,7 @@
         if (data.user_id) {
           showToast(`✅ ${isAgent ? 'Agent' : 'Promoter'} "${name}" created!`);
           cancelEditAgent(role);
+          document.getElementById(isAgent ? 'agentFormSection' : 'promoterFormSection').style.display = 'none';
           loadAndRenderUsers(role);
         } else { showToast('❌ ' + (data.error||'Could not create user')); }
       }
