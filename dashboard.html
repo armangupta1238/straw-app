@@ -187,7 +187,8 @@
     .ag-stat-txt { font-size: 11px; color: var(--muted); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
     .ag-form { padding: 20px; border-bottom: 1px solid var(--border); background: #fafafe; }
     .ag-form h3 { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 14px; }
-    .ag-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: end; }
+    .ag-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; align-items: end; }
+    .ag-grid-3 .ag-add-btn { grid-column: 1 / -1; justify-self: start; }
     .ag-fld { display: flex; flex-direction: column; gap: 5px; }
     .ag-fld label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; color: var(--primary); }
     .ag-input { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--dark); background: #fff; outline: none; }
@@ -463,13 +464,16 @@
         <div class="ag-stat-box"><div class="ag-stat-num" id="agStatActive">—</div><div class="ag-stat-txt">Active</div></div>
         <div class="ag-stat-box"><div class="ag-stat-num" id="agStatFarmers">—</div><div class="ag-stat-txt">Farmers Added</div></div>
       </div>
-      <div class="ag-form">
-        <h3>➕ Add New Agent</h3>
+      <div class="ag-form" id="agentFormSection">
+        <h3 id="agentFormTitle">➕ Add New Agent</h3>
+        <input type="hidden" id="editingAgentId" value=""/>
         <div class="ag-grid-3">
-          <div class="ag-fld"><label>Full Name</label><input class="ag-input" type="text" id="newAgentName" placeholder="e.g. Rahul Kumar"/></div>
-          <div class="ag-fld"><label>Username</label><input class="ag-input" type="text" id="newAgentUsername" placeholder="e.g. rahul_k"/></div>
-          <div class="ag-fld"><label>Password</label><input class="ag-input" type="text" id="newAgentPassword" placeholder="e.g. straw2025"/></div>
+          <div class="ag-fld"><label>Full Name</label><input class="ag-input" type="text" id="newAgentName" placeholder="e.g. Rajesh Kumar" oninput="agentAutoFill('agent')"/></div>
+          <div class="ag-fld"><label>Phone (10 digits)</label><input class="ag-input" type="text" id="newAgentPhone" placeholder="e.g. 9876543210" maxlength="10" inputmode="numeric" oninput="agentPhoneInput(this,'agent')"/></div>
+          <div class="ag-fld"><label>Username</label><input class="ag-input" type="text" id="newAgentUsername" placeholder="auto-generated"/></div>
+          <div class="ag-fld"><label>Password</label><input class="ag-input" type="text" id="newAgentPassword" placeholder="auto-generated"/></div>
           <button class="ag-add-btn" id="addAgentBtn" onclick="addUser('agent')">Add Agent</button>
+          <button class="ag-add-btn" id="cancelEditAgentBtn" onclick="cancelEditAgent()" style="display:none;background:var(--muted);">Cancel</button>
         </div>
       </div>
       <div id="agentsList"><div class="loading"><div class="spinner"></div> Loading agents...</div></div>
@@ -487,13 +491,16 @@
         <div class="ag-stat-box"><div class="ag-stat-num" id="prStatActive">—</div><div class="ag-stat-txt">Active</div></div>
         <div class="ag-stat-box"><div class="ag-stat-num" id="prStatFarmers">—</div><div class="ag-stat-txt">Farmers Added</div></div>
       </div>
-      <div class="ag-form">
-        <h3>➕ Add New Promoter</h3>
+      <div class="ag-form" id="promoterFormSection">
+        <h3 id="promoterFormTitle">➕ Add New Promoter</h3>
+        <input type="hidden" id="editingPromoterId" value=""/>
         <div class="ag-grid-3">
-          <div class="ag-fld"><label>Full Name</label><input class="ag-input" type="text" id="newPromoterName" placeholder="e.g. Arman Gupta"/></div>
-          <div class="ag-fld"><label>Username</label><input class="ag-input" type="text" id="newPromoterUsername" placeholder="e.g. arman_g"/></div>
-          <div class="ag-fld"><label>Password</label><input class="ag-input" type="text" id="newPromoterPassword" placeholder="e.g. straw2025"/></div>
+          <div class="ag-fld"><label>Full Name</label><input class="ag-input" type="text" id="newPromoterName" placeholder="e.g. Arman Gupta" oninput="agentAutoFill('promoter')"/></div>
+          <div class="ag-fld"><label>Phone (10 digits)</label><input class="ag-input" type="text" id="newPromoterPhone" placeholder="e.g. 9876543210" maxlength="10" inputmode="numeric" oninput="agentPhoneInput(this,'promoter')"/></div>
+          <div class="ag-fld"><label>Username</label><input class="ag-input" type="text" id="newPromoterUsername" placeholder="auto-generated"/></div>
+          <div class="ag-fld"><label>Password</label><input class="ag-input" type="text" id="newPromoterPassword" placeholder="auto-generated"/></div>
           <button class="ag-add-btn" id="addPromoterBtn" onclick="addUser('promoter')">Add Promoter</button>
+          <button class="ag-add-btn" id="cancelEditPromoterBtn" onclick="cancelEditAgent('promoter')" style="display:none;background:var(--muted);">Cancel</button>
         </div>
       </div>
       <div id="promotersList"><div class="loading"><div class="spinner"></div> Loading promoters...</div></div>
@@ -1316,7 +1323,7 @@
             <div class="${avatarClass}">${avatarIcon}</div>
             <div class="ag-info">
               <div class="ag-name">${a.full_name}</div>
-              <div class="ag-uname">@${a.username}</div>
+              <div class="ag-uname">@${a.username}${a.phone ? ' · 📞 ' + a.phone : ''}</div>
               <div class="ag-meta">
                 <div class="ag-meta-i"><div class="ag-meta-v">${a.farmers_added||0}</div><div class="ag-meta-l">Farmers</div></div>
                 <div class="ag-meta-i"><div class="ag-meta-v">${parseFloat(a.total_acres||0).toFixed(0)}</div><div class="ag-meta-l">Acres</div></div>
@@ -1325,6 +1332,7 @@
             </div>
             <div class="ag-acts">
               <span class="ag-status ${a.is_active?'on':'off'}">${a.is_active?'✅ Active':'❌ Inactive'}</span>
+              <button class="ag-tog" onclick="event.stopPropagation();editAgentInline(${a.user_id},'${role}')" style="color:var(--blue);border-color:var(--blue-pale);">✏️ Edit</button>
               <button class="ag-tog" onclick="event.stopPropagation();toggleUser(${a.user_id},'${role}')">${a.is_active?'Deactivate':'Activate'}</button>
               <button class="ag-del" onclick="event.stopPropagation();deleteUser(${a.user_id},'${a.full_name.replace(/'/g,"\\'")}','${role}')">🗑</button>
             </div>
@@ -1343,26 +1351,116 @@
     if (el) el.classList.toggle('open');
   }
 
+  /* ---- Agent/Promoter auto-fill helpers ---- */
+  function agentPhoneInput(el, role) {
+    // Allow only digits, max 10
+    el.value = el.value.replace(/\D/g, '').slice(0, 10);
+    agentAutoFill(role);
+  }
+
+  function agentAutoFill(role) {
+    const isAgent = role === 'agent';
+    const nameEl  = document.getElementById(isAgent ? 'newAgentName'     : 'newPromoterName');
+    const phoneEl = document.getElementById(isAgent ? 'newAgentPhone'    : 'newPromoterPhone');
+    const userEl  = document.getElementById(isAgent ? 'newAgentUsername' : 'newPromoterUsername');
+    const passEl  = document.getElementById(isAgent ? 'newAgentPassword' : 'newPromoterPassword');
+
+    const name  = nameEl.value.trim();
+    const phone = phoneEl.value.trim();
+
+    // Username = first word of name (lowercase) + last 3 digits of phone
+    const firstName = name.split(/\s+/)[0] || '';
+    const last3     = phone.length >= 3 ? phone.slice(-3) : phone;
+    if (firstName || last3) {
+      userEl.value = firstName.toLowerCase() + last3;
+    }
+
+    // Password = first 6 digits of phone
+    if (phone.length >= 6) {
+      passEl.value = phone.slice(0, 6);
+    } else {
+      passEl.value = phone; // show whatever digits typed so far
+    }
+  }
+
+  function editAgentInline(id, role) {
+    const isAgent = role === 'agent';
+    const a = allAgents.find(x => x.user_id === id);
+    if (!a) return;
+
+    // Set edit mode
+    document.getElementById(isAgent ? 'editingAgentId' : 'editingPromoterId').value = id;
+    document.getElementById(isAgent ? 'agentFormTitle' : 'promoterFormTitle').textContent = `✏️ Edit ${isAgent ? 'Agent' : 'Promoter'}: ${a.full_name}`;
+
+    // Fill fields
+    document.getElementById(isAgent ? 'newAgentName'     : 'newPromoterName').value     = a.full_name || '';
+    document.getElementById(isAgent ? 'newAgentPhone'    : 'newPromoterPhone').value    = a.phone || '';
+    document.getElementById(isAgent ? 'newAgentUsername'  : 'newPromoterUsername').value = a.username || '';
+    document.getElementById(isAgent ? 'newAgentPassword'  : 'newPromoterPassword').value = '';  // blank for security
+
+    // Show save/cancel buttons
+    const btn = document.getElementById(isAgent ? 'addAgentBtn' : 'addPromoterBtn');
+    btn.textContent = '💾 Save Changes';
+    document.getElementById(isAgent ? 'cancelEditAgentBtn' : 'cancelEditPromoterBtn').style.display = '';
+
+    // Scroll to form
+    document.getElementById(isAgent ? 'agentFormSection' : 'promoterFormSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function cancelEditAgent(role) {
+    if (!role) role = 'agent';
+    const isAgent = role === 'agent';
+    document.getElementById(isAgent ? 'editingAgentId' : 'editingPromoterId').value = '';
+    document.getElementById(isAgent ? 'agentFormTitle' : 'promoterFormTitle').textContent = `➕ Add New ${isAgent ? 'Agent' : 'Promoter'}`;
+    document.getElementById(isAgent ? 'newAgentName'     : 'newPromoterName').value = '';
+    document.getElementById(isAgent ? 'newAgentPhone'    : 'newPromoterPhone').value = '';
+    document.getElementById(isAgent ? 'newAgentUsername'  : 'newPromoterUsername').value = '';
+    document.getElementById(isAgent ? 'newAgentPassword'  : 'newPromoterPassword').value = '';
+    const btn = document.getElementById(isAgent ? 'addAgentBtn' : 'addPromoterBtn');
+    btn.textContent = isAgent ? 'Add Agent' : 'Add Promoter';
+    document.getElementById(isAgent ? 'cancelEditAgentBtn' : 'cancelEditPromoterBtn').style.display = 'none';
+  }
+
   async function addUser(role) {
     const isAgent  = role === 'agent';
     const name     = document.getElementById(isAgent ? 'newAgentName'     : 'newPromoterName').value.trim();
+    const phone    = document.getElementById(isAgent ? 'newAgentPhone'    : 'newPromoterPhone').value.trim();
     const username = document.getElementById(isAgent ? 'newAgentUsername' : 'newPromoterUsername').value.trim();
     const password = document.getElementById(isAgent ? 'newAgentPassword' : 'newPromoterPassword').value.trim();
     const btn      = document.getElementById(isAgent ? 'addAgentBtn'      : 'addPromoterBtn');
-    if (!name || !username || !password) { showToast('⚠️ Please fill all fields'); return; }
-    btn.disabled = true; btn.textContent = 'Adding...';
+    const editId   = document.getElementById(isAgent ? 'editingAgentId'   : 'editingPromoterId').value;
+
+    if (!name || !username) { showToast('⚠️ Name and username are required'); return; }
+    if (phone && phone.length !== 10) { showToast('⚠️ Phone must be exactly 10 digits'); return; }
+    if (!editId && !password) { showToast('⚠️ Password is required for new users'); return; }
+
+    btn.disabled = true; btn.textContent = editId ? '⏳ Saving...' : 'Adding...';
     try {
-      const res  = await fetch(`${API}/auth/agents`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({full_name:name, username, password, role}) });
-      const data = await res.json();
-      if (data.user_id) {
-        showToast(`✅ ${role === 'promoter' ? 'Promoter' : 'Agent'} "${name}" created!`);
-        document.getElementById(isAgent ? 'newAgentName'     : 'newPromoterName').value = '';
-        document.getElementById(isAgent ? 'newAgentUsername' : 'newPromoterUsername').value = '';
-        document.getElementById(isAgent ? 'newAgentPassword' : 'newPromoterPassword').value = '';
-        loadAndRenderUsers(role);
-      } else { showToast('❌ ' + (data.error||'Could not create user')); }
+      const body = { full_name: name, username, role, phone: phone || null };
+      if (password) body.password = password;
+
+      if (editId) {
+        // UPDATE existing agent
+        const res  = await fetch(`${API}/auth/agents/${editId}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+        const data = await res.json();
+        if (data.user_id || data.success) {
+          showToast(`✅ ${isAgent ? 'Agent' : 'Promoter'} "${name}" updated!`);
+          cancelEditAgent(role);
+          loadAndRenderUsers(role);
+        } else { showToast('❌ ' + (data.error||'Could not update user')); }
+      } else {
+        // CREATE new agent
+        const res  = await fetch(`${API}/auth/agents`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+        const data = await res.json();
+        if (data.user_id) {
+          showToast(`✅ ${isAgent ? 'Agent' : 'Promoter'} "${name}" created!`);
+          cancelEditAgent(role);
+          loadAndRenderUsers(role);
+        } else { showToast('❌ ' + (data.error||'Could not create user')); }
+      }
     } catch(e) { showToast('❌ Server error'); }
-    btn.disabled = false; btn.textContent = isAgent ? 'Add Agent' : 'Add Promoter';
+    btn.disabled = false;
+    btn.textContent = editId ? '💾 Save Changes' : (isAgent ? 'Add Agent' : 'Add Promoter');
   }
 
   async function toggleUser(id, role) {
