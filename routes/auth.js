@@ -31,7 +31,7 @@ router.get('/agents', async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT
-        u.user_id, u.full_name, u.username, u.role, u.is_active, u.created_at,
+        u.user_id, u.full_name, u.username, u.phone, u.role, u.is_active, u.created_at,
         COUNT(DISTINCT f.farmer_id) as farmers_added,
         COALESCE(SUM(f.total_acres), 0) as total_acres,
         COALESCE(SUM(p.straw_qty_kg) / 1000, 0) as total_straw_tons
@@ -50,14 +50,45 @@ router.get('/agents', async (req, res) => {
 
 // Add new user — role comes from request body (agent or promoter)
 router.post('/agents', async (req, res) => {
-  const { full_name, username, password, role } = req.body;
+  const { full_name, username, password, role, phone } = req.body;
   try {
     const result = await pool.query(
-      `INSERT INTO users (full_name, username, password, role)
-       VALUES ($1, $2, $3, $4) RETURNING *`,
-      [full_name, username, password, role || 'agent']
+      `INSERT INTO users (full_name, username, password, role, phone)
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [full_name, username, password, role || 'agent', phone || null]
     );
     res.json(result.rows[0]);
+  } catch (err) {
+    if (err.code === '23505') {
+      res.status(400).json({ error: 'Username already exists' });
+    } else {
+      res.status(500).json({ error: err.message });
+    }
+  }
+});
+
+// Edit user (update name, phone, username, password)
+router.put('/agents/:id', async (req, res) => {
+  const { full_name, username, password, role, phone } = req.body;
+  try {
+    // Build dynamic update — only update password if provided
+    if (password) {
+      const result = await pool.query(
+        `UPDATE users SET full_name = $1, username = $2, password = $3, role = $4, phone = $5
+         WHERE user_id = $6 RETURNING user_id, full_name, username, phone, role, is_active`,
+        [full_name, username, password, role || 'agent', phone || null, req.params.id]
+      );
+      if (result.rows.length === 0) return res.status(404).json({ error: 'User not found' });
+      res.json(result.rows[0]);
+    } else {
+      const result = await pool.query(
+        `UPDATE users SET full_name = $1, username = $2, role = $3, phone = $4
+         WHERE user_id = $5 RETURNING user_id, full_name, username, phone, role, is_active`,
+        [full_name, username, role || 'agent', phone || null, req.params.id]
+      );
+      if (result.rows.length === 0) return res.status(404).json({ error: 'User not found' });
+      res.json(result.rows[0]);
+    }
   } catch (err) {
     if (err.code === '23505') {
       res.status(400).json({ error: 'Username already exists' });
