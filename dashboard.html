@@ -1283,6 +1283,11 @@
         renderStats();
         renderSeasonsSummary();
         renderAllSeasons();
+        // Refresh agents data so agent stats reflect reassignment
+        try {
+          const agRes = await fetch(`${API}/auth/agents`);
+          allAgents = await agRes.json();
+        } catch(e) {}
       } else { showToast('❌ Could not save changes'); }
     } catch(e) { showToast('❌ Server error'); }
     btn.textContent = '💾 Save Changes'; btn.disabled = false;
