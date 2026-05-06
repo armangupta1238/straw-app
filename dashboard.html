@@ -753,6 +753,32 @@
 </div>
 
 <!-- ADD/EDIT MACHINE MODAL (NEW) -->
+
+<!-- EDIT PICKUP MODAL -->
+<div class="modal-overlay" id="editPickupModal">
+  <div class="modal">
+    <h2>Edit Pickup</h2>
+    <p class="modal-sub">Update pickup details. Changes save instantly.</p>
+    <input type="hidden" id="ep_pickup_id"/>
+    <div class="modal-grid">
+      <div class="modal-fld"><label>Pickup Date</label><input type="date" id="ep_date"/></div>
+      <div class="modal-fld"><label>Straw Qty (Tons)</label><input type="number" id="ep_straw_tons" step="0.1" min="0" placeholder="e.g. 3"/></div>
+      <div class="modal-fld"><label>Acres Picked</label><input type="number" id="ep_acres" step="0.1" min="0" placeholder="e.g. 5"/></div>
+      <div class="modal-fld"><label>Vehicle No</label><input type="text" id="ep_vehicle" placeholder="CG 07 AB 1234"/></div>
+      <div class="modal-fld"><label>Transport Cost (₹)</label><input type="number" id="ep_transport" min="0" placeholder="e.g. 5000"/></div>
+      <div class="modal-fld"><label>Farmer Compensation (₹)</label><input type="number" id="ep_compensation" min="0" placeholder="e.g. 1000"/></div>
+      <div class="modal-fld"><label>No. of Labourers</label><input type="number" id="ep_labour_count" min="0" placeholder="e.g. 2"/></div>
+      <div class="modal-fld"><label>Cost / Labourer (₹)</label><input type="number" id="ep_labour_rate" min="0" placeholder="e.g. 250"/></div>
+      <div class="modal-fld"><label>Agent Name</label><input type="text" id="ep_agent" placeholder="Agent name"/></div>
+      <div class="modal-fld"><label>Next Pickup Date</label><input type="date" id="ep_next_date"/></div>
+      <div class="modal-fld full"><label>Notes</label><textarea id="ep_notes" rows="2" style="padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--dark);background:#fff;outline:none;resize:vertical;"></textarea></div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closePickupModal()">Cancel</button>
+      <button class="modal-save" id="epSaveBtn" onclick="savePickupEdit()">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
 <div class="modal-overlay" id="machineModal">
   <div class="modal">
     <h2 id="mchModalTitle">Add Machine</h2>
@@ -1574,7 +1600,7 @@
     document.getElementById('pickupsCount').textContent = `${filtered.length} record${filtered.length!==1?'s':''}`;
     if (!filtered.length) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">🚛</div><p>No pickups found</p></div>`; return; }
     el.innerHTML = `<div class="table-wrap"><table style="width:100%">
-      <thead><tr><th>Date</th><th>Farmer</th><th>Village</th><th>Straw (kg)</th><th>Acres Picked</th><th>Transport (₹)</th><th>Labourers</th><th>Labour Cost (₹)</th><th>Total Cost (₹)</th><th>Vehicle</th><th>Agent</th><th>Next Pickup</th><th>Status</th><th>Actions</th></tr></thead>
+      <thead><tr><th>Date</th><th>Farmer</th><th>Village</th><th>Straw (T)</th><th>Acres Picked</th><th>Transport (₹)</th><th>Labourers</th><th>Labour Cost (₹)</th><th>Total Cost (₹)</th><th>Vehicle</th><th>Agent</th><th>Next Pickup</th><th>Status</th><th>Actions</th></tr></thead>
       <tbody>${filtered.map(p => {
         const labourTotal = parseFloat(p.labour_count||0) * parseFloat(p.labour_cost_per_person||0);
         const transport   = parseFloat(p.transport_cost||0);
@@ -1585,7 +1611,7 @@
           <td>${new Date(p.pickup_date).toLocaleDateString('en-IN')}</td>
           <td><div class="farmer-name">${p.full_name||'—'}</div></td>
           <td>${p.village_name||'—'}</td>
-          <td><strong>${p.straw_qty_kg?parseFloat(p.straw_qty_kg).toLocaleString('en-IN'):'—'}</strong></td>
+          <td><strong>${p.straw_qty_kg?(parseFloat(p.straw_qty_kg)/1000).toFixed(1)+'T':'—'}</strong></td>
           <td>${p.acres_picked ? parseFloat(p.acres_picked).toLocaleString('en-IN') + ' ac' : '—'}</td>
           <td>${transport > 0 ? '₹'+transport.toLocaleString('en-IN') : '—'}</td>
           <td>${p.labour_count||'—'}</td>
@@ -1643,42 +1669,62 @@
     const p = allPickups.find(x => x.pickup_id === pickupId);
     if (!p) return;
 
-    const newStraw = prompt('Straw Qty (kg):', p.straw_qty_kg || '');
-    if (newStraw === null) return;
-    const newAcres = prompt('Acres Picked:', p.acres_picked || '');
-    if (newAcres === null) return;
-    const newTransport = prompt('Transport Cost (₹):', p.transport_cost || '');
-    if (newTransport === null) return;
-    const newLabourCount = prompt('No. of Labourers:', p.labour_count || '');
-    if (newLabourCount === null) return;
-    const newLabourRate = prompt('Cost per Labourer (₹):', p.labour_cost_per_person || '');
-    if (newLabourRate === null) return;
-    const newVehicle = prompt('Vehicle No:', p.vehicle_no || '');
-    if (newVehicle === null) return;
+    document.getElementById('ep_pickup_id').value     = pickupId;
+    document.getElementById('ep_date').value           = p.pickup_date ? p.pickup_date.slice(0,10) : '';
+    document.getElementById('ep_straw_tons').value     = p.straw_qty_kg ? (parseFloat(p.straw_qty_kg) / 1000).toFixed(1) : '';
+    document.getElementById('ep_acres').value           = p.acres_picked || '';
+    document.getElementById('ep_vehicle').value         = p.vehicle_no || '';
+    document.getElementById('ep_transport').value       = p.transport_cost || '';
+    document.getElementById('ep_compensation').value    = p.farmer_compensation || '';
+    document.getElementById('ep_labour_count').value    = p.labour_count || '';
+    document.getElementById('ep_labour_rate').value     = p.labour_cost_per_person || '';
+    document.getElementById('ep_agent').value           = p.agent_name || '';
+    document.getElementById('ep_next_date').value       = p.next_pickup_date ? p.next_pickup_date.slice(0,10) : '';
+    document.getElementById('ep_notes').value           = p.notes || '';
+
+    document.getElementById('editPickupModal').classList.add('open');
+  }
+
+  function closePickupModal() {
+    document.getElementById('editPickupModal').classList.remove('open');
+  }
+
+  document.getElementById('editPickupModal').addEventListener('click', function(e) {
+    if (e.target === this) closePickupModal();
+  });
+
+  async function savePickupEdit() {
+    const pickupId = document.getElementById('ep_pickup_id').value;
+    if (!pickupId) return;
+
+    const btn = document.getElementById('epSaveBtn');
+    btn.textContent = '⏳ Saving...'; btn.disabled = true;
+
+    const strawTons = parseFloat(document.getElementById('ep_straw_tons').value) || 0;
 
     try {
       const res = await fetch(`${API}/pickups/${pickupId}`, {
         method: 'PUT',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({
-          pickup_date:            p.pickup_date,
-          straw_qty_kg:           newStraw || p.straw_qty_kg,
-          acres_picked:           newAcres || null,
-          transport_cost:         newTransport || null,
-          vehicle_no:             newVehicle || p.vehicle_no,
-          agent_name:             p.agent_name,
-          notes:                  p.notes,
-          labour_count:           newLabourCount || null,
-          labour_cost_per_person: newLabourRate || null,
-          next_pickup_date:       p.next_pickup_date,
-          warehouse_id:           p.warehouse_id,
-          farmer_compensation:    p.farmer_compensation,
+          pickup_date:            document.getElementById('ep_date').value,
+          straw_qty_kg:           strawTons * 1000,
+          acres_picked:           document.getElementById('ep_acres').value || null,
+          transport_cost:         document.getElementById('ep_transport').value || null,
+          vehicle_no:             document.getElementById('ep_vehicle').value,
+          agent_name:             document.getElementById('ep_agent').value || null,
+          notes:                  document.getElementById('ep_notes').value || null,
+          labour_count:           document.getElementById('ep_labour_count').value || null,
+          labour_cost_per_person: document.getElementById('ep_labour_rate').value || null,
+          next_pickup_date:       document.getElementById('ep_next_date').value || null,
+          warehouse_id:           allPickups.find(x => x.pickup_id == pickupId)?.warehouse_id || null,
+          farmer_compensation:    document.getElementById('ep_compensation').value || null,
         })
       });
       const data = await res.json();
       if (data.pickup_id) {
         showToast('✅ Pickup updated!');
-        // Refresh pickups
+        closePickupModal();
         const pr = await fetch(`${API}/pickups`);
         allPickups = await pr.json();
         renderAllPickups();
@@ -1686,6 +1732,7 @@
         showToast('❌ ' + (data.error || 'Could not update'));
       }
     } catch(e) { showToast('❌ Server error'); }
+    btn.textContent = '💾 Save Changes'; btn.disabled = false;
   }
 
   async function deletePickup(pickupId, farmerName) {

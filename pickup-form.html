@@ -331,8 +331,8 @@
         <input type="date" id="pickup_date"/>
       </div>
       <div class="field">
-        <label>Straw Qty (kg) *</label>
-        <input type="number" id="straw_qty_kg" placeholder="e.g. 3000" min="0" oninput="updateRemaining()"/>
+        <label>Straw Qty (Tons) *</label>
+        <input type="number" id="straw_qty_tons" placeholder="e.g. 3" min="0" step="0.1" oninput="updateRemaining()"/>
       </div>
     </div>
     <div class="field">
@@ -631,8 +631,9 @@
       ? newAcresRemaining.toLocaleString('en-IN') + ' ac remaining after this pickup'
       : '✓ All acres collected after this pickup';
 
-    const qty = parseFloat(document.getElementById('straw_qty_kg').value) || 0;
-    const newStrawTotal = selectedFarmerData._strawPicked + qty;
+    const qty = parseFloat(document.getElementById('straw_qty_tons').value) || 0;
+    const qtyKg = qty * 1000;
+    const newStrawTotal = selectedFarmerData._strawPicked + qtyKg;
     document.getElementById('f_straw_picked').textContent = newStrawTotal > 0
       ? (newStrawTotal / 1000).toFixed(1) + ' T (' + newStrawTotal.toLocaleString('en-IN') + ' kg) after this pickup'
       : '0 kg';
@@ -693,16 +694,18 @@
   async function submitPickup() {
     const farmerId   = document.getElementById('farmer_select').value;
     const pickupDate = document.getElementById('pickup_date').value;
-    const strawQty   = document.getElementById('straw_qty_kg').value;
+    const strawQtyTons = document.getElementById('straw_qty_tons').value;
     const vehicleNo  = document.getElementById('vehicle_no').value.trim();
 
-    if (!farmerId)   { showToast('⚠️ Please select a farmer'); return; }
-    if (!pickupDate) { showToast('⚠️ Please enter pickup date'); return; }
-    if (!strawQty)   { showToast('⚠️ Please enter straw quantity'); return; }
-    if (!vehicleNo)  { showToast('⚠️ Please enter vehicle number'); return; }
+    if (!farmerId)      { showToast('⚠️ Please select a farmer'); return; }
+    if (!pickupDate)    { showToast('⚠️ Please enter pickup date'); return; }
+    if (!strawQtyTons)  { showToast('⚠️ Please enter straw quantity'); return; }
+    if (!vehicleNo)     { showToast('⚠️ Please enter vehicle number'); return; }
 
     const acresPicked = document.getElementById('acres_picked').value;
     if (!acresPicked) { showToast('⚠️ Please enter acres picked up'); return; }
+
+    const strawQtyKg = parseFloat(strawQtyTons) * 1000;
 
     const btn = document.getElementById('saveBtn');
     btn.textContent = '⏳ Saving...'; btn.disabled = true;
@@ -717,7 +720,7 @@
     const pickupPayload = {
       farmer_id:              farmerId,
       pickup_date:            pickupDate,
-      straw_qty_kg:           strawQty,
+      straw_qty_kg:           strawQtyKg,
       transport_cost:         document.getElementById('transport_cost').value || null,
       vehicle_no:             vehicleNo,
       agent_name:             agent.full_name,
@@ -741,7 +744,7 @@
       screen.classList.add('active', 'offline-save');
       document.getElementById('successTitle').textContent = 'Saved Offline!';
       document.getElementById('successMsg').textContent =
-        `${parseFloat(strawQty).toLocaleString('en-IN')} kg from ${farmerName} saved locally. Will sync when you reconnect.`;
+        `${parseFloat(strawQtyTons).toLocaleString('en-IN')} T from ${farmerName} saved locally. Will sync when you reconnect.`;
       document.getElementById('nextPickupMsg').textContent = '';
       return;
     }
@@ -764,7 +767,7 @@
         screen.classList.add('active');
         document.getElementById('successTitle').textContent = 'Pickup Recorded!';
         document.getElementById('successMsg').textContent =
-          `${parseFloat(strawQty).toLocaleString('en-IN')} kg collected from ${farmerName}.`;
+          `${parseFloat(strawQtyTons).toLocaleString('en-IN')} T collected from ${farmerName}.`;
         if (nextDate) {
           const d = new Date(nextDate);
           document.getElementById('nextPickupMsg').textContent =
@@ -788,7 +791,7 @@
     document.getElementById('navBtns').style.display = 'flex';
     document.getElementById('successScreen').classList.remove('active', 'offline-save');
     document.getElementById('farmer_select').value = '';
-    document.getElementById('straw_qty_kg').value  = '';
+    document.getElementById('straw_qty_tons').value  = '';
     document.getElementById('acres_picked').value  = '';
     document.getElementById('vehicle_no').value    = '';
     document.getElementById('transport_cost').value = '';
