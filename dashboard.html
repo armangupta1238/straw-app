@@ -1547,13 +1547,14 @@
   }
 
   function getFulfillmentStatus(farmerId) {
-    const farmerSeasons = allSeasons.filter(s => s.farmer_id === farmerId);
-    const expected  = farmerSeasons.reduce((s, x) => s + parseFloat(x.expected_straw_kg || 0), 0);
-    const collected = allPickups.filter(p => p.farmer_id === farmerId).reduce((s, p) => s + parseFloat(p.straw_qty_kg || 0), 0);
-    if (expected === 0) return { status: 'no_target', label: 'No Target', cls: 'badge-blue', expected, collected };
-    if (collected === 0) return { status: 'not_picked', label: 'Not Picked', cls: 'badge-red', expected, collected };
-    if (collected >= expected) return { status: 'complete', label: 'Complete ✓', cls: 'badge-teal', expected, collected };
-    return { status: 'partial', label: `Partial (${Math.round(collected/expected*100)}%)`, cls: 'badge-amber', expected, collected };
+    const farmer = allFarmers.find(f => f.farmer_id === farmerId);
+    const totalAcres     = farmer ? parseFloat(farmer.total_acres || 0) : 0;
+    const acresCollected = allPickups.filter(p => p.farmer_id === farmerId).reduce((s, p) => s + parseFloat(p.acres_picked || 0), 0);
+    const strawCollected = allPickups.filter(p => p.farmer_id === farmerId).reduce((s, p) => s + parseFloat(p.straw_qty_kg || 0), 0);
+    if (totalAcres === 0) return { status: 'no_target', label: 'No Target', cls: 'badge-blue', totalAcres, acresCollected, strawCollected };
+    if (acresCollected === 0) return { status: 'not_picked', label: 'Not Picked', cls: 'badge-red', totalAcres, acresCollected, strawCollected };
+    if (acresCollected >= totalAcres) return { status: 'complete', label: 'Complete ✓', cls: 'badge-teal', totalAcres, acresCollected, strawCollected };
+    return { status: 'partial', label: `Partial (${Math.round(acresCollected/totalAcres*100)}%)`, cls: 'badge-amber', totalAcres, acresCollected, strawCollected };
   }
 
   function renderAllPickups() {
@@ -1573,7 +1574,7 @@
     document.getElementById('pickupsCount').textContent = `${filtered.length} record${filtered.length!==1?'s':''}`;
     if (!filtered.length) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">🚛</div><p>No pickups found</p></div>`; return; }
     el.innerHTML = `<div class="table-wrap"><table style="width:100%">
-      <thead><tr><th>Date</th><th>Farmer</th><th>Village</th><th>Straw (kg)</th><th>Transport (₹)</th><th>Labourers</th><th>Labour Cost (₹)</th><th>Total Cost (₹)</th><th>Vehicle</th><th>Agent</th><th>Next Pickup</th><th>Status</th></tr></thead>
+      <thead><tr><th>Date</th><th>Farmer</th><th>Village</th><th>Straw (kg)</th><th>Acres Picked</th><th>Transport (₹)</th><th>Labourers</th><th>Labour Cost (₹)</th><th>Total Cost (₹)</th><th>Vehicle</th><th>Agent</th><th>Next Pickup</th><th>Status</th><th>Actions</th></tr></thead>
       <tbody>${filtered.map(p => {
         const labourTotal = parseFloat(p.labour_count||0) * parseFloat(p.labour_cost_per_person||0);
         const transport   = parseFloat(p.transport_cost||0);
@@ -1585,6 +1586,7 @@
           <td><div class="farmer-name">${p.full_name||'—'}</div></td>
           <td>${p.village_name||'—'}</td>
           <td><strong>${p.straw_qty_kg?parseFloat(p.straw_qty_kg).toLocaleString('en-IN'):'—'}</strong></td>
+          <td>${p.acres_picked ? parseFloat(p.acres_picked).toLocaleString('en-IN') + ' ac' : '—'}</td>
           <td>${transport > 0 ? '₹'+transport.toLocaleString('en-IN') : '—'}</td>
           <td>${p.labour_count||'—'}</td>
           <td>${labourTotal > 0 ? '₹'+labourTotal.toLocaleString('en-IN') : '—'}</td>
@@ -1593,6 +1595,10 @@
           <td>${p.agent_name||'—'}</td>
           <td>${nextDate !== '—' ? '<span style="color:var(--primary);font-weight:600;">'+nextDate+'</span>' : '—'}</td>
           <td><span class="badge ${fs.cls}">${fs.label}</span></td>
+          <td style="white-space:nowrap">
+            <button class="btn-edit" onclick="editPickup(${p.pickup_id})">✏️ Edit</button>
+            <button class="btn-del" onclick="deletePickup(${p.pickup_id},'${(p.full_name||'').replace(/'/g,"\\'")}')">🗑</button>
+          </td>
         </tr>`;
       }).join('')}</tbody></table></div>`;
   }
@@ -1611,10 +1617,10 @@
     });
     if (!pending.length) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">✅</div><p>All collections are complete!</p></div>`; return; }
     el.innerHTML = `<div class="table-wrap"><table style="width:100%">
-      <thead><tr><th>Farmer</th><th>Village</th><th>Phone</th><th>Expected (kg)</th><th>Collected (kg)</th><th>Remaining (kg)</th><th>Next Pickup Date</th><th>Status</th><th>Action</th></tr></thead>
+      <thead><tr><th>Farmer</th><th>Village</th><th>Phone</th><th>Total Acres</th><th>Acres Collected</th><th>Acres Remaining</th><th>Straw Picked</th><th>Next Pickup Date</th><th>Status</th><th>Action</th></tr></thead>
       <tbody>${pending.map(f => {
         const fs = getFulfillmentStatus(f.farmer_id);
-        const remaining = Math.max(0, fs.expected - fs.collected);
+        const remaining = Math.max(0, fs.totalAcres - fs.acresCollected);
         const farmerPickups = allPickups.filter(p => p.farmer_id === f.farmer_id).sort((a,b) => new Date(b.pickup_date) - new Date(a.pickup_date));
         const nextDate = farmerPickups[0]?.next_pickup_date
           ? new Date(farmerPickups[0].next_pickup_date).toLocaleDateString('en-IN') : '—';
@@ -1622,14 +1628,74 @@
           <td><div class="farmer-name">${f.full_name}</div></td>
           <td>${f.village_name||'—'}</td>
           <td>${f.phone||'—'}</td>
-          <td>${fs.expected > 0 ? fs.expected.toLocaleString('en-IN') : '—'}</td>
-          <td>${fs.collected > 0 ? fs.collected.toLocaleString('en-IN') : '0'}</td>
-          <td><strong style="color:var(--red)">${remaining.toLocaleString('en-IN')}</strong></td>
+          <td>${fs.totalAcres > 0 ? fs.totalAcres.toLocaleString('en-IN') + ' ac' : '—'}</td>
+          <td>${fs.acresCollected > 0 ? fs.acresCollected.toLocaleString('en-IN') + ' ac' : '0 ac'}</td>
+          <td><strong style="color:var(--red)">${remaining.toLocaleString('en-IN')} ac</strong></td>
+          <td>${fs.strawCollected > 0 ? (fs.strawCollected/1000).toFixed(1) + 'T' : '0'}</td>
           <td>${nextDate !== '—' ? '<span style="color:var(--primary);font-weight:600;">'+nextDate+'</span>' : '<span style="color:var(--muted);">Not scheduled</span>'}</td>
           <td><span class="badge ${fs.cls}">${fs.label}</span></td>
           <td><a href="pickup-form.html?farmer_id=${f.farmer_id}" class="panel-action" style="font-size:11px;">Record →</a></td>
         </tr>`;
       }).join('')}</tbody></table></div>`;
+  }
+
+  async function editPickup(pickupId) {
+    const p = allPickups.find(x => x.pickup_id === pickupId);
+    if (!p) return;
+
+    const newStraw = prompt('Straw Qty (kg):', p.straw_qty_kg || '');
+    if (newStraw === null) return;
+    const newAcres = prompt('Acres Picked:', p.acres_picked || '');
+    if (newAcres === null) return;
+    const newTransport = prompt('Transport Cost (₹):', p.transport_cost || '');
+    if (newTransport === null) return;
+    const newLabourCount = prompt('No. of Labourers:', p.labour_count || '');
+    if (newLabourCount === null) return;
+    const newLabourRate = prompt('Cost per Labourer (₹):', p.labour_cost_per_person || '');
+    if (newLabourRate === null) return;
+    const newVehicle = prompt('Vehicle No:', p.vehicle_no || '');
+    if (newVehicle === null) return;
+
+    try {
+      const res = await fetch(`${API}/pickups/${pickupId}`, {
+        method: 'PUT',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          pickup_date:            p.pickup_date,
+          straw_qty_kg:           newStraw || p.straw_qty_kg,
+          acres_picked:           newAcres || null,
+          transport_cost:         newTransport || null,
+          vehicle_no:             newVehicle || p.vehicle_no,
+          agent_name:             p.agent_name,
+          notes:                  p.notes,
+          labour_count:           newLabourCount || null,
+          labour_cost_per_person: newLabourRate || null,
+          next_pickup_date:       p.next_pickup_date,
+          warehouse_id:           p.warehouse_id,
+          farmer_compensation:    p.farmer_compensation,
+        })
+      });
+      const data = await res.json();
+      if (data.pickup_id) {
+        showToast('✅ Pickup updated!');
+        // Refresh pickups
+        const pr = await fetch(`${API}/pickups`);
+        allPickups = await pr.json();
+        renderAllPickups();
+      } else {
+        showToast('❌ ' + (data.error || 'Could not update'));
+      }
+    } catch(e) { showToast('❌ Server error'); }
+  }
+
+  async function deletePickup(pickupId, farmerName) {
+    if (!confirm(`Delete pickup for "${farmerName}"? This cannot be undone.`)) return;
+    try {
+      await fetch(`${API}/pickups/${pickupId}`, { method: 'DELETE' });
+      allPickups = allPickups.filter(p => p.pickup_id !== pickupId);
+      showToast(`🗑 Pickup for "${farmerName}" deleted`);
+      renderAllPickups();
+    } catch(e) { showToast('❌ Could not delete'); }
   }
 
   function renderMapTable() {

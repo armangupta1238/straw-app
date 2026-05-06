@@ -287,16 +287,20 @@
     <!-- Fulfillment info — shown after farmer selected -->
     <div class="fulfillment-box hidden" id="fulfillmentBox">
       <div class="fulfill-row">
-        <span class="fulfill-label">Expected Total</span>
+        <span class="fulfill-label">Total Acres</span>
         <span class="fulfill-value" id="f_expected">—</span>
       </div>
       <div class="fulfill-row">
-        <span class="fulfill-label">Already Collected</span>
+        <span class="fulfill-label">Acres Collected</span>
         <span class="fulfill-value" id="f_collected">—</span>
       </div>
       <div class="fulfill-row">
-        <span class="fulfill-label">Remaining</span>
+        <span class="fulfill-label">Acres Remaining</span>
         <span class="fulfill-value" id="f_remaining">—</span>
+      </div>
+      <div class="fulfill-row">
+        <span class="fulfill-label">Straw Picked So Far</span>
+        <span class="fulfill-value" id="f_straw_picked">—</span>
       </div>
       <div class="fulfill-row">
         <span class="fulfill-label">Status</span>
@@ -330,6 +334,10 @@
         <label>Straw Qty (kg) *</label>
         <input type="number" id="straw_qty_kg" placeholder="e.g. 3000" min="0" oninput="updateRemaining()"/>
       </div>
+    </div>
+    <div class="field">
+      <label>Acres Picked Up *</label>
+      <input type="number" id="acres_picked" placeholder="e.g. 5" min="0" step="0.1" oninput="updateRemaining()"/>
     </div>
     <div class="field">
       <label>Vehicle Number *</label>
@@ -483,34 +491,31 @@
       farmerPickups = await res.json();
     } catch(e) { farmerPickups = []; }
 
-    // Load expected straw from seasons
-    let expectedKg = 0;
-    try {
-      const res     = await fetch(`${API}/seasons/${farmerId}`);
-      const seasons = await res.json();
-      expectedKg = seasons.reduce((s, x) => s + parseFloat(x.expected_straw_kg || 0), 0);
-    } catch(e) {}
+    // Acres-based fulfillment
+    const totalAcres     = parseFloat(selectedFarmerData.total_acres || 0);
+    const acresCollected = farmerPickups.reduce((s, p) => s + parseFloat(p.acres_picked || 0), 0);
+    const acresRemaining = Math.max(0, totalAcres - acresCollected);
+    const strawPicked    = farmerPickups.reduce((s, p) => s + parseFloat(p.straw_qty_kg || 0), 0);
 
-    const collectedKg = farmerPickups.reduce((s, p) => s + parseFloat(p.straw_qty_kg || 0), 0);
-    const remainingKg = Math.max(0, expectedKg - collectedKg);
+    selectedFarmerData._totalAcres     = totalAcres;
+    selectedFarmerData._acresCollected = acresCollected;
+    selectedFarmerData._acresRemaining = acresRemaining;
+    selectedFarmerData._strawPicked    = strawPicked;
 
-    selectedFarmerData._expected  = expectedKg;
-    selectedFarmerData._collected = collectedKg;
-    selectedFarmerData._remaining = remainingKg;
-
-    document.getElementById('f_expected').textContent  = expectedKg > 0 ? expectedKg.toLocaleString('en-IN') + ' kg' : 'Not set';
-    document.getElementById('f_collected').textContent = collectedKg.toLocaleString('en-IN') + ' kg';
-    document.getElementById('f_remaining').textContent = remainingKg > 0 ? remainingKg.toLocaleString('en-IN') + ' kg' : '0 kg';
+    document.getElementById('f_expected').textContent  = totalAcres > 0 ? totalAcres.toLocaleString('en-IN') + ' ac' : 'Not set';
+    document.getElementById('f_collected').textContent = acresCollected.toLocaleString('en-IN') + ' ac';
+    document.getElementById('f_remaining').textContent = acresRemaining > 0 ? acresRemaining.toLocaleString('en-IN') + ' ac' : '0 ac';
+    document.getElementById('f_straw_picked').textContent = strawPicked > 0 ? (strawPicked / 1000).toFixed(1) + ' T (' + strawPicked.toLocaleString('en-IN') + ' kg)' : '0 kg';
 
     const statusEl = document.getElementById('f_status');
-    if (expectedKg === 0) {
-      statusEl.innerHTML = '<span class="badge badge-amber">No Target Set</span>';
-    } else if (collectedKg === 0) {
+    if (totalAcres === 0) {
+      statusEl.innerHTML = '<span class="badge badge-amber">No Acres Set</span>';
+    } else if (acresCollected === 0) {
       statusEl.innerHTML = '<span class="badge badge-red">Not Picked</span>';
-    } else if (collectedKg >= expectedKg) {
+    } else if (acresCollected >= totalAcres) {
       statusEl.innerHTML = '<span class="badge badge-teal">Complete ✓</span>';
     } else {
-      statusEl.innerHTML = '<span class="badge badge-amber">Partial</span>';
+      statusEl.innerHTML = '<span class="badge badge-amber">Partial (' + Math.round(acresCollected/totalAcres*100) + '%)</span>';
     }
 
     box.classList.remove('hidden');
@@ -619,12 +624,18 @@
   // ── UPDATE REMAINING after entering qty ──
   function updateRemaining() {
     if (!selectedFarmerData) return;
+    const acresInput = parseFloat(document.getElementById('acres_picked').value) || 0;
+    const newAcresCollected = selectedFarmerData._acresCollected + acresInput;
+    const newAcresRemaining = Math.max(0, selectedFarmerData._totalAcres - newAcresCollected);
+    document.getElementById('f_remaining').textContent = newAcresRemaining > 0
+      ? newAcresRemaining.toLocaleString('en-IN') + ' ac remaining after this pickup'
+      : '✓ All acres collected after this pickup';
+
     const qty = parseFloat(document.getElementById('straw_qty_kg').value) || 0;
-    const newCollected = selectedFarmerData._collected + qty;
-    const newRemaining = Math.max(0, selectedFarmerData._expected - newCollected);
-    document.getElementById('f_remaining').textContent = newRemaining > 0
-      ? newRemaining.toLocaleString('en-IN') + ' kg remaining after this pickup'
-      : '✓ Fully collected after this pickup';
+    const newStrawTotal = selectedFarmerData._strawPicked + qty;
+    document.getElementById('f_straw_picked').textContent = newStrawTotal > 0
+      ? (newStrawTotal / 1000).toFixed(1) + ' T (' + newStrawTotal.toLocaleString('en-IN') + ' kg) after this pickup'
+      : '0 kg';
   }
 
   // ── LABOUR CALC ──
@@ -690,6 +701,9 @@
     if (!strawQty)   { showToast('⚠️ Please enter straw quantity'); return; }
     if (!vehicleNo)  { showToast('⚠️ Please enter vehicle number'); return; }
 
+    const acresPicked = document.getElementById('acres_picked').value;
+    if (!acresPicked) { showToast('⚠️ Please enter acres picked up'); return; }
+
     const btn = document.getElementById('saveBtn');
     btn.textContent = '⏳ Saving...'; btn.disabled = true;
 
@@ -713,6 +727,7 @@
       next_pickup_date:       nextDate     || null,
       warehouse_id:           warehouseId  || null,
       farmer_compensation:    compensation || null,
+      acres_picked:           acresPicked  || null,
     };
 
     // ── OFFLINE PATH ──
@@ -774,6 +789,7 @@
     document.getElementById('successScreen').classList.remove('active', 'offline-save');
     document.getElementById('farmer_select').value = '';
     document.getElementById('straw_qty_kg').value  = '';
+    document.getElementById('acres_picked').value  = '';
     document.getElementById('vehicle_no').value    = '';
     document.getElementById('transport_cost').value = '';
     document.getElementById('farmer_compensation').value = '';
