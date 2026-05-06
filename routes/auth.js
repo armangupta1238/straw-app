@@ -32,14 +32,14 @@ router.get('/agents', async (req, res) => {
     const result = await pool.query(`
       SELECT
         u.user_id, u.full_name, u.username, u.phone, u.password, u.role, u.is_active, u.created_at,
-        COUNT(DISTINCT f.farmer_id) as farmers_added,
-        COALESCE(SUM(f.total_acres), 0) as total_acres,
-        COALESCE(SUM(p.straw_qty_kg) / 1000, 0) as total_straw_tons
+        (SELECT COUNT(*) FROM farmers f WHERE f.added_by_user_id = u.user_id) as farmers_added,
+        (SELECT COALESCE(SUM(f.total_acres), 0) FROM farmers f WHERE f.added_by_user_id = u.user_id) as total_acres,
+        (SELECT COALESCE(SUM(p.straw_qty_kg), 0) / 1000
+         FROM pickups p
+         JOIN farmers f ON p.farmer_id = f.farmer_id
+         WHERE f.added_by_user_id = u.user_id) as total_straw_tons
       FROM users u
-      LEFT JOIN farmers f ON f.added_by_user_id = u.user_id
-      LEFT JOIN pickups p ON p.farmer_id = f.farmer_id
       WHERE u.role IN ('agent', 'promoter')
-      GROUP BY u.user_id
       ORDER BY u.created_at DESC
     `);
     res.json(result.rows);
