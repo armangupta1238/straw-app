@@ -738,6 +738,7 @@
       <div class="modal-fld"><label>Transport Cost (₹) — auto</label><input type="number" id="edit_transport" placeholder="Auto calculated" readonly style="background:#f5f3ff;color:var(--primary);font-weight:600;"/></div>
       <div class="modal-fld"><label>Village</label><input type="text" id="edit_village" placeholder="Village name"/></div>
       <div class="modal-fld"><label>District</label><input type="text" id="edit_district" placeholder="District name"/></div>
+      <div class="modal-fld full"><label>Added By (Agent / Promoter)</label><select id="edit_added_by" style="padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--dark);background:#fff;outline:none;"><option value="">— Select —</option></select></div>
       <div class="modal-fld full">
         <label>Pickup Months</label>
         <div class="edit-month-grid" id="editMonthGrid"></div>
@@ -1158,6 +1159,20 @@
     document.getElementById('edit_village').value        = f.village_name || '';
     document.getElementById('edit_district').value       = f.district || '';
 
+    // Populate Added By dropdown with all agents + promoters
+    const addedBySelect = document.getElementById('edit_added_by');
+    addedBySelect.innerHTML = '<option value="">— Select —</option>' +
+      allAgents.filter(a => a.is_active).map(a =>
+        `<option value="${a.user_id}" ${f.added_by_user_id === a.user_id ? 'selected' : ''}>${a.full_name} (${a.role})</option>`
+      ).join('');
+    // If current added_by is inactive, still show them selected
+    if (f.added_by_user_id && !allAgents.find(a => a.user_id === f.added_by_user_id && a.is_active)) {
+      const inactiveAgent = allAgents.find(a => a.user_id === f.added_by_user_id);
+      if (inactiveAgent) {
+        addedBySelect.innerHTML += `<option value="${inactiveAgent.user_id}" selected>${inactiveAgent.full_name} (${inactiveAgent.role} - inactive)</option>`;
+      }
+    }
+
     // Pre-fill months from farmer's existing seasons
     const farmerSeasons = allSeasons.filter(s => s.farmer_id === id);
     const allMonthNames = farmerSeasons.map(s => s.season_name || '').join(', ');
@@ -1176,6 +1191,8 @@
     const btn = document.getElementById('modalSaveBtn');
     btn.textContent = '⏳ Saving...'; btn.disabled = true;
     try {
+      const addedByVal = document.getElementById('edit_added_by').value;
+      const addedByAgent = addedByVal ? allAgents.find(a => a.user_id === parseInt(addedByVal)) : null;
       const body = {
         full_name:               document.getElementById('edit_full_name').value.trim(),
         phone:                   document.getElementById('edit_phone').value.trim(),
@@ -1185,6 +1202,8 @@
         transport_cost_per_trip: document.getElementById('edit_transport').value,
         village_name:            document.getElementById('edit_village').value.trim(),
         district:                document.getElementById('edit_district').value.trim(),
+        added_by_user_id:        addedByVal ? parseInt(addedByVal) : null,
+        added_by_name:           addedByAgent ? addedByAgent.full_name : null,
       };
 
       const res  = await fetch(`${API}/farmers/${editingFarmerId}`, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
@@ -1437,6 +1456,7 @@
   function cancelEditAgent(role) {
     if (!role) role = 'agent';
     const isAgent = role === 'agent';
+    const wasEditing = document.getElementById(isAgent ? 'editingAgentId' : 'editingPromoterId').value;
     document.getElementById(isAgent ? 'editingAgentId' : 'editingPromoterId').value = '';
     document.getElementById(isAgent ? 'agentFormTitle' : 'promoterFormTitle').textContent = `➕ Add New ${isAgent ? 'Agent' : 'Promoter'}`;
     document.getElementById(isAgent ? 'newAgentName'     : 'newPromoterName').value = '';
@@ -1446,6 +1466,10 @@
     const btn = document.getElementById(isAgent ? 'addAgentBtn' : 'addPromoterBtn');
     btn.textContent = isAgent ? 'Add Agent' : 'Add Promoter';
     document.getElementById(isAgent ? 'cancelEditAgentBtn' : 'cancelEditPromoterBtn').style.display = 'none';
+    // If was editing, hide the form
+    if (wasEditing) {
+      document.getElementById(isAgent ? 'agentFormSection' : 'promoterFormSection').style.display = 'none';
+    }
   }
 
   async function addUser(role) {
