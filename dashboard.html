@@ -898,9 +898,10 @@
 
   async function loadAll() {
     try {
-      const [fr, pr] = await Promise.all([fetch(`${API}/farmers`), fetch(`${API}/pickups`)]);
+      const [fr, pr, ar] = await Promise.all([fetch(`${API}/farmers`), fetch(`${API}/pickups`), fetch(`${API}/auth/agents`)]);
       allFarmers = await fr.json();
       allPickups = await pr.json();
+      allAgents  = await ar.json();
       if (allFarmers.length > 0) {
         const results = await Promise.all(allFarmers.map(f =>
           fetch(`${API}/seasons/${f.farmer_id}`).then(r=>r.json()).then(s=>s.map(x=>({...x,farmer_name:f.full_name,village_name:f.village_name})))
