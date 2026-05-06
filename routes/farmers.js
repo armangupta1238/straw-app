@@ -58,7 +58,7 @@ router.get('/:id', async (req, res) => {
 router.patch('/:id', async (req, res) => {
   const { full_name, phone, total_acres, straw_per_acre_kg,
           farm_distance_km, transport_cost_per_trip,
-          village_name, district } = req.body;
+          village_name, district, added_by_user_id, added_by_name } = req.body;
   try {
     // Find existing village or create new one
     let village_id = null;
@@ -86,12 +86,14 @@ router.patch('/:id', async (req, res) => {
         straw_per_acre_kg       = $4,
         farm_distance_km        = $5,
         transport_cost_per_trip = $6,
-        village_id              = COALESCE($7, village_id)
-       WHERE farmer_id = $8
+        village_id              = COALESCE($7, village_id),
+        added_by_user_id        = $8,
+        added_by_name           = $9
+       WHERE farmer_id = $10
        RETURNING *`,
       [full_name, phone || null, total_acres, straw_per_acre_kg || null,
        farm_distance_km || null, transport_cost_per_trip || null,
-       village_id, req.params.id]
+       village_id, added_by_user_id || null, added_by_name || null, req.params.id]
     );
     res.json(result.rows[0]);
   } catch (err) {
