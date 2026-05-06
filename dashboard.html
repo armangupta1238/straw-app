@@ -444,8 +444,8 @@
         </select>
       </div>
       <div class="table-wrap"><table>
-        <thead><tr><th>Farmer</th><th>Village</th><th>District</th><th>Acres</th><th>Straw/Acre</th><th>Est. Straw</th><th>Trips</th><th>Distance</th><th>Cost/Trip</th><th>Months</th><th>Added By</th><th>Actions</th></tr></thead>
-        <tbody id="allFarmersBody"><tr><td colspan="12"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
+        <thead><tr><th>Farmer</th><th>Village</th><th>District</th><th>Acres</th><th>Trips</th><th>Distance</th><th>Cost/Trip</th><th>Months</th><th>Added By</th><th>Actions</th></tr></thead>
+        <tbody id="allFarmersBody"><tr><td colspan="10"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
       </table></div>
       <div class="pagination">
         <span id="paginationInfo">—</span>
@@ -1067,18 +1067,14 @@
     document.getElementById('farmersCount').textContent = `${total} farmer${total!==1?'s':''} found`;
     document.getElementById('paginationInfo').textContent = total ? `Showing ${(currentPage-1)*perPage+1}–${Math.min(currentPage*perPage,total)} of ${total}` : 'No results';
     const tbody = document.getElementById('allFarmersBody');
-    if (!slice.length) { tbody.innerHTML=`<tr><td colspan="12"><div class="empty-state"><div class="empty-icon">🔍</div><p>No farmers match your filters</p></div></td></tr>`; }
+    if (!slice.length) { tbody.innerHTML=`<tr><td colspan="10"><div class="empty-state"><div class="empty-icon">🔍</div><p>No farmers match your filters</p></div></td></tr>`; }
     else tbody.innerHTML = slice.map(f=>{
-      const est_kg = parseFloat(f.total_acres||0) * parseFloat(f.straw_per_acre_kg||0);
-      const est = est_kg > 0 ? (est_kg/1000).toFixed(1)+'T' : '—';
       const t = trips(f); const cpp = costPerTrip(f);
       return `<tr>
         <td><div class="farmer-name">${f.full_name}</div><div class="farmer-phone">${f.phone||'—'}</div></td>
         <td>${f.village_name||'—'}</td>
         <td>${f.district||'—'}</td>
         <td>${parseFloat(f.total_acres).toLocaleString('en-IN')} ac</td>
-        <td>${f.straw_per_acre_kg ? parseFloat(f.straw_per_acre_kg).toLocaleString('en-IN')+' kg' : '—'}</td>
-        <td><strong>${est}</strong></td>
         <td>${t > 0 ? t+' trip'+(t>1?'s':'') : '—'}</td>
         <td>${f.farm_distance_km ? f.farm_distance_km+' km' : '—'}</td>
         <td>${cpp > 0 ? '₹'+cpp.toLocaleString('en-IN') : '—'}</td>
@@ -1540,10 +1536,12 @@
     const el=document.getElementById('allSeasonsContent');
     const months=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     if (!allSeasons.length) { el.innerHTML=`<div class="empty-state"><div class="empty-icon">📅</div><p>No seasons recorded yet</p></div>`; return; }
-    el.innerHTML=`<div class="table-wrap"><table style="width:100%"><thead><tr><th>Farmer</th><th>Village</th><th>Season</th><th>Period</th><th>Est. Straw</th></tr></thead><tbody>${
+    el.innerHTML=`<div class="table-wrap"><table style="width:100%"><thead><tr><th>Farmer</th><th>Village</th><th>Acres</th><th>Season</th><th>Period</th></tr></thead><tbody>${
       allSeasons.map(s=>{
         const c=s.season_name==='Kharif'?'badge-amber':s.season_name==='Rabi'?'badge-blue':'badge-teal';
-        return `<tr><td><div class="farmer-name">${s.farmer_name}</div></td><td>${s.village_name||'—'}</td><td><span class="badge ${c}">${s.season_name}</span></td><td>${s.month_start?months[s.month_start]:'—'} – ${s.month_end?months[s.month_end]:'—'}</td><td>${s.expected_straw_kg?(parseFloat(s.expected_straw_kg)/1000).toFixed(1)+' T':'—'}</td></tr>`;
+        const farmer = allFarmers.find(f => f.farmer_id === s.farmer_id);
+        const acres = farmer ? parseFloat(farmer.total_acres||0).toLocaleString('en-IN') + ' ac' : '—';
+        return `<tr><td><div class="farmer-name">${s.farmer_name}</div></td><td>${s.village_name||'—'}</td><td>${acres}</td><td><span class="badge ${c}">${s.season_name}</span></td><td>${s.month_start?months[s.month_start]:'—'} – ${s.month_end?months[s.month_end]:'—'}</td></tr>`;
       }).join('')
     }</tbody></table></div>`;
   }
