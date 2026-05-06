@@ -1396,7 +1396,7 @@
     document.getElementById(isAgent ? 'newAgentName'     : 'newPromoterName').value     = a.full_name || '';
     document.getElementById(isAgent ? 'newAgentPhone'    : 'newPromoterPhone').value    = a.phone || '';
     document.getElementById(isAgent ? 'newAgentUsername'  : 'newPromoterUsername').value = a.username || '';
-    document.getElementById(isAgent ? 'newAgentPassword'  : 'newPromoterPassword').value = '';  // blank for security
+    document.getElementById(isAgent ? 'newAgentPassword'  : 'newPromoterPassword').value = a.password || '';
 
     // Show save/cancel buttons
     const btn = document.getElementById(isAgent ? 'addAgentBtn' : 'addPromoterBtn');

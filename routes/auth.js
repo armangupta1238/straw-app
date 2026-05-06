@@ -31,7 +31,7 @@ router.get('/agents', async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT
-        u.user_id, u.full_name, u.username, u.phone, u.role, u.is_active, u.created_at,
+        u.user_id, u.full_name, u.username, u.phone, u.password, u.role, u.is_active, u.created_at,
         COUNT(DISTINCT f.farmer_id) as farmers_added,
         COALESCE(SUM(f.total_acres), 0) as total_acres,
         COALESCE(SUM(p.straw_qty_kg) / 1000, 0) as total_straw_tons
