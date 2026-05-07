@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#0d9488"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <title>Straw Collector — Expense Calculator</title>
+
+  <script>
+    const a = localStorage.getItem('agent');
+    if (!a) { window.location.replace('login.html'); }
+    else {
+      const ag = JSON.parse(a);
+      if (ag.role !== 'promoter' && ag.role !== 'admin') window.location.replace('home.html');
+    }
+  </script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --teal:        #0d9488;
+      --teal-mid:    #2dd4bf;
+      --teal-pale:   #f0fdfa;
+      --teal-border: #99f6e4;
+      --teal-dark:   #134e4a;
+      --purple:      #6d28d9;
+      --purple-pale: #ede9fe;
+      --amber:       #f59e0b;
+      --amber-pale:  #fef3c7;
+      --green:       #16a34a;
+      --green-pale:  #f0fdf4;
+      --green-border:#86efac;
+      --red:         #dc2626;
+      --red-pale:    #fef2f2;
+      --card:        #ffffff;
+      --bg:          #f0fdfa;
+      --dark:        #1e1b3a;
+      --muted:       #6b7280;
+      --border:      #d1fae5;
+      --radius:      14px;
+      --shadow:      0 2px 16px rgba(13,148,136,0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--dark);
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 100%);
+      color: #fff; padding: 16px 20px 20px;
+      position: relative; overflow: hidden;
+    }
+    header::before { content:''; position:absolute; right:-40px; top:-40px; width:180px; height:180px; border-radius:50%; background:rgba(255,255,255,0.07); }
+    header::after  { content:''; position:absolute; left:20px; bottom:-60px; width:130px; height:130px; border-radius:50%; background:rgba(255,255,255,0.05); }
+
+    .header-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; position:relative; z-index:1; }
+    .header-badge {
+      display:inline-flex; align-items:center; gap:5px;
+      background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3);
+      border-radius:20px; padding:4px 12px;
+      font-size:11px; font-weight:600; letter-spacing:.5px; text-transform:uppercase; color:#fff;
+    }
+    .btn-home {
+      display:inline-flex; align-items:center; gap:6px;
+      background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25);
+      color:#fff; border-radius:10px; padding:8px 14px;
+      font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600;
+      cursor:pointer; text-decoration:none; min-height:44px; position:relative; z-index:1;
+    }
+    .btn-home svg { width:15px; height:15px; }
+    header h1 { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; line-height:1.15; position:relative; z-index:1; }
+    header p  { font-size:13px; opacity:.7; margin-top:4px; position:relative; z-index:1; }
+
+    /* ── SCENARIO TOGGLE ── */
+    .scenario-wrap { padding: 16px 16px 0; }
+    .scenario-toggle {
+      display:flex; background:#fff; border-radius:12px;
+      border:1.5px solid var(--border); padding:4px; gap:4px;
+      box-shadow: var(--shadow);
+    }
+    .scenario-btn {
+      flex:1; padding:11px 8px; border:none; border-radius:9px;
+      font-family:'Syne',sans-serif; font-size:13px; font-weight:700;
+      cursor:pointer; transition:all 0.2s; background:transparent; color:var(--muted);
+      line-height:1.3;
+    }
+    .scenario-btn.active { background:var(--teal); color:#fff; box-shadow:0 2px 8px rgba(13,148,136,0.3); }
+    .scenario-sub { font-size:10px; font-weight:500; opacity:0.8; display:block; }
+
+    /* ── LOCK BANNER ── */
+    .lock-banner {
+      margin: 12px 16px 0;
+      background: var(--amber-pale); border: 1.5px solid #fde68a;
+      border-radius: 12px; padding: 11px 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .lock-banner-text { font-size: 13px; color: #92400e; font-weight: 500; display:flex; align-items:center; gap:7px; }
+    .lock-banner-text svg { width:15px; height:15px; flex-shrink:0; }
+    .btn-lock {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:8px 14px; border-radius:9px; border:none; cursor:pointer;
+      font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600;
+      min-height:40px; transition:all 0.15s;
+    }
+    .btn-lock.locked   { background:#0d9488; color:#fff; }
+    .btn-lock.unlocked { background:#f59e0b; color:#fff; }
+    .btn-lock svg { width:14px; height:14px; }
+
+    /* ── CONTENT ── */
+    .content { padding: 14px 16px; display:flex; flex-direction:column; gap:14px; }
+
+    /* Desktop: 2 col */
+    @media (min-width: 768px) {
+      body { max-width: 900px; margin: 0 auto; }
+      .content { flex-direction: row; flex-wrap: wrap; align-items: flex-start; }
+      .card { flex: 1 1 calc(50% - 7px); }
+      .card.full { flex: 1 1 100%; }
+    }
+
+    .card {
+      background:var(--card); border-radius:var(--radius);
+      padding:18px; border:1px solid var(--border); box-shadow:var(--shadow);
+    }
+    .card-title {
+      font-family:'Syne',sans-serif; font-size:14px; font-weight:700;
+      color:var(--teal-dark); margin-bottom:14px;
+      display:flex; align-items:center; gap:6px;
+    }
+    .card-title svg { width:16px; height:16px; }
+
+    /* ── FIELD ── */
+    .field { margin-bottom:14px; }
+    .field:last-child { margin-bottom:0; }
+    .field-row { display:flex; gap:10px; }
+    .field-row .field { flex:1; }
+
+    .field label {
+      display:block; font-size:11px; font-weight:600;
+      text-transform:uppercase; letter-spacing:.5px;
+      color:var(--teal); margin-bottom:6px;
+    }
+    .field input, .field select {
+      width:100%; padding:12px 14px; min-height:48px;
+      border:1.5px solid var(--border); border-radius:10px;
+      font-family:'DM Sans',sans-serif; font-size:15px; color:var(--dark);
+      background:#fff; outline:none; transition:border-color .2s;
+      -webkit-appearance:none;
+    }
+    .field input:focus, .field select:focus { border-color:var(--teal-mid); }
+    .field input:disabled, .field select:disabled {
+      background:#f9fafb; color:var(--muted); cursor:not-allowed;
+    }
+    .field-hint { font-size:11px; color:var(--muted); margin-top:5px; }
+
+    /* ── RESULTS ── */
+    .results-card {
+      background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 100%);
+      border-radius:var(--radius); padding:20px;
+      color:#fff; box-shadow:0 4px 24px rgba(13,148,136,0.25);
+    }
+    .results-title {
+      font-family:'Syne',sans-serif; font-size:15px; font-weight:700;
+      margin-bottom:16px; opacity:0.85;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .results-scenario-badge {
+      background:rgba(255,255,255,0.2); border-radius:20px;
+      padding:3px 10px; font-size:11px; font-weight:600;
+    }
+
+    .result-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+    .result-item {
+      background:rgba(255,255,255,0.12); border-radius:10px;
+      padding:12px 14px;
+    }
+    .result-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; opacity:0.7; margin-bottom:4px; }
+    .result-val { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; }
+    .result-val.big { font-size:26px; }
+    .result-val.green { color:#a7f3d0; }
+    .result-val.red   { color:#fca5a5; }
+    .result-val.amber { color:#fde68a; }
+
+    .result-item.full-width { grid-column:1 / -1; }
+
+    /* profit breakdown bar */
+    .profit-bar-wrap { margin-top:4px; }
+    .profit-bar-label { display:flex; justify-content:space-between; font-size:11px; opacity:0.7; margin-bottom:5px; }
+    .profit-bar-track { height:6px; background:rgba(255,255,255,0.15); border-radius:4px; overflow:hidden; }
+    .profit-bar-fill  { height:100%; border-radius:4px; background:#a7f3d0; transition:width 0.5s ease; }
+
+    /* cost breakdown */
+    .cost-breakdown { display:flex; flex-direction:column; gap:6px; margin-top:4px; }
+    .cost-row { display:flex; justify-content:space-between; align-items:center; }
+    .cost-label { font-size:12px; opacity:0.75; }
+    .cost-val   { font-size:13px; font-weight:700; }
+    .cost-divider { height:1px; background:rgba(255,255,255,0.15); margin:4px 0; }
+
+    /* monthly highlight */
+    .monthly-box {
+      background:rgba(255,255,255,0.15); border-radius:10px;
+      padding:16px; text-align:center; margin-top:0;
+    }
+    .monthly-label { font-size:11px; font-weight:600; letter-spacing:.5px; text-transform:uppercase; opacity:0.7; margin-bottom:6px; }
+    .monthly-val { font-family:'Syne',sans-serif; font-size:36px; font-weight:800; color:#a7f3d0; }
+    .monthly-days { font-size:12px; opacity:0.6; margin-top:4px; }
+
+    /* ── TOAST ── */
+    .toast {
+      position:fixed; bottom:28px; left:50%;
+      transform:translateX(-50%) translateY(20px);
+      background:var(--dark); color:#fff;
+      padding:11px 20px; border-radius:24px;
+      font-size:14px; font-weight:500;
+      opacity:0; transition:all .3s; z-index:999; white-space:nowrap;
+      pointer-events:none;
+    }
+    .toast.show  { opacity:1; transform:translateX(-50%) translateY(0); }
+    .toast.green { background:#166534; }
+    .toast.amber { background:#92400e; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="header-badge">🧮 Expense Calculator</div>
+    <a href="home.html" class="btn-home">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+      </svg>
+      Home
+    </a>
+  </div>
+  <h1>Expense Calculator</h1>
+  <p>Model your daily & monthly profit scenarios</p>
+</header>
+
+<!-- SCENARIO TOGGLE -->
+<div class="scenario-wrap">
+  <div class="scenario-toggle">
+    <button class="scenario-btn active" id="s1btn" onclick="setScenario(1)">
+      Scenario 1
+      <span class="scenario-sub">Own Equipment</span>
+    </button>
+    <button class="scenario-btn" id="s2btn" onclick="setScenario(2)">
+      Scenario 2
+      <span class="scenario-sub">Rented Equipment</span>
+    </button>
+  </div>
+</div>
+
+<!-- LOCK BANNER -->
+<div class="lock-banner">
+  <div class="lock-banner-text">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <span id="lockBannerText">Values auto-saved. Lock to prevent changes.</span>
+  </div>
+  <button class="btn-lock unlocked" id="lockBtn" onclick="toggleLock()">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" id="lockIcon">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+    </svg>
+    Lock
+  </button>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- REVENUE -->
+  <div class="card">
+    <div class="card-title">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Revenue
+    </div>
+    <div class="field">
+      <label>Selling Price (₹ / Ton)</label>
+      <input type="number" id="sellingPrice" value="2200" min="0" oninput="calc()"/>
+      <div class="field-hint">Report: ₹2,200 or ₹2,800 per ton</div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Acres / Day</label>
+        <input type="number" id="acresPerDay" value="10" min="0" oninput="calc()"/>
+      </div>
+      <div class="field">
+        <label>Yield (Tons / Acre)</label>
+        <input type="number" id="yieldPerAcre" value="1.2" min="0" step="0.1" oninput="calc()"/>
+      </div>
+    </div>
+    <div class="field">
+      <label>Working Days / Month</label>
+      <input type="number" id="workingDays" value="26" min="1" max="31" oninput="calc()"/>
+    </div>
+  </div>
+
+  <!-- DIRECT COSTS -->
+  <div class="card">
+    <div class="card-title">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
+      Direct Costs (Daily)
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Diesel (Litres)</label>
+        <input type="number" id="dieselLitres" value="15" min="0" oninput="calc()"/>
+      </div>
+      <div class="field">
+        <label>₹ / Litre</label>
+        <input type="number" id="dieselRate" value="90" min="0" oninput="calc()"/>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Transport Trips</label>
+        <input type="number" id="transportTrips" value="5" min="0" oninput="calc()"/>
+      </div>
+      <div class="field">
+        <label>Cost / Trip (₹)</label>
+        <input type="number" id="costPerTrip" value="500" min="0" oninput="calc()"/>
+      </div>
+    </div>
+    <div class="field">
+      <label>Farmer Compensation (₹/day)</label>
+      <input type="number" id="farmerComp" value="2000" min="0" oninput="calc()"/>
+    </div>
+  </div>
+
+  <!-- SALARIES -->
+  <div class="card">
+    <div class="card-title">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      Salaries (Monthly)
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Supervisor (₹/mo)</label>
+        <input type="number" id="salSupervisor" value="15000" min="0" oninput="calc()"/>
+      </div>
+      <div class="field">
+        <label>No. of Drivers</label>
+        <input type="number" id="numDrivers" value="2" min="0" oninput="calc()"/>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Driver Salary (₹/mo each)</label>
+        <input type="number" id="salDriver" value="12000" min="0" oninput="calc()"/>
+      </div>
+      <div class="field">
+        <label>Labour Team (₹/mo)</label>
+        <input type="number" id="salLabour" value="20000" min="0" oninput="calc()"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- EQUIPMENT (scenario 2 only) -->
+  <div class="card" id="equipmentCard">
+    <div class="card-title">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      Equipment Rental (Monthly)
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Tractors (₹/mo)</label>
+        <input type="number" id="rentTractors" value="50000" min="0" oninput="calc()"/>
+      </div>
+      <div class="field">
+        <label>Trolley (₹/mo)</label>
+        <input type="number" id="rentTrolley" value="10000" min="0" oninput="calc()"/>
+      </div>
+    </div>
+    <div class="field">
+      <label>Baler (₹/mo)</label>
+      <input type="number" id="rentBaler" value="30000" min="0" oninput="calc()"/>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="card results-card full">
+    <div class="results-title">
+      📊 Profit Summary
+      <span class="results-scenario-badge" id="scenarioBadge">Scenario 1 · Own Equipment</span>
+    </div>
+
+    <div class="result-grid">
+      <div class="result-item">
+        <div class="result-label">Daily Revenue</div>
+        <div class="result-val amber" id="r-revenue">₹0</div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Daily Total Costs</div>
+        <div class="result-val red" id="r-costs">₹0</div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Daily Net Profit</div>
+        <div class="result-val green big" id="r-daily">₹0</div>
+        <div class="profit-bar-wrap">
+          <div class="profit-bar-label">
+            <span>Costs</span><span>Profit</span>
+          </div>
+          <div class="profit-bar-track"><div class="profit-bar-fill" id="profitBar" style="width:50%"></div></div>
+        </div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Daily Straw Produced</div>
+        <div class="result-val" id="r-straw">0 T</div>
+        <div style="font-size:11px;opacity:0.7;margin-top:4px;" id="r-straw-sub"></div>
+      </div>
+    </div>
+
+    <!-- Cost breakdown -->
+    <div class="result-item" style="margin-bottom:12px;">
+      <div class="result-label" style="margin-bottom:8px;">Cost Breakdown (Daily)</div>
+      <div class="cost-breakdown">
+        <div class="cost-row"><span class="cost-label">🛢 Diesel</span><span class="cost-val" id="b-diesel">₹0</span></div>
+        <div class="cost-row"><span class="cost-label">🚛 Transport</span><span class="cost-val" id="b-transport">₹0</span></div>
+        <div class="cost-row"><span class="cost-label">👨‍🌾 Farmer Compensation</span><span class="cost-val" id="b-farmer">₹0</span></div>
+        <div class="cost-row"><span class="cost-label">👷 Salaries (prorated)</span><span class="cost-val" id="b-salary">₹0</span></div>
+        <div class="cost-row" id="equipRow"><span class="cost-label">🚜 Equipment Rental (prorated)</span><span class="cost-val" id="b-equip">₹0</span></div>
+        <div class="cost-divider"></div>
+        <div class="cost-row"><span class="cost-label" style="font-weight:700;">Total Daily Cost</span><span class="cost-val" id="b-total">₹0</span></div>
+      </div>
+    </div>
+
+    <!-- Monthly highlight -->
+    <div class="monthly-box">
+      <div class="monthly-label">Monthly Net Profit</div>
+      <div class="monthly-val" id="r-monthly">₹0</div>
+      <div class="monthly-days" id="r-monthly-sub">based on 26 working days</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const STORAGE_KEY = 'straw_calc_v1';
+  let scenario = 1;
+  let locked   = false;
+
+  const FIELDS = [
+    'sellingPrice','acresPerDay','yieldPerAcre','workingDays',
+    'dieselLitres','dieselRate','transportTrips','costPerTrip','farmerComp',
+    'salSupervisor','numDrivers','salDriver','salLabour',
+    'rentTractors','rentTrolley','rentBaler'
+  ];
+
+  // ── LOAD SAVED VALUES ──
+  function loadSaved() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      if (saved.scenario) setScenario(saved.scenario, true);
+      if (saved.locked !== undefined) {
+        locked = saved.locked;
+        applyLockUI();
+      }
+      FIELDS.forEach(id => {
+        if (saved[id] !== undefined) {
+          document.getElementById(id).value = saved[id];
+        }
+      });
+    } catch(e) {}
+    calc();
+  }
+
+  // ── SAVE VALUES ──
+  function saveValues() {
+    const data = { scenario, locked };
+    FIELDS.forEach(id => {
+      data[id] = document.getElementById(id).value;
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  // ── SCENARIO ──
+  function setScenario(s, silent) {
+    scenario = s;
+    document.getElementById('s1btn').classList.toggle('active', s === 1);
+    document.getElementById('s2btn').classList.toggle('active', s === 2);
+
+    const equipCard = document.getElementById('equipmentCard');
+    const equipRow  = document.getElementById('equipRow');
+    equipCard.style.opacity = s === 1 ? '0.4' : '1';
+    equipCard.style.pointerEvents = s === 1 ? 'none' : 'auto';
+    equipRow.style.display = s === 1 ? 'none' : 'flex';
+
+    document.getElementById('scenarioBadge').textContent =
+      s === 1 ? 'Scenario 1 · Own Equipment' : 'Scenario 2 · Rented Equipment';
+
+    if (!silent) { saveValues(); calc(); }
+  }
+
+  // ── LOCK ──
+  function toggleLock() {
+    locked = !locked;
+    applyLockUI();
+    saveValues();
+    showToast(locked ? '🔒 Calculator locked' : '🔓 Calculator unlocked', locked ? 'green' : 'amber');
+  }
+
+  function applyLockUI() {
+    const btn      = document.getElementById('lockBtn');
+    const icon     = document.getElementById('lockIcon');
+    const bannerTxt= document.getElementById('lockBannerText');
+
+    FIELDS.forEach(id => {
+      document.getElementById(id).disabled = locked;
+    });
+    document.getElementById('s1btn').disabled = locked;
+    document.getElementById('s2btn').disabled = locked;
+
+    if (locked) {
+      btn.className = 'btn-lock locked';
+      btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg> Unlock`;
+      bannerTxt.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg> Calculator is locked. Tap Unlock to edit values.`;
+    } else {
+      btn.className = 'btn-lock unlocked';
+      btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg> Lock`;
+      bannerTxt.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Values auto-saved. Lock to prevent accidental changes.`;
+    }
+  }
+
+  // ── CALCULATE ──
+  function calc() {
+    const v = id => parseFloat(document.getElementById(id).value) || 0;
+
+    const sellingPrice   = v('sellingPrice');
+    const acresPerDay    = v('acresPerDay');
+    const yieldPerAcre   = v('yieldPerAcre');
+    const workingDays    = v('workingDays');
+    const dieselLitres   = v('dieselLitres');
+    const dieselRate     = v('dieselRate');
+    const transportTrips = v('transportTrips');
+    const costPerTrip    = v('costPerTrip');
+    const farmerComp     = v('farmerComp');
+    const salSupervisor  = v('salSupervisor');
+    const numDrivers     = v('numDrivers');
+    const salDriver      = v('salDriver');
+    const salLabour      = v('salLabour');
+    const rentTractors   = v('rentTractors');
+    const rentTrolley    = v('rentTrolley');
+    const rentBaler      = v('rentBaler');
+
+    // Revenue
+    const tonsPerDay   = acresPerDay * yieldPerAcre;
+    const dailyRevenue = tonsPerDay * sellingPrice;
+
+    // Daily costs
+    const dieselCost     = dieselLitres * dieselRate;
+    const transportCost  = transportTrips * costPerTrip;
+    const totalMonthlySalary = salSupervisor + (numDrivers * salDriver) + salLabour;
+    const dailySalary    = workingDays > 0 ? totalMonthlySalary / workingDays : 0;
+
+    const totalMonthlyEquip = scenario === 2 ? (rentTractors + rentTrolley + rentBaler) : 0;
+    const dailyEquip     = workingDays > 0 ? totalMonthlyEquip / workingDays : 0;
+
+    const totalDailyCost = dieselCost + transportCost + farmerComp + dailySalary + dailyEquip;
+    const dailyProfit    = dailyRevenue - totalDailyCost;
+    const monthlyProfit  = dailyProfit * workingDays;
+
+    // Profit bar
+    const profitPct = dailyRevenue > 0 ? Math.max(0, Math.min(100, (dailyProfit / dailyRevenue) * 100)) : 0;
+
+    // Update UI
+    document.getElementById('r-revenue').textContent  = fmt(dailyRevenue);
+    document.getElementById('r-costs').textContent    = fmt(totalDailyCost);
+    document.getElementById('r-daily').textContent    = fmt(dailyProfit);
+    document.getElementById('r-daily').className      = 'result-val big ' + (dailyProfit >= 0 ? 'green' : 'red');
+    document.getElementById('r-straw').textContent    = tonsPerDay.toFixed(1) + ' T';
+    document.getElementById('r-straw-sub').textContent= acresPerDay + ' acres × ' + yieldPerAcre + ' T/acre';
+    document.getElementById('profitBar').style.width  = profitPct + '%';
+    document.getElementById('b-diesel').textContent    = fmt(dieselCost);
+    document.getElementById('b-transport').textContent = fmt(transportCost);
+    document.getElementById('b-farmer').textContent    = fmt(farmerComp);
+    document.getElementById('b-salary').textContent    = fmt(dailySalary);
+    document.getElementById('b-equip').textContent     = fmt(dailyEquip);
+    document.getElementById('b-total').textContent     = fmt(totalDailyCost);
+    document.getElementById('r-monthly').textContent   = fmtLakh(monthlyProfit);
+    document.getElementById('r-monthly-sub').textContent = 'based on ' + workingDays + ' working days';
+
+    saveValues();
+  }
+
+  function fmt(n) {
+    if (isNaN(n)) return '₹0';
+    return '₹' + Math.round(n).toLocaleString('en-IN');
+  }
+
+  function fmtLakh(n) {
+    if (isNaN(n)) return '₹0';
+    const abs = Math.abs(n);
+    const sign = n < 0 ? '-' : '';
+    if (abs >= 100000) return sign + '₹' + (abs / 100000).toFixed(2) + ' L';
+    return sign + '₹' + Math.round(abs).toLocaleString('en-IN');
+  }
+
+  function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className   = 'toast ' + (type || '');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  loadSaved();
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>

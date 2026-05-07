@@ -414,6 +414,15 @@
             <button class="queue-pill-sync" onclick="OfflineSync.syncNow(true)">Sync Now</button>
           </div>
           ${dashboardBtn}
+          ${isPromoterOrAdmin ? `
+          <a href="expense-calculator.html" class="choice-btn" style="border-color:#0d9488;background:#f0fdfa;">
+            <div class="choice-icon" style="background:#ccfbf1;">🧮</div>
+            <div class="choice-text">
+              <div class="choice-label">Expense Calculator</div>
+              <div class="choice-desc">Model daily & monthly profit scenarios</div>
+            </div>
+            <span class="choice-arrow" style="color:#0d9488;">→</span>
+          </a>` : ''}
           <a href="farmer-form.html" class="choice-btn">
             <div class="choice-icon">👨‍🌾</div>
             <div class="choice-text">
