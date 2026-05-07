@@ -7,25 +7,27 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-const farmersRouter    = require('./routes/farmers');
-const villagesRouter   = require('./routes/villages');
-const seasonsRouter    = require('./routes/seasons');
-const pickupsRouter    = require('./routes/pickups');
-const distanceRouter   = require('./routes/distance');
-const authRouter       = require('./routes/auth');
-const warehousesRouter = require('./routes/warehouses');
-const locationRouter   = require('./routes/location');
-const machineryRouter  = require('./routes/machinery');
+const farmersRouter          = require('./routes/farmers');
+const villagesRouter         = require('./routes/villages');
+const seasonsRouter          = require('./routes/seasons');
+const pickupsRouter          = require('./routes/pickups');
+const distanceRouter         = require('./routes/distance');
+const authRouter             = require('./routes/auth');
+const warehousesRouter       = require('./routes/warehouses');
+const locationRouter         = require('./routes/location');
+const machineryRouter        = require('./routes/machinery');
+const pickupSchedulesRouter  = require('./routes/pickup-schedules');
 
-app.use('/api/farmers',    farmersRouter);
-app.use('/api/villages',   villagesRouter);
-app.use('/api/seasons',    seasonsRouter);
-app.use('/api/pickups',    pickupsRouter);
-app.use('/api/distance',   distanceRouter);
-app.use('/api/auth',       authRouter);
-app.use('/api/warehouses', warehousesRouter);
-app.use('/api/location',   locationRouter);
-app.use('/api/machinery',  machineryRouter);
+app.use('/api/farmers',           farmersRouter);
+app.use('/api/villages',          villagesRouter);
+app.use('/api/seasons',           seasonsRouter);
+app.use('/api/pickups',           pickupsRouter);
+app.use('/api/distance',          distanceRouter);
+app.use('/api/auth',              authRouter);
+app.use('/api/warehouses',        warehousesRouter);
+app.use('/api/location',          locationRouter);
+app.use('/api/machinery',         machineryRouter);
+app.use('/api/pickup-schedules',  pickupSchedulesRouter);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Straw App Backend is running!' });
