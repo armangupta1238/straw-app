@@ -6,9 +6,12 @@ const pool = require('../db');
 router.get('/', async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT f.*, v.village_name, v.district 
+      `SELECT f.*, v.village_name, v.district,
+              STRING_AGG(DISTINCT hs.month_name, ', ' ORDER BY hs.month_name) AS harvest_months
        FROM farmers f
        LEFT JOIN villages v ON f.village_id = v.village_id
+       LEFT JOIN harvest_seasons hs ON hs.farmer_id = f.farmer_id
+       GROUP BY f.farmer_id, v.village_name, v.district
        ORDER BY f.full_name`
     );
     res.json(result.rows);
