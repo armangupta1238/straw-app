@@ -35,12 +35,19 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'farmer_id and scheduled_date are required' });
     }
 
-    // Try insert first
-    const insert = await pool.query(`
+    // Upsert: update if farmer+agent combo exists, else insert
+    const result = await pool.query(`
       INSERT INTO pickup_schedules
         (farmer_id, farmer_name, village_name, scheduled_date, agent_id, agent_name, notes, status)
       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
-      ON CONFLICT DO NOTHING
+      ON CONFLICT (farmer_id, agent_id)
+      DO UPDATE SET
+        scheduled_date = EXCLUDED.scheduled_date,
+        farmer_name    = EXCLUDED.farmer_name,
+        village_name   = EXCLUDED.village_name,
+        agent_name     = EXCLUDED.agent_name,
+        notes          = EXCLUDED.notes,
+        status         = EXCLUDED.status
       RETURNING *
     `, [
       farmer_id, farmer_name || null, village_name || null,
@@ -48,27 +55,7 @@ router.post('/', async (req, res) => {
       notes || null, status || 'SCHEDULED'
     ]);
 
-    if (insert.rows.length > 0) return res.json(insert.rows[0]);
-
-    // Already exists — update it
-    const update = await pool.query(`
-      UPDATE pickup_schedules
-      SET scheduled_date = $1,
-          farmer_name    = $2,
-          village_name   = $3,
-          agent_name     = $4,
-          notes          = $5,
-          status         = $6
-      WHERE farmer_id = $7
-        AND (agent_id = $8 OR agent_id IS NULL)
-      RETURNING *
-    `, [
-      scheduled_date, farmer_name || null, village_name || null,
-      agent_name || null, notes || null, status || 'SCHEDULED',
-      farmer_id, agent_id || null
-    ]);
-
-    res.json(update.rows[0]);
+    res.json(result.rows[0]);
   } catch (err) {
     console.error('POST pickup-schedules error:', err);
     res.status(500).json({ error: 'Failed to save pickup schedule' });
