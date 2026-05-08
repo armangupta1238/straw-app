@@ -588,7 +588,7 @@
     rp.textContent=fmt(profit);rp.className='rv big '+(profit>=0?'green':'red');
     $('r-pct',pct.toFixed(0)+'%');
     document.getElementById('pbar').style.width=pct+'%';
-    $('b-diesel',fmt(diesel));$('b-transport',fmt(trans));$('b-farmer',fmt(farmer));
+    $('b-diesel',fmt(diesel));$('b-transport',fmt(trans));$('b-bundle',fmt(bundle));$('b-farmer',fmt(farmer));
     $('b-salary',fmt(salDay+drvDayExtra+labDayExtra));$('b-equip',fmt(eqDay));$('b-total',fmt(costTot));
     $('r-monthly',fmtL(monthly));
     $('r-monthly-sub',`based on ${g('workingDays')} working days`);
