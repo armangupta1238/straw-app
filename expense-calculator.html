@@ -197,6 +197,15 @@
     </div>
   </div>
 
+  <!-- PLASTIC BUNDLE -->
+  <div class="card">
+    <div class="card-title">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>Plastic Bundle Cost
+    </div>
+    <div class="field"><label>Plastic Bundle Cost (₹/day)</label><input type="number" data-key="bundleCost" min="0" oninput="inp(this)"/><div class="hint">Cost of plastic bundles used per day</div></div>
+    <div class="fcalc" id="c-bundle">—</div>
+  </div>
+
   <!-- FARMER COMPENSATION -->
   <div class="card">
     <div class="card-title">
@@ -355,6 +364,7 @@
       <div class="bkd-title">Daily Cost Breakdown</div>
       <div class="brow"><span class="bl">🛢 Baling (Diesel)</span><span class="bv" id="b-diesel">₹0</span></div>
       <div class="brow"><span class="bl">🚛 Transport</span><span class="bv" id="b-transport">₹0</span></div>
+      <div class="brow"><span class="bl">📦 Plastic Bundle</span><span class="bv" id="b-bundle">₹0</span></div>
       <div class="brow"><span class="bl">👨‍🌾 Farmer Compensation</span><span class="bv" id="b-farmer">₹0</span></div>
       <div class="brow"><span class="bl">👷 Salaries (prorated)</span><span class="bv" id="b-salary">₹0</span></div>
       <div class="brow" id="b-equip-row"><span class="bl">🚜 Equipment Rental (prorated)</span><span class="bv" id="b-equip">₹0</span></div>
@@ -378,7 +388,7 @@
        trips:5,costPerTrip:500,distKm:15,
        farmerPerAcre:200,farmerAcres:10,
        salSuper:15000,numDrivers:2,salDriver:12000,numLabour:4,salLabour:5000,
-       drvDayNum:1,drvDayEach:0,labDayNum:4,labDayEach:0,drvMode:"monthly",labMode:"monthly",
+       bundleCost:2600,drvDayNum:1,drvDayEach:0,labDayNum:4,labDayEach:0,drvMode:"monthly",labMode:"monthly",
        numTractors:2,rentTractor:25000,numTrolleys:1,rentTrolley:10000,numBalers:1,rentBaler:30000,
        numTractorsDay:2,rentTractorDay:0,numTrolleysDay:1,rentTrolleyDay:0,numBalersDay:1,rentBalerDay:0,
        eqMode:"monthly"},
@@ -387,25 +397,58 @@
        trips:5,costPerTrip:500,distKm:15,
        farmerPerAcre:200,farmerAcres:10,
        salSuper:15000,numDrivers:2,salDriver:12000,numLabour:4,salLabour:5000,
-       drvDayNum:1,drvDayEach:0,labDayNum:4,labDayEach:0,drvMode:"monthly",labMode:"monthly",
+       bundleCost:2600,drvDayNum:1,drvDayEach:0,labDayNum:4,labDayEach:0,drvMode:"monthly",labMode:"monthly",
        numTractors:2,rentTractor:25000,numTrolleys:1,rentTrolley:10000,numBalers:1,rentBaler:30000,
        numTractorsDay:2,rentTractorDay:0,numTrolleysDay:1,rentTrolleyDay:0,numBalersDay:1,rentBalerDay:0,
        eqMode:"monthly"}
   };
 
   const KEY='straw_calc_v2';
+  const API='https://straw-app-production.up.railway.app/api';
   let sc=1,locked=false;
   let store={1:{...DEFAULTS[1]},2:{...DEFAULTS[2]},locked:false};
+  let saveTimer=null;
 
-  function save(){localStorage.setItem(KEY,JSON.stringify(store));}
+  // Save to localStorage immediately + debounce DB save
+  function save(){
+    localStorage.setItem(KEY,JSON.stringify(store));
+    clearTimeout(saveTimer);
+    saveTimer=setTimeout(saveToDB, 800);
+  }
 
-  function loadStore(){
+  async function saveToDB(){
+    try{
+      await fetch(`${API}/calculator-settings`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({settings:store})
+      });
+    }catch(e){}
+  }
+
+  async function loadStore(){
+    // First load from localStorage for instant render
     try{
       const d=JSON.parse(localStorage.getItem(KEY)||'null');
       if(d){
         if(d[1])store[1]={...DEFAULTS[1],...d[1]};
         if(d[2])store[2]={...DEFAULTS[2],...d[2]};
         if(d.locked!==undefined)locked=d.locked;
+      }
+    }catch(e){}
+    // Then fetch from DB and update if newer
+    try{
+      const res=await fetch(`${API}/calculator-settings`);
+      if(res.ok){
+        const data=await res.json();
+        if(data && data.settings){
+          const s=data.settings;
+          if(s[1])store[1]={...DEFAULTS[1],...s[1]};
+          if(s[2])store[2]={...DEFAULTS[2],...s[2]};
+          if(s.locked!==undefined)locked=s.locked;
+          localStorage.setItem(KEY,JSON.stringify(store));
+          populate();applyLock();applyEqMode(store[sc].eqMode||'monthly');calc();
+        }
       }
     }catch(e){}
   }
@@ -507,11 +550,13 @@
     const eqDayFlat=sc===2?(g('numTractorsDay')*g('rentTractorDay')+g('numTrolleysDay')*g('rentTrolleyDay')+g('numBalersDay')*g('rentBalerDay')):0;
     const eqTot=eqMode==='monthly'?eqTotMonthly:0;
     const eqDay=(eqMode==='monthly'?(g('workingDays')>0?eqTot/g('workingDays'):0):eqDayFlat);
-    const costTot=diesel+trans+farmer+salDay+drvDayExtra+labDayExtra+eqDay;
+    const bundle=g('bundleCost');
+    const costTot=diesel+trans+bundle+farmer+salDay+drvDayExtra+labDayExtra+eqDay;
     const profit=rev-costTot;
     const monthly=profit*g('workingDays');
     const pct=rev>0?Math.max(0,Math.min(100,(profit/rev)*100)):0;
 
+    $('c-bundle',`₹${g('bundleCost').toLocaleString('en-IN')}/day`);
     $('c-rev',`${tons.toFixed(1)} T/day · ${fmt(rev)} gross revenue`);
     $('c-diesel',`${litres.toFixed(1)} L/day · ${fmt(diesel)} baling cost`);
     $('c-transport',`${fmt(trans)} transport / day`);
