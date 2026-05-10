@@ -3,13 +3,15 @@ const https   = require('https');
 const router  = express.Router();
 
 // POST /api/ops-advisor-chat
-// Proxies chat messages to Anthropic API server-side.
-// Requires ANTHROPIC_API_KEY in Railway environment variables.
 router.post('/', async (req, res) => {
   try {
     const { system, messages } = req.body;
-    if (!messages || !Array.isArray(messages)) {
-      return res.status(400).json({ error: 'messages array required' });
+
+    console.log('ops-advisor-chat called, messages count:', messages ? messages.length : 'none');
+
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      console.error('Invalid messages:', messages);
+      return res.status(400).json({ error: 'messages array required and must not be empty' });
     }
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -42,8 +44,11 @@ router.post('/', async (req, res) => {
       proxyRes.on('data', chunk => data += chunk);
       proxyRes.on('end', () => {
         try {
-          res.status(proxyRes.statusCode).json(JSON.parse(data));
+          const parsed = JSON.parse(data);
+          console.log('Anthropic response status:', proxyRes.statusCode);
+          res.status(proxyRes.statusCode).json(parsed);
         } catch(e) {
+          console.error('Parse error:', e.message, 'Raw:', data.slice(0, 200));
           res.status(500).json({ error: 'Failed to parse Anthropic response' });
         }
       });
