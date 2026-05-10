@@ -157,6 +157,10 @@
     </div>
   </div>
 
+  <div id="rulesBanner" style="display:none;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#F59E0B;font-family:'DM Mono',monospace;text-align:center;">
+    📖 <span id="rulesCountText">0 custom business rules loaded</span>
+  </div>
+
   <div class="section-label">Quick scenarios</div>
   <div class="quick-list" id="quickList"></div>
 </div>
@@ -217,8 +221,10 @@ const QUICK_PROMPTS = [
 
 let rates       = null;
 let limits      = null;
+let rules       = [];
 let ratesSource = 'loading';
 let limitsSource= 'loading';
+let rulesSource = 'loading';
 let chatHistory = [];
 let isRecording = false;
 let recognition = null;
@@ -233,7 +239,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 async function fetchData() {
-  await Promise.all([fetchRates(), fetchLimits()]);
+  await Promise.all([fetchRates(), fetchLimits(), fetchRules()]);
   updateStatusBadge();
   updateFallbackBanner();
   updateDataCards();
@@ -260,6 +266,21 @@ async function fetchLimits() {
     limits = data.settings; limitsSource = 'live';
   } catch(e) {
     limits = FALLBACK_LIMITS; limitsSource = 'fallback';
+  }
+}
+
+async function fetchRules() {
+  try {
+    const res = await fetch(`${BACKEND}/api/business-rules`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (!data || !data.settings || !Array.isArray(data.settings.rules)) {
+      rules = []; rulesSource = 'live'; return;
+    }
+    rules = data.settings.rules;
+    rulesSource = 'live';
+  } catch(e) {
+    rules = []; rulesSource = 'fallback';
   }
 }
 
@@ -309,6 +330,20 @@ function updateDataCards() {
   document.getElementById('dc-speed').textContent      = l.tractorSpeedKmh + ' km/hr';
   document.getElementById('dc-drivermax').textContent  = l.driverMaxHrs + 'h/day';
   document.getElementById('dc-window').textContent     = l.balingStartTime + '–' + l.fieldEndTime;
+
+  // Rules banner
+  const rulesBanner = document.getElementById('rulesBanner');
+  const rulesCountText = document.getElementById('rulesCountText');
+  if (rules && rules.length > 0) {
+    rulesBanner.style.display = 'block';
+    rulesCountText.textContent = '✓ ' + rules.length + ' custom business rule' + (rules.length === 1 ? '' : 's') + ' loaded';
+    rulesBanner.style.background = 'rgba(16,185,129,0.08)';
+    rulesBanner.style.borderColor = 'rgba(16,185,129,0.25)';
+    rulesBanner.style.color = '#10B981';
+  } else {
+    rulesBanner.style.display = 'block';
+    rulesCountText.textContent = '📝 No business rules yet — add some to teach the AI';
+  }
 }
 
 // ── System Prompt ─────────────────────────────────────────────────────
@@ -398,7 +433,12 @@ Ask when execution is if not mentioned.
 **RISK FLAGS** — top 2-3 with contingency
 **DO THIS NOW** — immediate action steps
 
-Decisive. Direct. Use ₹. Ask only 1 critical thing if info missing, then proceed with stated assumptions.`;
+Decisive. Direct. Use ₹. Ask only 1 critical thing if info missing, then proceed with stated assumptions.
+
+## CUSTOM BUSINESS RULES — FROM THE OPERATOR (HIGHEST PRIORITY)
+${rules && rules.length > 0
+  ? 'These are rules the operator has personally written based on real experience. Follow them strictly. They override any conflicting general logic above.\n\n' + rules.map((r, i) => `RULE ${i+1}: ${r.text}`).join('\n\n')
+  : 'No custom rules defined yet. Use only the general logic above.'}`;
 }
 
 // ── Chat ──────────────────────────────────────────────────────────────

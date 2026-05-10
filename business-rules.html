@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#0d9488"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <title>Straw Collector — Business Rules</title>
+  <script>
+    const _a = localStorage.getItem('agent');
+    if (!_a) { window.location.replace('login.html'); }
+    else { const _ag = JSON.parse(_a); if (_ag.role !== 'promoter' && _ag.role !== 'admin') window.location.replace('home.html'); }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--teal:#0d9488;--teal-mid:#2dd4bf;--teal-pale:#f0fdfa;--teal-dark:#134e4a;--amber:#f59e0b;--amber-pale:#fef3c7;--red:#dc2626;--red-pale:#fef2f2;--card:#ffffff;--bg:#f0fdfa;--dark:#1e1b3a;--muted:#6b7280;--border:#d1fae5;--radius:14px;--shadow:0 2px 16px rgba(13,148,136,0.08);}
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;padding-bottom:48px;}
+    header{background:linear-gradient(135deg,var(--teal-dark) 0%,var(--teal) 100%);color:#fff;padding:16px 20px 20px;position:relative;overflow:hidden;}
+    header::before{content:'';position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.07);}
+    header::after{content:'';position:absolute;left:20px;bottom:-60px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,0.05);}
+    .hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;position:relative;z-index:1;}
+    .hdr-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:#fff;}
+    .btn-home{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;min-height:44px;position:relative;z-index:1;}
+    header h1{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;position:relative;z-index:1;}
+    header p{font-size:13px;opacity:.7;margin-top:3px;position:relative;z-index:1;}
+
+    .lock-banner{margin:14px 16px 0;background:var(--amber-pale);border:1.5px solid #fde68a;border-radius:12px;padding:11px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+    .lock-txt{font-size:12px;color:#92400e;font-weight:500;display:flex;align-items:center;gap:6px;flex:1;}
+    .lock-txt svg{width:14px;height:14px;flex-shrink:0;}
+    .btn-lock{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:9px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;min-height:40px;white-space:nowrap;}
+    .btn-lock.locked{background:var(--teal);color:#fff;}
+    .btn-lock.unlocked{background:var(--amber);color:#fff;}
+
+    .content{padding:14px 16px;display:flex;flex-direction:column;gap:12px;max-width:760px;margin:0 auto;}
+
+    .card{background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid var(--border);box-shadow:var(--shadow);}
+    .card-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--teal-dark);margin-bottom:14px;display:flex;align-items:center;gap:6px;padding-bottom:10px;border-bottom:1.5px solid var(--border);}
+
+    /* Intro card */
+    .intro-card{background:linear-gradient(135deg,#fef3c7 0%,#fde68a 100%);border:1.5px solid #fcd34d;border-radius:var(--radius);padding:14px 16px;}
+    .intro-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#92400e;margin-bottom:6px;}
+    .intro-text{font-size:12.5px;color:#78350f;line-height:1.55;}
+    .intro-examples{margin-top:8px;font-size:11.5px;color:#92400e;font-style:italic;line-height:1.6;}
+
+    /* Add rule input */
+    .add-wrap{display:flex;flex-direction:column;gap:8px;}
+    textarea.rule-input{width:100%;padding:12px 14px;min-height:80px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--dark);background:#fff;outline:none;resize:vertical;line-height:1.55;transition:border-color .2s;}
+    textarea.rule-input:focus{border-color:var(--teal-mid);}
+    textarea.rule-input:disabled{background:#f9fafb;color:var(--muted);cursor:not-allowed;}
+    .btn-add{align-self:flex-end;background:var(--teal);color:#fff;border:none;border-radius:9px;padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;min-height:40px;transition:background .15s;}
+    .btn-add:hover{background:var(--teal-dark);}
+    .btn-add:disabled{background:#9ca3af;cursor:not-allowed;}
+
+    /* Rules list */
+    .rules-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+    .rules-count{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+    .empty-state{text-align:center;padding:30px 16px;color:var(--muted);font-size:13px;}
+    .empty-state .empty-icon{font-size:36px;margin-bottom:8px;}
+
+    .rule-item{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;transition:border-color .15s,box-shadow .15s;animation:slideIn .2s ease;}
+    .rule-item:hover{border-color:var(--teal-mid);box-shadow:0 2px 8px rgba(13,148,136,0.1);}
+    .rule-num{display:inline-block;background:var(--teal-pale);color:var(--teal-dark);font-family:'DM Mono',monospace;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:.4px;margin-bottom:6px;}
+    .rule-text{font-size:13.5px;color:var(--dark);line-height:1.6;white-space:pre-wrap;word-wrap:break-word;}
+    .rule-actions{display:flex;gap:6px;margin-top:10px;justify-content:flex-end;}
+    .btn-icon{background:#fff;border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:4px;transition:all .15s;min-height:32px;}
+    .btn-icon.edit{color:var(--teal);}
+    .btn-icon.edit:hover{background:var(--teal-pale);border-color:var(--teal);}
+    .btn-icon.delete{color:var(--red);}
+    .btn-icon.delete:hover{background:var(--red-pale);border-color:var(--red);}
+    .btn-icon:disabled{opacity:.4;cursor:not-allowed;}
+    .btn-icon svg{width:13px;height:13px;}
+
+    /* Edit mode */
+    .rule-item.editing{border-color:var(--amber);background:#fffbeb;}
+    .rule-edit-input{width:100%;padding:10px 12px;min-height:70px;border:1.5px solid var(--amber);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--dark);background:#fff;outline:none;resize:vertical;line-height:1.55;}
+    .rule-edit-actions{display:flex;gap:6px;margin-top:8px;justify-content:flex-end;}
+    .btn-icon.save{background:var(--teal);color:#fff;border-color:var(--teal);}
+    .btn-icon.save:hover{background:var(--teal-dark);}
+    .btn-icon.cancel{color:var(--muted);}
+
+    .last-saved{font-size:11px;color:var(--muted);text-align:center;margin-top:14px;font-family:'DM Mono',monospace;}
+
+    .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:#fff;padding:11px 20px;border-radius:24px;font-size:14px;font-weight:500;opacity:0;transition:all .3s;z-index:999;white-space:nowrap;pointer-events:none;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .toast.green{background:#166534;}
+    .toast.amber{background:#92400e;}
+    .toast.red{background:#991b1b;}
+
+    @keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-top">
+    <div class="hdr-badge">📖 Business Rules</div>
+    <a href="home.html" class="btn-home">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      Home
+    </a>
+  </div>
+  <h1>Business Rules</h1>
+  <p>Teach the AI how your business actually works</p>
+</header>
+
+<div class="lock-banner">
+  <div class="lock-txt" id="lockTxt">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    Rules auto-saved and shared. Lock to prevent accidental changes.
+  </div>
+  <button class="btn-lock unlocked" id="lockBtn" onclick="toggleLock()">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+    Lock
+  </button>
+</div>
+
+<div class="content">
+
+  <!-- Intro -->
+  <div class="intro-card">
+    <div class="intro-title">💡 How this works</div>
+    <div class="intro-text">Whenever the Ops Advisor makes a mistake, write a rule here that prevents it from happening again. Rules can be sentences or paragraphs.</div>
+    <div class="intro-examples">
+      Examples:<br/>
+      • Diesel cost is part of baling cost. Never add diesel as a separate line item.<br/>
+      • If buyer provides tractor, do not include tractor rental in any cost calculation.<br/>
+      • Each tractor needs exactly 1 driver. Total drivers = total tractors.
+    </div>
+  </div>
+
+  <!-- Add new rule -->
+  <div class="card">
+    <div class="card-title">➕ Add New Rule</div>
+    <div class="add-wrap">
+      <textarea id="newRuleInput" class="rule-input" placeholder="Write a rule the AI should always follow... You can write a single sentence or a full paragraph explaining the logic."></textarea>
+      <button class="btn-add" id="btnAdd" onclick="addRule()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        Add Rule
+      </button>
+    </div>
+  </div>
+
+  <!-- Rules list -->
+  <div class="card">
+    <div class="rules-header">
+      <div class="card-title" style="margin-bottom:0;border:none;padding-bottom:0;">📋 All Rules</div>
+      <div class="rules-count" id="rulesCount">0 rules</div>
+    </div>
+    <div id="rulesList"></div>
+  </div>
+
+  <div class="last-saved" id="lastSaved">Not yet saved</div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const LS_KEY = 'straw_business_rules_v1';
+  const API    = 'https://straw-app-production.up.railway.app/api';
+  let locked   = false;
+  let rules    = []; // array of { id, text, createdAt }
+  let saveTimer = null;
+  let editingId = null;
+
+  // ── Persist ──────────────────────────────────────────────────────────
+  function save() {
+    localStorage.setItem(LS_KEY, JSON.stringify({ rules, locked }));
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveToDB, 600);
+  }
+
+  async function saveToDB() {
+    try {
+      await fetch(`${API}/business-rules`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ settings: { rules, locked } })
+      });
+      setText('lastSaved', 'Last saved: ' + new Date().toLocaleString('en-IN'));
+    } catch(e) {
+      setText('lastSaved', 'Save failed — check connection');
+    }
+  }
+
+  async function loadStore() {
+    // localStorage first for instant render
+    try {
+      const d = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+      if (d) { rules = d.rules || []; locked = d.locked || false; }
+    } catch(e) {}
+    render();
+
+    // DB fetch to sync
+    try {
+      const res = await fetch(`${API}/business-rules`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.settings) {
+          rules  = data.settings.rules  || [];
+          locked = data.settings.locked || false;
+          localStorage.setItem(LS_KEY, JSON.stringify({ rules, locked }));
+          render();
+          if (data.updated_at) setText('lastSaved', 'Last saved: ' + new Date(data.updated_at).toLocaleString('en-IN'));
+        }
+      }
+    } catch(e) {}
+  }
+
+  // ── Rule operations ──────────────────────────────────────────────────
+  function addRule() {
+    if (locked) return;
+    const input = document.getElementById('newRuleInput');
+    const text  = input.value.trim();
+    if (!text) { toast('Please write a rule first', 'amber'); return; }
+
+    const newRule = {
+      id: Date.now() + '_' + Math.random().toString(36).slice(2,8),
+      text: text,
+      createdAt: new Date().toISOString(),
+    };
+    rules.unshift(newRule); // newest first
+    input.value = '';
+    save(); render();
+    toast('✓ Rule added', 'green');
+  }
+
+  function deleteRule(id) {
+    if (locked) return;
+    if (!confirm('Delete this rule? The AI will no longer follow it.')) return;
+    rules = rules.filter(r => r.id !== id);
+    save(); render();
+    toast('🗑 Rule deleted', 'red');
+  }
+
+  function startEdit(id) {
+    if (locked) return;
+    editingId = id;
+    render();
+  }
+
+  function cancelEdit() {
+    editingId = null;
+    render();
+  }
+
+  function saveEdit(id) {
+    const ta = document.getElementById('edit_' + id);
+    const newText = ta.value.trim();
+    if (!newText) { toast('Rule cannot be empty', 'amber'); return; }
+    const rule = rules.find(r => r.id === id);
+    if (rule) { rule.text = newText; rule.updatedAt = new Date().toISOString(); }
+    editingId = null;
+    save(); render();
+    toast('✓ Rule updated', 'green');
+  }
+
+  // ── Render ──────────────────────────────────────────────────────────
+  function render() {
+    const list = document.getElementById('rulesList');
+    setText('rulesCount', rules.length + (rules.length === 1 ? ' rule' : ' rules'));
+
+    if (rules.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">📝</div>
+          <div>No rules yet. Add your first rule above to start teaching the AI.</div>
+        </div>`;
+      applyLockUI();
+      return;
+    }
+
+    list.innerHTML = rules.map((r, i) => {
+      const num = rules.length - i;
+      if (editingId === r.id) {
+        return `
+          <div class="rule-item editing">
+            <div class="rule-num">RULE #${num}</div>
+            <textarea id="edit_${r.id}" class="rule-edit-input">${escapeHtml(r.text)}</textarea>
+            <div class="rule-edit-actions">
+              <button class="btn-icon cancel" onclick="cancelEdit()">Cancel</button>
+              <button class="btn-icon save" onclick="saveEdit('${r.id}')">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                Save
+              </button>
+            </div>
+          </div>`;
+      }
+      return `
+        <div class="rule-item">
+          <div class="rule-num">RULE #${num}</div>
+          <div class="rule-text">${escapeHtml(r.text)}</div>
+          <div class="rule-actions">
+            <button class="btn-icon edit" onclick="startEdit('${r.id}')" ${locked ? 'disabled' : ''}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              Edit
+            </button>
+            <button class="btn-icon delete" onclick="deleteRule('${r.id}')" ${locked ? 'disabled' : ''}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3"/></svg>
+              Delete
+            </button>
+          </div>
+        </div>`;
+    }).join('');
+
+    applyLockUI();
+  }
+
+  // ── Lock ─────────────────────────────────────────────────────────────
+  function toggleLock() {
+    locked = !locked;
+    save();
+    applyLockUI();
+    toast(locked ? '🔒 Rules locked' : '🔓 Rules unlocked', locked ? 'green' : 'amber');
+  }
+
+  function applyLockUI() {
+    document.getElementById('newRuleInput').disabled = locked;
+    document.getElementById('btnAdd').disabled       = locked;
+
+    const btn = document.getElementById('lockBtn');
+    const txt = document.getElementById('lockTxt');
+    const lockSVG = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>';
+    const unlockSVG = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>';
+    const infoSVG = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+
+    if (locked) {
+      btn.className = 'btn-lock locked'; btn.innerHTML = lockSVG + ' Unlock';
+      txt.innerHTML = lockSVG + ' Rules locked. Tap Unlock to add or edit.';
+    } else {
+      btn.className = 'btn-lock unlocked'; btn.innerHTML = unlockSVG + ' Lock';
+      txt.innerHTML = infoSVG + ' Rules auto-saved and shared. Lock to prevent accidental changes.';
+    }
+  }
+
+  // ── Helpers ──────────────────────────────────────────────────────────
+  function setText(id, v) { const e = document.getElementById(id); if (e) e.textContent = v; }
+  function escapeHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+  function toast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'toast ' + (type || '');
+    t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  // Allow Ctrl+Enter to add rule
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('newRuleInput').addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        addRule();
+      }
+    });
+  });
+
+  loadStore();
+</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{});});}</script>
+</body>
+</html>
