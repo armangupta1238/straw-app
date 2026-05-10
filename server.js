@@ -19,6 +19,8 @@ const machineryRouter        = require('./routes/machinery');
 const pickupSchedulesRouter      = require('./routes/pickup-schedules');
 const calculatorSettingsRouter   = require('./routes/calculator-settings');
 const operationalLimitsRouter    = require('./routes/operational-limits');
+const opsAdvisorChatRouter       = require('./routes/ops-advisor-chat');
+const opsAdvisorRatesRouter      = require('./routes/ops-advisor-rates');
 
 app.use('/api/farmers',           farmersRouter);
 app.use('/api/villages',          villagesRouter);
@@ -32,6 +34,8 @@ app.use('/api/machinery',         machineryRouter);
 app.use('/api/pickup-schedules',      pickupSchedulesRouter);
 app.use('/api/calculator-settings',   calculatorSettingsRouter);
 app.use('/api/operational-limits',    operationalLimitsRouter);
+app.use('/api/ops-advisor-chat',      opsAdvisorChatRouter);
+app.use('/api/ops-advisor-rates',     opsAdvisorRatesRouter);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Straw App Backend is running!' });

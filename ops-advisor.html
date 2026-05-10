@@ -429,12 +429,10 @@ async function sendMessage(text) {
   scrollBottom();
 
   try {
-    const res = await fetch(ANTHROPIC_URL, {
+    const res = await fetch(`${BACKEND}/api/ops-advisor-chat`, {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
         system: buildSystemPrompt(),
         messages: chatHistory,
       })
