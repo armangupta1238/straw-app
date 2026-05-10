@@ -34,14 +34,7 @@
     header h1{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;position:relative;z-index:1;}
     header p{font-size:13px;opacity:.7;margin-top:3px;position:relative;z-index:1;}
 
-    .sc-wrap{padding:14px 16px 0;}
-    .sc-toggle{display:flex;background:#fff;border-radius:12px;border:1.5px solid var(--border);padding:4px;gap:4px;box-shadow:var(--shadow);}
-    .sc-btn{flex:1;padding:12px 8px;border:none;border-radius:9px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;background:transparent;color:var(--muted);line-height:1.3;}
-    .sc-btn.active{background:var(--teal);color:#fff;box-shadow:0 2px 8px rgba(13,148,136,0.3);}
-    .sc-btn:disabled{opacity:0.5;cursor:not-allowed;}
-    .sc-sub{font-size:10px;font-weight:500;opacity:0.8;display:block;}
-
-    .lock-banner{margin:12px 16px 0;background:var(--amber-pale);border:1.5px solid #fde68a;border-radius:12px;padding:11px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+    .lock-banner{margin:14px 16px 0;background:var(--amber-pale);border:1.5px solid #fde68a;border-radius:12px;padding:11px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
     .lock-txt{font-size:12px;color:#92400e;font-weight:500;display:flex;align-items:center;gap:6px;flex:1;}
     .lock-txt svg{width:14px;height:14px;flex-shrink:0;}
     .btn-lock{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:9px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;min-height:40px;white-space:nowrap;}
@@ -67,17 +60,32 @@
     .frow3{display:flex;gap:8px;}
     .frow3 .field{flex:1;margin-bottom:0;}
     label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:5px;}
-    input[type=number]{width:100%;padding:11px 13px;min-height:46px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--dark);background:#fff;outline:none;-webkit-appearance:none;transition:border-color .2s;}
-    input[type=number]:focus{border-color:var(--teal-mid);}
-    input[type=number]:disabled{background:#f9fafb;color:var(--muted);cursor:not-allowed;}
+    input[type=number],input[type=text]{width:100%;padding:11px 13px;min-height:46px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--dark);background:#fff;outline:none;-webkit-appearance:none;transition:border-color .2s;}
+    input[type=number]:focus,input[type=text]:focus{border-color:var(--teal-mid);}
+    input[type=number]:disabled,input[type=text]:disabled{background:#f9fafb;color:var(--muted);cursor:not-allowed;}
     .hint{font-size:11px;color:var(--muted);margin-top:4px;}
     .fcalc{font-size:12px;color:var(--teal);font-weight:600;margin-top:6px;background:var(--teal-pale);border-radius:6px;padding:5px 9px;display:inline-block;}
+
+    /* Buyer equipment checkboxes */
+    .buyer-checks{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+    .buyer-check-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--teal-pale);border:1.5px solid var(--border);border-radius:10px;cursor:pointer;}
+    .buyer-check-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--teal);cursor:pointer;flex-shrink:0;}
+    .buyer-check-label{font-size:13px;font-weight:500;color:var(--dark);}
+    .buyer-check-sub{font-size:11px;color:var(--muted);margin-left:auto;}
+    .buyer-provided-badge{display:inline-block;background:#d1fae5;color:#065f46;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:.4px;text-transform:uppercase;}
+
+    /* Equipment rows with buyer offset */
+    .eq-split{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
+    .eq-row{display:flex;gap:8px;align-items:flex-end;}
+    .eq-row .field{flex:1;margin-bottom:0;}
+    .eq-row-label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;}
 
     .results-card{background:linear-gradient(135deg,var(--teal-dark) 0%,var(--teal) 100%);border-radius:var(--radius);padding:20px;color:#fff;box-shadow:0 4px 24px rgba(13,148,136,0.25);}
     .res-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
     .res-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;}
     .res-badge{background:rgba(255,255,255,0.2);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;}
     .rgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+    .rgrid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;}
     .ri{background:rgba(255,255,255,0.12);border-radius:10px;padding:12px 14px;}
     .ri.full{grid-column:1/-1;}
     .rl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.65;margin-bottom:4px;}
@@ -86,6 +94,7 @@
     .rv.green{color:#a7f3d0;}
     .rv.red{color:#fca5a5;}
     .rv.amber{color:#fde68a;}
+    .rv.sm{font-size:16px;}
     .rsub{font-size:11px;opacity:.6;margin-top:3px;}
     .pbar-wrap{margin-top:8px;}
     .pbar-labels{display:flex;justify-content:space-between;font-size:10px;opacity:.6;margin-bottom:4px;}
@@ -99,10 +108,19 @@
     .bdiv{height:1px;background:rgba(255,255,255,0.15);margin:6px 0;}
     .brow.tot .bl{font-weight:700;opacity:1;}
     .brow.tot .bv{font-size:15px;color:#fde68a;}
-    .monthly-box{background:rgba(255,255,255,0.15);border-radius:10px;padding:18px;text-align:center;}
+    .monthly-box{background:rgba(255,255,255,0.15);border-radius:10px;padding:18px;text-align:center;margin-bottom:12px;}
     .mo-label{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;opacity:.7;margin-bottom:6px;}
     .mo-val{font-family:'Syne',sans-serif;font-size:38px;font-weight:800;color:#a7f3d0;line-height:1;}
     .mo-sub{font-size:12px;opacity:.6;margin-top:6px;}
+
+    /* Resource summary */
+    .res-summary{background:rgba(255,255,255,0.1);border-radius:10px;padding:14px;margin-bottom:12px;}
+    .res-sum-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.7;margin-bottom:12px;}
+    .res-sum-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+    .res-sum-item{background:rgba(255,255,255,0.1);border-radius:8px;padding:10px;text-align:center;}
+    .res-sum-num{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#a7f3d0;line-height:1;}
+    .res-sum-lbl{font-size:10px;opacity:.65;margin-top:4px;letter-spacing:.3px;}
+    .res-sum-badge{font-size:9px;color:#fde68a;margin-top:2px;}
 
     .mode-toggle{display:flex;background:#f0fdfa;border:1.5px solid var(--border);border-radius:8px;padding:3px;gap:3px;margin-bottom:10px;width:100%;}
     .mode-btn{flex:1;padding:7px 8px;border:none;border-radius:6px;font-family:"DM Sans",sans-serif;font-size:12px;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);transition:all 0.15s;min-height:36px;}
@@ -114,6 +132,8 @@
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
     .toast.green{background:#166534;}
     .toast.amber{background:#92400e;}
+
+    .auto-badge{display:inline-flex;align-items:center;gap:4px;background:#d1fae5;color:#065f46;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px;letter-spacing:.3px;}
   </style>
 </head>
 <body>
@@ -127,20 +147,13 @@
     </a>
   </div>
   <h1>Expense Calculator</h1>
-  <p>Each scenario saved independently — persists on refresh</p>
+  <p>Rented Equipment · Values auto-saved</p>
 </header>
-
-<div class="sc-wrap">
-  <div class="sc-toggle">
-    <button class="sc-btn active" id="s1btn" onclick="setSc(1)">Scenario 1<span class="sc-sub">Own Equipment</span></button>
-    <button class="sc-btn" id="s2btn" onclick="setSc(2)">Scenario 2<span class="sc-sub">Rented Equipment</span></button>
-  </div>
-</div>
 
 <div class="lock-banner">
   <div class="lock-txt" id="lockTxt">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-    Values auto-saved per scenario. Lock to prevent accidental changes.
+    Values auto-saved. Lock to prevent accidental changes.
   </div>
   <button class="btn-lock unlocked" id="lockBtn" onclick="toggleLock()">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
@@ -149,6 +162,38 @@
 </div>
 
 <div class="content">
+
+  <!-- BUYER INFO -->
+  <div class="card full">
+    <div class="card-title">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+      Buyer Information
+    </div>
+    <div class="field">
+      <label>Buyer Name</label>
+      <input type="text" id="buyerName" placeholder="Enter buyer name..." oninput="inpText(this,'buyerName')"/>
+    </div>
+    <div style="margin-top:14px;">
+      <div class="sub-title">🎁 Equipment Provided by Buyer <span style="font-size:10px;color:var(--muted);text-transform:none;letter-spacing:0;font-weight:400;">(cost-free — tick what buyer provides)</span></div>
+      <div class="buyer-checks">
+        <label class="buyer-check-row" onclick="toggleBuyer('buyerTractor')">
+          <input type="checkbox" id="chk-buyerTractor" onchange="toggleBuyer('buyerTractor')"/>
+          <span class="buyer-check-label">🚜 Tractor(s)</span>
+          <span class="buyer-check-sub" id="sub-buyerTractor">Not provided</span>
+        </label>
+        <label class="buyer-check-row" onclick="toggleBuyer('buyerLongTrolley')">
+          <input type="checkbox" id="chk-buyerLongTrolley" onchange="toggleBuyer('buyerLongTrolley')"/>
+          <span class="buyer-check-label">🛒 Long Trolley(ies)</span>
+          <span class="buyer-check-sub" id="sub-buyerLongTrolley">Not provided</span>
+        </label>
+        <label class="buyer-check-row" onclick="toggleBuyer('buyerBaler')">
+          <input type="checkbox" id="chk-buyerBaler" onchange="toggleBuyer('buyerBaler')"/>
+          <span class="buyer-check-label">🌀 Baler(s)</span>
+          <span class="buyer-check-sub" id="sub-buyerBaler">Not provided</span>
+        </label>
+      </div>
+    </div>
+  </div>
 
   <!-- REVENUE -->
   <div class="card">
@@ -186,15 +231,20 @@
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 2h2m6-12h3l3 3v5h-2m-4-8v8m0 0H9"/></svg>Transport Cost
     </div>
     <div class="frow">
-      <div class="field"><label>Trips / Day</label><input type="number" data-key="trips" min="0" oninput="inp(this)"/></div>
+      <div class="field">
+        <label>Trips / Day <span class="auto-badge" id="auto-trips-badge">AUTO</span></label>
+        <input type="number" data-key="trips" min="0" oninput="inp(this); store.tripsManual=true; save();"/>
+        <div class="hint" id="trips-hint">Auto-calculated from tons ÷ trolley capacity</div>
+      </div>
       <div class="field"><label>Cost / Trip (₹)</label><input type="number" data-key="costPerTrip" min="0" oninput="inp(this)"/></div>
     </div>
     <div class="fcalc" id="c-transport">—</div>
     <div class="field" style="margin-top:12px;">
-      <label>Distance / Trip (km) — reference</label>
+      <label>Warehouse Distance (km)</label>
       <input type="number" data-key="distKm" min="0" oninput="inp(this)"/>
-      <div class="hint">Not used in calculation</div>
+      <div class="hint">Reference only — used by Ops Advisor</div>
     </div>
+    <button onclick="resetTrips()" style="margin-top:8px;background:var(--teal-pale);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--teal-dark);font-weight:600;cursor:pointer;">↺ Reset to Auto</button>
   </div>
 
   <!-- PLASTIC BUNDLE -->
@@ -221,11 +271,12 @@
   <!-- SALARIES -->
   <div class="card">
     <div class="card-title">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Salaries (Monthly)
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Salaries
     </div>
     <div class="sub">
       <div class="sub-title">👷 Supervisor</div>
       <div class="field"><label>Supervisor Salary (₹/month)</label><input type="number" data-key="salSuper" min="0" oninput="inp(this)"/></div>
+      <div class="hint">No. of supervisors: <strong id="sup-count-hint">1</strong></div>
     </div>
     <div class="sub">
       <div class="sub-title">🚛 Drivers</div>
@@ -273,39 +324,58 @@
   </div>
 
   <!-- EQUIPMENT RENTAL -->
-  <div class="card" id="equipCard">
+  <div class="card full">
     <div class="card-title">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Equipment Rental — Scenario 2
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Equipment Rental
     </div>
 
     <div class="mode-toggle">
       <button class="mode-btn active" id="eq-mo-btn" onclick="setMode('eq','monthly')">Monthly Rent</button>
-      <button class="mode-btn" id="eq-dy-btn" onclick="setMode('eq','daily')">Daily / Per Trip</button>
+      <button class="mode-btn" id="eq-dy-btn" onclick="setMode('eq','daily')">Daily Rent</button>
     </div>
 
     <!-- MONTHLY MODE -->
     <div class="mode-section show" id="eq-monthly">
+
+      <!-- Tractors -->
       <div class="sub">
         <div class="sub-title">🚜 Tractors</div>
         <div class="frow">
-          <div class="field"><label>No. of Tractors</label><input type="number" data-key="numTractors" min="0" oninput="inp(this)"/></div>
-          <div class="field"><label>Rent Each (₹/month)</label><input type="number" data-key="rentTractor" min="0" oninput="inp(this)"/></div>
+          <div class="field"><label>Buyer Provides</label><input type="number" data-key="buyerTractorNum" min="0" oninput="inp(this)" placeholder="0"/><div class="hint">Cost-free</div></div>
+          <div class="field"><label>Extra Rented</label><input type="number" data-key="numTractors" min="0" oninput="inp(this)"/></div>
+          <div class="field"><label>Rent Each (₹/mo)</label><input type="number" data-key="rentTractor" min="0" oninput="inp(this)"/></div>
         </div>
         <div class="fcalc" id="c-tractors">—</div>
       </div>
+
+      <!-- Long Trolleys -->
       <div class="sub">
-        <div class="sub-title">🛒 Trolleys</div>
+        <div class="sub-title">🛒 Long Trolleys <span style="font-size:10px;color:var(--muted);text-transform:none;font-weight:400;">(2.5 T capacity)</span></div>
         <div class="frow">
-          <div class="field"><label>No. of Trolleys</label><input type="number" data-key="numTrolleys" min="0" oninput="inp(this)"/></div>
-          <div class="field"><label>Rent Each (₹/month)</label><input type="number" data-key="rentTrolley" min="0" oninput="inp(this)"/></div>
+          <div class="field"><label>Buyer Provides</label><input type="number" data-key="buyerLongTrolleyNum" min="0" oninput="inp(this)" placeholder="0"/><div class="hint">Cost-free</div></div>
+          <div class="field"><label>Extra Rented</label><input type="number" data-key="numLongTrolleys" min="0" oninput="inp(this)"/></div>
+          <div class="field"><label>Rent Each (₹/mo)</label><input type="number" data-key="rentLongTrolley" min="0" oninput="inp(this)"/></div>
         </div>
-        <div class="fcalc" id="c-trolleys">—</div>
+        <div class="fcalc" id="c-long-trolleys">—</div>
       </div>
+
+      <!-- Normal Trolleys -->
+      <div class="sub">
+        <div class="sub-title">🛒 Normal Trolleys <span style="font-size:10px;color:var(--muted);text-transform:none;font-weight:400;">(1.2 T capacity)</span></div>
+        <div class="frow">
+          <div class="field"><label>No. Rented</label><input type="number" data-key="numNormalTrolleys" min="0" oninput="inp(this)"/></div>
+          <div class="field"><label>Rent Each (₹/mo)</label><input type="number" data-key="rentNormalTrolley" min="0" oninput="inp(this)"/></div>
+        </div>
+        <div class="fcalc" id="c-normal-trolleys">—</div>
+      </div>
+
+      <!-- Balers -->
       <div class="sub">
         <div class="sub-title">🌀 Balers</div>
         <div class="frow">
-          <div class="field"><label>No. of Balers</label><input type="number" data-key="numBalers" min="0" oninput="inp(this)"/></div>
-          <div class="field"><label>Rent Each (₹/month)</label><input type="number" data-key="rentBaler" min="0" oninput="inp(this)"/></div>
+          <div class="field"><label>Buyer Provides</label><input type="number" data-key="buyerBalerNum" min="0" oninput="inp(this)" placeholder="0"/><div class="hint">Cost-free</div></div>
+          <div class="field"><label>Extra Rented</label><input type="number" data-key="numBalers" min="0" oninput="inp(this)"/></div>
+          <div class="field"><label>Rent Each (₹/mo)</label><input type="number" data-key="rentBaler" min="0" oninput="inp(this)"/></div>
         </div>
         <div class="fcalc" id="c-balers">—</div>
       </div>
@@ -313,26 +383,45 @@
 
     <!-- DAILY MODE -->
     <div class="mode-section" id="eq-daily">
+
+      <!-- Tractors -->
       <div class="sub">
         <div class="sub-title">🚜 Tractors</div>
         <div class="frow">
-          <div class="field"><label>No. of Tractors</label><input type="number" data-key="numTractorsDay" min="0" oninput="inp(this)"/></div>
+          <div class="field"><label>Buyer Provides</label><input type="number" data-key="buyerTractorNumDay" min="0" oninput="inp(this)" placeholder="0"/><div class="hint">Cost-free</div></div>
+          <div class="field"><label>Extra Rented</label><input type="number" data-key="numTractorsDay" min="0" oninput="inp(this)"/></div>
           <div class="field"><label>Rent Each (₹/day)</label><input type="number" data-key="rentTractorDay" min="0" oninput="inp(this)"/></div>
         </div>
         <div class="fcalc" id="c-tractors-day">—</div>
       </div>
+
+      <!-- Long Trolleys -->
       <div class="sub">
-        <div class="sub-title">🛒 Trolleys</div>
+        <div class="sub-title">🛒 Long Trolleys <span style="font-size:10px;color:var(--muted);text-transform:none;font-weight:400;">(2.5 T capacity)</span></div>
         <div class="frow">
-          <div class="field"><label>No. of Trolleys</label><input type="number" data-key="numTrolleysDay" min="0" oninput="inp(this)"/></div>
-          <div class="field"><label>Rent Each (₹/day)</label><input type="number" data-key="rentTrolleyDay" min="0" oninput="inp(this)"/></div>
+          <div class="field"><label>Buyer Provides</label><input type="number" data-key="buyerLongTrolleyNumDay" min="0" oninput="inp(this)" placeholder="0"/><div class="hint">Cost-free</div></div>
+          <div class="field"><label>Extra Rented</label><input type="number" data-key="numLongTrolleysDay" min="0" oninput="inp(this)"/></div>
+          <div class="field"><label>Rent Each (₹/day)</label><input type="number" data-key="rentLongTrolleyDay" min="0" oninput="inp(this)"/></div>
         </div>
-        <div class="fcalc" id="c-trolleys-day">—</div>
+        <div class="fcalc" id="c-long-trolleys-day">—</div>
       </div>
+
+      <!-- Normal Trolleys -->
+      <div class="sub">
+        <div class="sub-title">🛒 Normal Trolleys <span style="font-size:10px;color:var(--muted);text-transform:none;font-weight:400;">(1.2 T capacity)</span></div>
+        <div class="frow">
+          <div class="field"><label>No. Rented</label><input type="number" data-key="numNormalTrolleysDay" min="0" oninput="inp(this)"/></div>
+          <div class="field"><label>Rent Each (₹/day)</label><input type="number" data-key="rentNormalTrolleyDay" min="0" oninput="inp(this)"/></div>
+        </div>
+        <div class="fcalc" id="c-normal-trolleys-day">—</div>
+      </div>
+
+      <!-- Balers -->
       <div class="sub">
         <div class="sub-title">🌀 Balers</div>
         <div class="frow">
-          <div class="field"><label>No. of Balers</label><input type="number" data-key="numBalersDay" min="0" oninput="inp(this)"/></div>
+          <div class="field"><label>Buyer Provides</label><input type="number" data-key="buyerBalerNumDay" min="0" oninput="inp(this)" placeholder="0"/><div class="hint">Cost-free</div></div>
+          <div class="field"><label>Extra Rented</label><input type="number" data-key="numBalersDay" min="0" oninput="inp(this)"/></div>
           <div class="field"><label>Rent Each (₹/day)</label><input type="number" data-key="rentBalerDay" min="0" oninput="inp(this)"/></div>
         </div>
         <div class="fcalc" id="c-balers-day">—</div>
@@ -346,8 +435,9 @@
   <div class="card results-card full">
     <div class="res-hdr">
       <div class="res-title">📊 Profit Summary</div>
-      <div class="res-badge" id="resBadge">S1 · Own Equipment</div>
+      <div class="res-badge" id="resBadge">Rented Equipment</div>
     </div>
+
     <div class="rgrid">
       <div class="ri"><div class="rl">Daily Revenue</div><div class="rv amber" id="r-rev">₹0</div><div class="rsub" id="r-rev-sub"></div></div>
       <div class="ri"><div class="rl">Daily Straw</div><div class="rv" id="r-straw">0 T</div><div class="rsub" id="r-straw-sub"></div></div>
@@ -360,6 +450,13 @@
         </div>
       </div>
     </div>
+
+    <!-- Per unit metrics -->
+    <div class="rgrid">
+      <div class="ri"><div class="rl">Profit / Ton</div><div class="rv sm green" id="r-per-ton">₹0</div><div class="rsub" id="r-per-ton-sub"></div></div>
+      <div class="ri"><div class="rl">Profit / Trip</div><div class="rv sm green" id="r-per-trip">₹0</div><div class="rsub" id="r-per-trip-sub"></div></div>
+    </div>
+
     <div class="bkd">
       <div class="bkd-title">Daily Cost Breakdown</div>
       <div class="brow"><span class="bl">🛢 Baling (Diesel)</span><span class="bv" id="b-diesel">₹0</span></div>
@@ -367,10 +464,27 @@
       <div class="brow"><span class="bl">📦 Plastic Bundle</span><span class="bv" id="b-bundle">₹0</span></div>
       <div class="brow"><span class="bl">👨‍🌾 Farmer Compensation</span><span class="bv" id="b-farmer">₹0</span></div>
       <div class="brow"><span class="bl">👷 Salaries (prorated)</span><span class="bv" id="b-salary">₹0</span></div>
-      <div class="brow" id="b-equip-row"><span class="bl">🚜 Equipment Rental (prorated)</span><span class="bv" id="b-equip">₹0</span></div>
+      <div class="brow"><span class="bl">🚜 Equipment Rental (prorated)</span><span class="bv" id="b-equip">₹0</span></div>
       <div class="bdiv"></div>
       <div class="brow tot"><span class="bl">Total Daily Cost</span><span class="bv" id="b-total">₹0</span></div>
     </div>
+
+    <!-- Resource Summary -->
+    <div class="res-summary">
+      <div class="res-sum-title">👥 Resource Summary</div>
+      <div class="res-sum-grid">
+        <div class="res-sum-item"><div class="res-sum-num" id="sum-tractors">0</div><div class="res-sum-lbl">Tractors</div><div class="res-sum-badge" id="sum-tractors-badge"></div></div>
+        <div class="res-sum-item"><div class="res-sum-num" id="sum-long-trolleys">0</div><div class="res-sum-lbl">Long Trolleys</div><div class="res-sum-badge" id="sum-long-badge"></div></div>
+        <div class="res-sum-item"><div class="res-sum-num" id="sum-normal-trolleys">0</div><div class="res-sum-lbl">Normal Trolleys</div><div class="res-sum-badge"></div></div>
+        <div class="res-sum-item"><div class="res-sum-num" id="sum-balers">0</div><div class="res-sum-lbl">Balers</div><div class="res-sum-badge" id="sum-balers-badge"></div></div>
+        <div class="res-sum-item"><div class="res-sum-num" id="sum-supervisors">1</div><div class="res-sum-lbl">Supervisors</div><div class="res-sum-badge"></div></div>
+        <div class="res-sum-item"><div class="res-sum-num" id="sum-drivers">0</div><div class="res-sum-lbl">Drivers</div><div class="res-sum-badge" id="sum-drivers-badge"></div></div>
+        <div class="res-sum-item"><div class="res-sum-num" id="sum-labour">0</div><div class="res-sum-lbl">Labourers</div><div class="res-sum-badge" id="sum-labour-badge"></div></div>
+        <div class="res-sum-item"><div class="res-sum-num" id="sum-trips">0</div><div class="res-sum-lbl">Trips/Day</div><div class="res-sum-badge"></div></div>
+        <div class="res-sum-item"><div class="res-sum-num" id="sum-tons">0</div><div class="res-sum-lbl">Tons/Day</div><div class="res-sum-badge"></div></div>
+      </div>
+    </div>
+
     <div class="monthly-box">
       <div class="mo-label">Monthly Net Profit</div>
       <div class="mo-val" id="r-monthly">₹0</div>
@@ -383,223 +497,317 @@
 
 <script>
   const DEFAULTS = {
-    1:{sellingPrice:2200,acresPerDay:10,yieldPerAcre:1.2,workingDays:26,
-       dieselLPH:3,dieselHrs:5,dieselRate:90,
-       trips:5,costPerTrip:500,distKm:15,
-       farmerPerAcre:200,farmerAcres:10,
-       salSuper:15000,numDrivers:2,salDriver:12000,numLabour:4,salLabour:5000,
-       bundleCost:2600,drvDayNum:1,drvDayEach:0,labDayNum:4,labDayEach:0,drvMode:"monthly",labMode:"monthly",
-       numTractors:2,rentTractor:25000,numTrolleys:1,rentTrolley:10000,numBalers:1,rentBaler:30000,
-       numTractorsDay:2,rentTractorDay:0,numTrolleysDay:1,rentTrolleyDay:0,numBalersDay:1,rentBalerDay:0,
-       eqMode:"monthly"},
-    2:{sellingPrice:2800,acresPerDay:10,yieldPerAcre:1.2,workingDays:26,
-       dieselLPH:3,dieselHrs:5,dieselRate:90,
-       trips:5,costPerTrip:500,distKm:15,
-       farmerPerAcre:200,farmerAcres:10,
-       salSuper:15000,numDrivers:2,salDriver:12000,numLabour:4,salLabour:5000,
-       bundleCost:2600,drvDayNum:1,drvDayEach:0,labDayNum:4,labDayEach:0,drvMode:"monthly",labMode:"monthly",
-       numTractors:2,rentTractor:25000,numTrolleys:1,rentTrolley:10000,numBalers:1,rentBaler:30000,
-       numTractorsDay:2,rentTractorDay:0,numTrolleysDay:1,rentTrolleyDay:0,numBalersDay:1,rentBalerDay:0,
-       eqMode:"monthly"}
+    buyerName:'',
+    sellingPrice:2200, acresPerDay:10, yieldPerAcre:1.25, workingDays:26,
+    dieselLPH:4, dieselHrs:6, dieselRate:95,
+    trips:5, costPerTrip:1200, distKm:17,
+    farmerPerAcre:200, farmerAcres:10,
+    bundleCost:2600,
+    salSuper:10000,
+    numDrivers:2, salDriver:12000,
+    drvDayNum:3, drvDayEach:600, drvMode:'daily',
+    numLabour:2, salLabour:10000,
+    labDayNum:4, labDayEach:500, labMode:'daily',
+    // Monthly equipment
+    buyerTractorNum:0, numTractors:1, rentTractor:30000,
+    buyerLongTrolleyNum:0, numLongTrolleys:0, rentLongTrolley:10000,
+    numNormalTrolleys:0, rentNormalTrolley:6000,
+    buyerBalerNum:0, numBalers:0, rentBaler:30000,
+    // Daily equipment
+    buyerTractorNumDay:0, numTractorsDay:2, rentTractorDay:1400,
+    buyerLongTrolleyNumDay:0, numLongTrolleysDay:2, rentLongTrolleyDay:1000,
+    numNormalTrolleysDay:0, rentNormalTrolleyDay:600,
+    buyerBalerNumDay:0, numBalersDay:1, rentBalerDay:0,
+    eqMode:'daily',
+    tripsManual: false,
   };
 
-  const KEY='straw_calc_v2';
-  const API='https://straw-app-production.up.railway.app/api';
-  let sc=1,locked=false;
-  let store={1:{...DEFAULTS[1]},2:{...DEFAULTS[2]},locked:false};
-  let saveTimer=null;
+  const KEY = 'straw_calc_v3';
+  const API = 'https://straw-app-production.up.railway.app/api';
+  let locked = false;
+  let store = {...DEFAULTS};
+  let saveTimer = null;
 
-  // Save to localStorage immediately + debounce DB save
-  function save(){
-    localStorage.setItem(KEY,JSON.stringify(store));
+  function save() {
+    localStorage.setItem(KEY, JSON.stringify(store));
     clearTimeout(saveTimer);
-    saveTimer=setTimeout(saveToDB, 800);
+    saveTimer = setTimeout(saveToDB, 800);
   }
 
-  async function saveToDB(){
-    try{
-      await fetch(`${API}/calculator-settings`,{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({settings:store})
+  async function saveToDB() {
+    try {
+      await fetch(`${API}/calculator-settings`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({settings: store})
       });
-    }catch(e){}
+    } catch(e) {}
   }
 
-  async function loadStore(){
-    // First load from localStorage for instant render
-    try{
-      const d=JSON.parse(localStorage.getItem(KEY)||'null');
-      if(d){
-        if(d[1])store[1]={...DEFAULTS[1],...d[1]};
-        if(d[2])store[2]={...DEFAULTS[2],...d[2]};
-        if(d.locked!==undefined)locked=d.locked;
-      }
-    }catch(e){}
-    // Then fetch from DB and update if newer
-    try{
-      const res=await fetch(`${API}/calculator-settings`);
-      if(res.ok){
-        const data=await res.json();
-        if(data && data.settings){
-          const s=data.settings;
-          if(s[1])store[1]={...DEFAULTS[1],...s[1]};
-          if(s[2])store[2]={...DEFAULTS[2],...s[2]};
-          if(s.locked!==undefined)locked=s.locked;
-          localStorage.setItem(KEY,JSON.stringify(store));
-          populate();applyLock();applyEqMode(store[sc].eqMode||'monthly');calc();
+  async function loadStore() {
+    try {
+      const d = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if (d) { store = {...DEFAULTS, ...d}; locked = store.locked || false; }
+    } catch(e) {}
+    try {
+      const res = await fetch(`${API}/calculator-settings`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.settings) {
+          store = {...DEFAULTS, ...data.settings};
+          locked = store.locked || false;
+          localStorage.setItem(KEY, JSON.stringify(store));
+          populate(); applyLock(); applyEqMode(store.eqMode||'daily'); calc();
         }
       }
-    }catch(e){}
+    } catch(e) {}
   }
 
-  function populate(){
-    const s=store[sc];
-    document.querySelectorAll('input[data-key]').forEach(el=>{
-      if(s[el.dataset.key]!==undefined)el.value=s[el.dataset.key];
+  function populate() {
+    // Text inputs
+    const buyerEl = document.getElementById('buyerName');
+    if (buyerEl) buyerEl.value = store.buyerName || '';
+    // Number inputs
+    document.querySelectorAll('input[data-key]').forEach(el => {
+      if (store[el.dataset.key] !== undefined) el.value = store[el.dataset.key];
     });
-    applyMode('drv',s.drvMode||'monthly');
-    applyMode('lab',s.labMode||'monthly');
-    applyEqMode(s.eqMode||'monthly');
+    applyMode('drv', store.drvMode || 'daily');
+    applyMode('lab', store.labMode || 'daily');
+    applyEqMode(store.eqMode || 'daily');
   }
 
-  function setMode(type,mode){
-    if(type==='eq'){store[sc].eqMode=mode;save();applyEqMode(mode);calc();return;}
-    store[sc][type+'Mode']=mode;
-    save();applyMode(type,mode);calc();
+  function inpText(el, key) {
+    store[key] = el.value;
+    save();
   }
 
-  function applyMode(type,mode){
-    const isMo=mode==='monthly';
-    document.getElementById(type+'-mo-btn').classList.toggle('active',isMo);
-    document.getElementById(type+'-dy-btn').classList.toggle('active',!isMo);
-    document.getElementById(type+'-monthly').classList.toggle('show',isMo);
-    document.getElementById(type+'-daily').classList.toggle('show',!isMo);
+  function inp(el) {
+    store[el.dataset.key] = parseFloat(el.value) || 0;
+    save(); calc();
   }
 
-  function applyEqMode(mode){
-    const isMo=mode==='monthly';
-    document.getElementById('eq-mo-btn').classList.toggle('active',isMo);
-    document.getElementById('eq-dy-btn').classList.toggle('active',!isMo);
-    document.getElementById('eq-monthly').classList.toggle('show',isMo);
-    document.getElementById('eq-daily').classList.toggle('show',!isMo);
+  function setMode(type, mode) {
+    if (type === 'eq') { store.eqMode = mode; save(); applyEqMode(mode); calc(); return; }
+    store[type + 'Mode'] = mode;
+    save(); applyMode(type, mode); calc();
   }
 
-  function inp(el){
-    store[sc][el.dataset.key]=parseFloat(el.value)||0;
-    save();calc();
+  function applyMode(type, mode) {
+    const isMo = mode === 'monthly';
+    document.getElementById(type+'-mo-btn').classList.toggle('active', isMo);
+    document.getElementById(type+'-dy-btn').classList.toggle('active', !isMo);
+    document.getElementById(type+'-monthly').classList.toggle('show', isMo);
+    document.getElementById(type+'-daily').classList.toggle('show', !isMo);
   }
 
-  function setSc(s){
-    sc=s;
-    document.getElementById('s1btn').classList.toggle('active',s===1);
-    document.getElementById('s2btn').classList.toggle('active',s===2);
-    document.getElementById('resBadge').textContent=s===1?'S1 · Own Equipment':'S2 · Rented Equipment';
-    const ec=document.getElementById('equipCard');
-    ec.style.opacity=s===1?'0.45':'1';
-    ec.style.pointerEvents=s===1?'none':(locked?'none':'auto');
-    document.getElementById('b-equip-row').style.display=s===1?'none':'flex';
-    populate();applyLock();applyEqMode(store[sc].eqMode||'monthly');calc();
+  function applyEqMode(mode) {
+    const isMo = mode === 'monthly';
+    document.getElementById('eq-mo-btn').classList.toggle('active', isMo);
+    document.getElementById('eq-dy-btn').classList.toggle('active', !isMo);
+    document.getElementById('eq-monthly').classList.toggle('show', isMo);
+    document.getElementById('eq-daily').classList.toggle('show', !isMo);
   }
 
-  function toggleLock(){
-    locked=!locked;store.locked=locked;save();applyLock();
-    toast2(locked?'🔒 Calculator locked':'🔓 Calculator unlocked',locked?'green':'amber');
+  function toggleBuyer(key) {
+    // Handled via number inputs now — buyer provides count in the field
+    // This function kept for backward compat, not used
   }
 
-  function applyLock(){
-    document.querySelectorAll('input[data-key]').forEach(el=>el.disabled=locked);
-    document.getElementById('s1btn').disabled=locked;
-    document.getElementById('s2btn').disabled=locked;
-    ['drv-mo-btn','drv-dy-btn','lab-mo-btn','lab-dy-btn','eq-mo-btn','eq-dy-btn'].forEach(id=>{
-      const el=document.getElementById(id);if(el)el.disabled=locked;
+  function resetTrips() {
+    store.tripsManual = false;
+    save(); calc();
+  }
+
+  // Auto-calculate trips from tons and trolley mix
+  function autoTrips() {
+    const tons = (store.acresPerDay || 0) * (store.yieldPerAcre || 0);
+    const eqMode = store.eqMode || 'daily';
+    const longCount = eqMode === 'monthly'
+      ? (store.buyerLongTrolleyNum||0) + (store.numLongTrolleys||0)
+      : (store.buyerLongTrolleyNumDay||0) + (store.numLongTrolleysDay||0);
+    const normalCount = eqMode === 'monthly'
+      ? (store.numNormalTrolleys||0)
+      : (store.numNormalTrolleysDay||0);
+    const totalCapacity = longCount * 2.5 + normalCount * 1.2;
+    if (totalCapacity <= 0) return null;
+    return Math.ceil(tons / totalCapacity);
+  }
+
+  function calc() {
+    const g = k => store[k] || 0;
+    const tons = g('acresPerDay') * g('yieldPerAcre');
+    const rev = tons * g('sellingPrice');
+    const litres = g('dieselLPH') * g('dieselHrs');
+    const diesel = litres * g('dieselRate');
+
+    // Auto trips
+    const computed = autoTrips();
+    let trips = g('trips');
+    if (!store.tripsManual && computed !== null) {
+      trips = computed;
+      store.trips = trips;
+      const tripsEl = document.querySelector('input[data-key="trips"]');
+      if (tripsEl && parseFloat(tripsEl.value) !== trips) tripsEl.value = trips;
+      document.getElementById('auto-trips-badge').style.display = 'inline-flex';
+      document.getElementById('trips-hint').textContent = computed !== null
+        ? `Auto: ${tons.toFixed(1)}T ÷ trolley mix = ${trips} trips`
+        : 'Auto-calculated from tons ÷ trolley capacity';
+    } else {
+      document.getElementById('auto-trips-badge').style.display = store.tripsManual ? 'none' : 'inline-flex';
+    }
+
+    const trans = trips * g('costPerTrip');
+    const farmer = g('farmerPerAcre') * g('farmerAcres');
+
+    // Salaries
+    const drvMode = store.drvMode || 'daily';
+    const labMode = store.labMode || 'daily';
+    const salDrv = drvMode === 'monthly' ? g('numDrivers') * g('salDriver') : 0;
+    const salLab = labMode === 'monthly' ? g('numLabour') * g('salLabour') : 0;
+    const salTot = g('salSuper') + salDrv + salLab;
+    const salDay = g('workingDays') > 0 ? salTot / g('workingDays') : 0;
+    const drvDayExtra = drvMode === 'daily' ? g('drvDayNum') * g('drvDayEach') : 0;
+    const labDayExtra = labMode === 'daily' ? g('labDayNum') * g('labDayEach') : 0;
+
+    // Equipment — only rented portion costs money
+    const eqMode = store.eqMode || 'daily';
+    let eqDay = 0;
+    if (eqMode === 'monthly') {
+      const tractorMo  = g('numTractors') * g('rentTractor');
+      const longMo     = g('numLongTrolleys') * g('rentLongTrolley');
+      const normalMo   = g('numNormalTrolleys') * g('rentNormalTrolley');
+      const balerMo    = g('numBalers') * g('rentBaler');
+      const eqTotMo    = tractorMo + longMo + normalMo + balerMo;
+      eqDay            = g('workingDays') > 0 ? eqTotMo / g('workingDays') : 0;
+      $('c-tractors',     `₹${fmt2(tractorMo)}/mo (${g('numTractors')} rented × ${fmt2(g('rentTractor'))}) + ${g('buyerTractorNum')} buyer`);
+      $('c-long-trolleys',`₹${fmt2(longMo)}/mo (${g('numLongTrolleys')} rented × ${fmt2(g('rentLongTrolley'))}) + ${g('buyerLongTrolleyNum')} buyer`);
+      $('c-normal-trolleys',`₹${fmt2(normalMo)}/mo (${g('numNormalTrolleys')} × ${fmt2(g('rentNormalTrolley'))})`);
+      $('c-balers',       `₹${fmt2(balerMo)}/mo (${g('numBalers')} rented × ${fmt2(g('rentBaler'))}) + ${g('buyerBalerNum')} buyer`);
+      $('c-equip',        `₹${fmt2(eqTotMo)}/mo total · ₹${fmt2(eqDay)}/day prorated`);
+    } else {
+      const tractorDy  = g('numTractorsDay') * g('rentTractorDay');
+      const longDy     = g('numLongTrolleysDay') * g('rentLongTrolleyDay');
+      const normalDy   = g('numNormalTrolleysDay') * g('rentNormalTrolleyDay');
+      const balerDy    = g('numBalersDay') * g('rentBalerDay');
+      eqDay            = tractorDy + longDy + normalDy + balerDy;
+      $('c-tractors-day',     `₹${fmt2(tractorDy)}/day (${g('numTractorsDay')} rented × ${fmt2(g('rentTractorDay'))}) + ${g('buyerTractorNumDay')} buyer`);
+      $('c-long-trolleys-day',`₹${fmt2(longDy)}/day (${g('numLongTrolleysDay')} rented × ${fmt2(g('rentLongTrolleyDay'))}) + ${g('buyerLongTrolleyNumDay')} buyer`);
+      $('c-normal-trolleys-day',`₹${fmt2(normalDy)}/day (${g('numNormalTrolleysDay')} × ${fmt2(g('rentNormalTrolleyDay'))})`);
+      $('c-balers-day',       `₹${fmt2(balerDy)}/day (${g('numBalersDay')} rented × ${fmt2(g('rentBalerDay'))}) + ${g('buyerBalerNumDay')} buyer`);
+      $('c-equip',            `₹${fmt2(eqDay)}/day total`);
+    }
+
+    const bundle = g('bundleCost');
+    const costTot = diesel + trans + bundle + farmer + salDay + drvDayExtra + labDayExtra + eqDay;
+    const profit = rev - costTot;
+    const monthly = profit * g('workingDays');
+    const pct = rev > 0 ? Math.max(0, Math.min(100, (profit/rev)*100)) : 0;
+    const perTon = tons > 0 ? profit / tons : 0;
+    const perTrip = trips > 0 ? profit / trips : 0;
+
+    // Display calcs
+    $('c-bundle',    `₹${g('bundleCost').toLocaleString('en-IN')}/day`);
+    $('c-rev',       `${tons.toFixed(1)} T/day · ${fmt(rev)} gross revenue`);
+    $('c-diesel',    `${litres.toFixed(1)} L/day · ${fmt(diesel)} baling diesel cost`);
+    $('c-transport', `${trips} trips/day · ${fmt(trans)} transport cost`);
+    $('c-farmer',    `${fmt(farmer)} farmer compensation / day`);
+    $('c-drivers',   drvMode==='monthly'
+      ? `${fmt(salDrv)}/month for ${g('numDrivers')} driver${g('numDrivers')!==1?'s':''}`
+      : `${fmt(drvDayExtra)}/day (${g('drvDayNum')} × ₹${g('drvDayEach')} each)`);
+    $('c-labour',    labMode==='monthly'
+      ? `${fmt(salLab)}/month for ${g('numLabour')} labourer${g('numLabour')!==1?'s':''}`
+      : `${fmt(labDayExtra)}/day (${g('labDayNum')} × ₹${g('labDayEach')} each)`);
+    $('c-salTotal',  `Monthly salaries: ${fmt(salTot)}/month · ${fmt(salDay+drvDayExtra+labDayExtra)}/day`);
+
+    // Results
+    $('r-rev',       fmt(rev));
+    $('r-rev-sub',   `${tons.toFixed(1)} T × ₹${g('sellingPrice')}/T`);
+    $('r-straw',     tons.toFixed(1)+' T');
+    $('r-straw-sub', g('acresPerDay')+' ac × '+g('yieldPerAcre')+' T/ac');
+    const rp = document.getElementById('r-profit');
+    rp.textContent = fmt(profit); rp.className = 'rv big '+(profit>=0?'green':'red');
+    $('r-pct',       pct.toFixed(0)+'%');
+    document.getElementById('pbar').style.width = pct+'%';
+    $('b-diesel',    fmt(diesel));
+    $('b-transport', fmt(trans));
+    $('b-bundle',    fmt(bundle));
+    $('b-farmer',    fmt(farmer));
+    $('b-salary',    fmt(salDay+drvDayExtra+labDayExtra));
+    $('b-equip',     fmt(eqDay));
+    $('b-total',     fmt(costTot));
+    $('r-monthly',   fmtL(monthly));
+    $('r-monthly-sub', `based on ${g('workingDays')} working days`);
+
+    // Per unit
+    const profitColor = profit >= 0 ? 'green' : 'red';
+    const rpt = document.getElementById('r-per-ton');
+    rpt.textContent = fmt(perTon); rpt.className = 'rv sm '+profitColor;
+    $('r-per-ton-sub', `${tons.toFixed(1)} T/day`);
+    const rptr = document.getElementById('r-per-trip');
+    rptr.textContent = fmt(perTrip); rptr.className = 'rv sm '+profitColor;
+    $('r-per-trip-sub', `${trips} trips/day`);
+
+    // Resource summary
+    const totalTractors   = eqMode==='monthly' ? (g('buyerTractorNum')+g('numTractors')) : (g('buyerTractorNumDay')+g('numTractorsDay'));
+    const totalLong       = eqMode==='monthly' ? (g('buyerLongTrolleyNum')+g('numLongTrolleys')) : (g('buyerLongTrolleyNumDay')+g('numLongTrolleysDay'));
+    const totalNormal     = eqMode==='monthly' ? g('numNormalTrolleys') : g('numNormalTrolleysDay');
+    const totalBalers     = eqMode==='monthly' ? (g('buyerBalerNum')+g('numBalers')) : (g('buyerBalerNumDay')+g('numBalersDay'));
+    const totalDrivers    = drvMode==='monthly' ? g('numDrivers') : g('drvDayNum');
+    const totalLabour     = labMode==='monthly' ? g('numLabour') : g('labDayNum');
+
+    $('sum-tractors',      totalTractors);
+    $('sum-long-trolleys', totalLong);
+    $('sum-normal-trolleys',totalNormal);
+    $('sum-balers',        totalBalers);
+    $('sum-supervisors',   '1');
+    $('sum-drivers',       totalDrivers);
+    $('sum-labour',        totalLabour);
+    $('sum-trips',         trips);
+    $('sum-tons',          tons.toFixed(1));
+
+    // Buyer badges
+    const buyerT  = eqMode==='monthly' ? g('buyerTractorNum') : g('buyerTractorNumDay');
+    const buyerL  = eqMode==='monthly' ? g('buyerLongTrolleyNum') : g('buyerLongTrolleyNumDay');
+    const buyerB  = eqMode==='monthly' ? g('buyerBalerNum') : g('buyerBalerNumDay');
+    $('sum-tractors-badge',   buyerT  > 0 ? `${buyerT} by buyer` : '');
+    $('sum-long-badge',       buyerL  > 0 ? `${buyerL} by buyer` : '');
+    $('sum-balers-badge',     buyerB  > 0 ? `${buyerB} by buyer` : '');
+    $('sum-drivers-badge',    drvMode==='daily' ? 'daily hire' : 'monthly');
+    $('sum-labour-badge',     labMode==='daily' ? 'daily hire' : 'monthly');
+    $('sup-count-hint',       '1');
+  }
+
+  function toggleLock() {
+    locked = !locked; store.locked = locked; save(); applyLock();
+    toast2(locked ? '🔒 Calculator locked' : '🔓 Calculator unlocked', locked ? 'green' : 'amber');
+  }
+
+  function applyLock() {
+    document.querySelectorAll('input[data-key], input[type=text]').forEach(el => el.disabled = locked);
+    ['drv-mo-btn','drv-dy-btn','lab-mo-btn','lab-dy-btn','eq-mo-btn','eq-dy-btn'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.disabled = locked;
     });
-    if(!locked&&sc===1)document.getElementById('equipCard').style.pointerEvents='none';
-    const btn=document.getElementById('lockBtn');
-    const txt=document.getElementById('lockTxt');
-    const lockSVG=`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>`;
-    const unlockSVG=`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>`;
-    const infoSVG=`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
-    if(locked){
-      btn.className='btn-lock locked';btn.innerHTML=lockSVG+' Unlock';
-      txt.innerHTML=lockSVG.replace('></svg>',' style="width:14px;height:14px;flex-shrink:0"></svg>')+' Calculator locked. Tap Unlock to edit.';
-    }else{
-      btn.className='btn-lock unlocked';btn.innerHTML=unlockSVG+' Lock';
-      txt.innerHTML=infoSVG+' Values auto-saved per scenario. Lock to prevent accidental changes.';
+    const btn = document.getElementById('lockBtn');
+    const txt = document.getElementById('lockTxt');
+    const lockSVG   = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>`;
+    const unlockSVG = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>`;
+    const infoSVG   = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
+    if (locked) {
+      btn.className = 'btn-lock locked'; btn.innerHTML = lockSVG + ' Unlock';
+      txt.innerHTML = lockSVG.replace('></svg>',' style="width:14px;height:14px;flex-shrink:0"></svg>') + ' Calculator locked. Tap Unlock to edit.';
+    } else {
+      btn.className = 'btn-lock unlocked'; btn.innerHTML = unlockSVG + ' Lock';
+      txt.innerHTML = infoSVG + ' Values auto-saved. Lock to prevent accidental changes.';
     }
   }
 
-  function calc(){
-    const g=k=>store[sc][k]||0;
-    const tons=g('acresPerDay')*g('yieldPerAcre');
-    const rev=tons*g('sellingPrice');
-    const litres=g('dieselLPH')*g('dieselHrs');
-    const diesel=litres*g('dieselRate');
-    const trans=g('trips')*g('costPerTrip');
-    const farmer=g('farmerPerAcre')*g('farmerAcres');
-    const drvMode=store[sc].drvMode||'monthly';
-    const labMode=store[sc].labMode||'monthly';
-    const salDrv=drvMode==='monthly'?g('numDrivers')*g('salDriver'):0;
-    const salLab=labMode==='monthly'?g('numLabour')*g('salLabour'):0;
-    const salTot=g('salSuper')+salDrv+salLab;
-    const salDay=g('workingDays')>0?salTot/g('workingDays'):0;
-    const drvDayExtra=drvMode==='daily'?g('drvDayNum')*g('drvDayEach'):0;
-    const labDayExtra=labMode==='daily'?g('labDayNum')*g('labDayEach'):0;
-    const eqMode=store[sc].eqMode||'monthly';
-    const eqTotMonthly=sc===2?(g('numTractors')*g('rentTractor')+g('numTrolleys')*g('rentTrolley')+g('numBalers')*g('rentBaler')):0;
-    const eqDayFlat=sc===2?(g('numTractorsDay')*g('rentTractorDay')+g('numTrolleysDay')*g('rentTrolleyDay')+g('numBalersDay')*g('rentBalerDay')):0;
-    const eqTot=eqMode==='monthly'?eqTotMonthly:0;
-    const eqDay=(eqMode==='monthly'?(g('workingDays')>0?eqTot/g('workingDays'):0):eqDayFlat);
-    const bundle=g('bundleCost');
-    const costTot=diesel+trans+bundle+farmer+salDay+drvDayExtra+labDayExtra+eqDay;
-    const profit=rev-costTot;
-    const monthly=profit*g('workingDays');
-    const pct=rev>0?Math.max(0,Math.min(100,(profit/rev)*100)):0;
+  function $(id, v) { const e = document.getElementById(id); if (e) e.textContent = v; }
+  function fmt(n)  { return isNaN(n) ? '₹0' : '₹' + Math.round(n).toLocaleString('en-IN'); }
+  function fmt2(n) { return isNaN(n) ? '0' : Math.round(n).toLocaleString('en-IN'); }
+  function fmtL(n) { if(isNaN(n))return'₹0'; const a=Math.abs(n),s=n<0?'-':''; return a>=100000?s+'₹'+(a/100000).toFixed(2)+' L':s+'₹'+Math.round(a).toLocaleString('en-IN'); }
+  function toast2(msg, type) { const t=document.getElementById('toast'); t.textContent=msg; t.className='toast '+(type||''); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
 
-    $('c-bundle',`₹${g('bundleCost').toLocaleString('en-IN')}/day`);
-    $('c-rev',`${tons.toFixed(1)} T/day · ${fmt(rev)} gross revenue`);
-    $('c-diesel',`${litres.toFixed(1)} L/day · ${fmt(diesel)} baling cost`);
-    $('c-transport',`${fmt(trans)} transport / day`);
-    $('c-farmer',`${fmt(farmer)} farmer compensation / day`);
-    $('c-drivers',drvMode==='monthly'?`${fmt(salDrv)}/month for ${g('numDrivers')} driver${g('numDrivers')!==1?'s':''}`:`${fmt(drvDayExtra)}/day (${g('drvDayNum')} × ₹${g('drvDayEach')} each)`);
-    $('c-labour',labMode==='monthly'?`${fmt(salLab)}/month for ${g('numLabour')} labourer${g('numLabour')!==1?'s':''}`:`${fmt(labDayExtra)}/day (${g('labDayNum')} × ₹${g('labDayEach')} each)`);
-    $('c-salTotal',`Monthly salaries: ${fmt(salTot)}/month · ${fmt(salDay+drvDayExtra+labDayExtra)}/day total`);
-    // Equipment breakdown calcs
-    if(sc===2){
-      const tractorMo=g('numTractors')*g('rentTractor');
-      const trolleyMo=g('numTrolleys')*g('rentTrolley');
-      const balerMo=g('numBalers')*g('rentBaler');
-      const tractorDy=g('numTractorsDay')*g('rentTractorDay');
-      const trolleyDy=g('numTrolleysDay')*g('rentTrolleyDay');
-      const balerDy=g('numBalersDay')*g('rentBalerDay');
-      $('c-tractors',`${fmt(tractorMo)}/month (${g('numTractors')} × ${fmt(g('rentTractor'))})`);
-      $('c-trolleys',`${fmt(trolleyMo)}/month (${g('numTrolleys')} × ${fmt(g('rentTrolley'))})`);
-      $('c-balers',`${fmt(balerMo)}/month (${g('numBalers')} × ${fmt(g('rentBaler'))})`);
-      $('c-tractors-day',`${fmt(tractorDy)}/day (${g('numTractorsDay')} × ${fmt(g('rentTractorDay'))})`);
-      $('c-trolleys-day',`${fmt(trolleyDy)}/day (${g('numTrolleysDay')} × ${fmt(g('rentTrolleyDay'))})`);
-      $('c-balers-day',`${fmt(balerDy)}/day (${g('numBalersDay')} × ${fmt(g('rentBalerDay'))})`);
-      $('c-equip',eqMode==='monthly'?`${fmt(eqTotMonthly)}/month total · ${fmt(eqDay)}/day prorated`:`${fmt(eqDayFlat)}/day total`);
-    }
-    $('r-rev',fmt(rev));
-    $('r-rev-sub',`${tons.toFixed(1)} T × ₹${g('sellingPrice')}/T`);
-    $('r-straw',tons.toFixed(1)+' T');
-    $('r-straw-sub',g('acresPerDay')+' ac × '+g('yieldPerAcre')+' T/ac');
-    const rp=document.getElementById('r-profit');
-    rp.textContent=fmt(profit);rp.className='rv big '+(profit>=0?'green':'red');
-    $('r-pct',pct.toFixed(0)+'%');
-    document.getElementById('pbar').style.width=pct+'%';
-    $('b-diesel',fmt(diesel));$('b-transport',fmt(trans));$('b-bundle',fmt(bundle));$('b-farmer',fmt(farmer));
-    $('b-salary',fmt(salDay+drvDayExtra+labDayExtra));$('b-equip',fmt(eqDay));$('b-total',fmt(costTot));
-    $('r-monthly',fmtL(monthly));
-    $('r-monthly-sub',`based on ${g('workingDays')} working days`);
-  }
-
-  function $(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
-  function fmt(n){return isNaN(n)?'₹0':'₹'+Math.round(n).toLocaleString('en-IN');}
-  function fmtL(n){if(isNaN(n))return'₹0';const a=Math.abs(n),s=n<0?'-':'';return a>=100000?s+'₹'+(a/100000).toFixed(2)+' L':s+'₹'+Math.round(a).toLocaleString('en-IN');}
-  function toast2(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(type||'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
-
-  loadStore();populate();applyLock();setSc(1);
+  loadStore().then(() => { populate(); applyLock(); applyEqMode(store.eqMode||'daily'); calc(); });
 </script>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{});});}</script>
 </body>
