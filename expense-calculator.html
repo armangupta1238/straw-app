@@ -66,19 +66,6 @@
     .hint{font-size:11px;color:var(--muted);margin-top:4px;}
     .fcalc{font-size:12px;color:var(--teal);font-weight:600;margin-top:6px;background:var(--teal-pale);border-radius:6px;padding:5px 9px;display:inline-block;}
 
-    /* Buyer equipment checkboxes */
-    .buyer-checks{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
-    .buyer-check-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--teal-pale);border:1.5px solid var(--border);border-radius:10px;cursor:pointer;}
-    .buyer-check-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--teal);cursor:pointer;flex-shrink:0;}
-    .buyer-check-label{font-size:13px;font-weight:500;color:var(--dark);}
-    .buyer-check-sub{font-size:11px;color:var(--muted);margin-left:auto;}
-    .buyer-provided-badge{display:inline-block;background:#d1fae5;color:#065f46;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:.4px;text-transform:uppercase;}
-
-    /* Equipment rows with buyer offset */
-    .eq-split{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
-    .eq-row{display:flex;gap:8px;align-items:flex-end;}
-    .eq-row .field{flex:1;margin-bottom:0;}
-    .eq-row-label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;}
 
     .results-card{background:linear-gradient(135deg,var(--teal-dark) 0%,var(--teal) 100%);border-radius:var(--radius);padding:20px;color:#fff;box-shadow:0 4px 24px rgba(13,148,136,0.25);}
     .res-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
@@ -133,7 +120,7 @@
     .toast.green{background:#166534;}
     .toast.amber{background:#92400e;}
 
-    .auto-badge{display:inline-flex;align-items:center;gap:4px;background:#d1fae5;color:#065f46;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px;letter-spacing:.3px;}
+
   </style>
 </head>
 <body>
@@ -174,24 +161,22 @@
       <input type="text" id="buyerName" placeholder="Enter buyer name..." oninput="inpText(this,'buyerName')"/>
     </div>
     <div style="margin-top:14px;">
-      <div class="sub-title">🎁 Equipment Provided by Buyer <span style="font-size:10px;color:var(--muted);text-transform:none;letter-spacing:0;font-weight:400;">(cost-free — tick what buyer provides)</span></div>
-      <div class="buyer-checks">
-        <label class="buyer-check-row" onclick="toggleBuyer('buyerTractor')">
-          <input type="checkbox" id="chk-buyerTractor" onchange="toggleBuyer('buyerTractor')"/>
-          <span class="buyer-check-label">🚜 Tractor(s)</span>
-          <span class="buyer-check-sub" id="sub-buyerTractor">Not provided</span>
-        </label>
-        <label class="buyer-check-row" onclick="toggleBuyer('buyerLongTrolley')">
-          <input type="checkbox" id="chk-buyerLongTrolley" onchange="toggleBuyer('buyerLongTrolley')"/>
-          <span class="buyer-check-label">🛒 Long Trolley(ies)</span>
-          <span class="buyer-check-sub" id="sub-buyerLongTrolley">Not provided</span>
-        </label>
-        <label class="buyer-check-row" onclick="toggleBuyer('buyerBaler')">
-          <input type="checkbox" id="chk-buyerBaler" onchange="toggleBuyer('buyerBaler')"/>
-          <span class="buyer-check-label">🌀 Baler(s)</span>
-          <span class="buyer-check-sub" id="sub-buyerBaler">Not provided</span>
-        </label>
+      <div class="sub-title">🎁 Equipment Provided by Buyer <span style="font-size:10px;color:var(--muted);text-transform:none;letter-spacing:0;font-weight:400;">(cost-free)</span></div>
+      <div class="frow3">
+        <div class="field">
+          <label>🚜 Tractors</label>
+          <input type="number" data-key="buyerTractorNum" min="0" placeholder="0" oninput="inp(this)"/>
+        </div>
+        <div class="field">
+          <label>🛒 Long Trolleys</label>
+          <input type="number" data-key="buyerLongTrolleyNum" min="0" placeholder="0" oninput="inp(this)"/>
+        </div>
+        <div class="field">
+          <label>🌀 Balers</label>
+          <input type="number" data-key="buyerBalerNum" min="0" placeholder="0" oninput="inp(this)"/>
+        </div>
       </div>
+      <div class="hint" style="margin-top:4px;">These are provided at no cost — not included in rental calculations</div>
     </div>
   </div>
 
@@ -232,9 +217,8 @@
     </div>
     <div class="frow">
       <div class="field">
-        <label>Trips / Day <span class="auto-badge" id="auto-trips-badge">AUTO</span></label>
-        <input type="number" data-key="trips" min="0" oninput="inp(this); store.tripsManual=true; save();"/>
-        <div class="hint" id="trips-hint">Auto-calculated from tons ÷ trolley capacity</div>
+        <label>Trips / Day</label>
+        <input type="number" data-key="trips" min="0" oninput="inp(this)"/>
       </div>
       <div class="field"><label>Cost / Trip (₹)</label><input type="number" data-key="costPerTrip" min="0" oninput="inp(this)"/></div>
     </div>
@@ -244,7 +228,6 @@
       <input type="number" data-key="distKm" min="0" oninput="inp(this)"/>
       <div class="hint">Reference only — used by Ops Advisor</div>
     </div>
-    <button onclick="resetTrips()" style="margin-top:8px;background:var(--teal-pale);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--teal-dark);font-weight:600;cursor:pointer;">↺ Reset to Auto</button>
   </div>
 
   <!-- PLASTIC BUNDLE -->
@@ -341,8 +324,7 @@
       <div class="sub">
         <div class="sub-title">🚜 Tractors</div>
         <div class="frow">
-          <div class="field"><label>Buyer Provides</label><input type="number" data-key="buyerTractorNum" min="0" oninput="inp(this)" placeholder="0"/><div class="hint">Cost-free</div></div>
-          <div class="field"><label>Extra Rented</label><input type="number" data-key="numTractors" min="0" oninput="inp(this)"/></div>
+          <div class="field"><label>No. Rented</label><input type="number" data-key="numTractors" min="0" oninput="inp(this)"/></div>
           <div class="field"><label>Rent Each (₹/mo)</label><input type="number" data-key="rentTractor" min="0" oninput="inp(this)"/></div>
         </div>
         <div class="fcalc" id="c-tractors">—</div>
@@ -352,8 +334,7 @@
       <div class="sub">
         <div class="sub-title">🛒 Long Trolleys <span style="font-size:10px;color:var(--muted);text-transform:none;font-weight:400;">(2.5 T capacity)</span></div>
         <div class="frow">
-          <div class="field"><label>Buyer Provides</label><input type="number" data-key="buyerLongTrolleyNum" min="0" oninput="inp(this)" placeholder="0"/><div class="hint">Cost-free</div></div>
-          <div class="field"><label>Extra Rented</label><input type="number" data-key="numLongTrolleys" min="0" oninput="inp(this)"/></div>
+          <div class="field"><label>No. Rented</label><input type="number" data-key="numLongTrolleys" min="0" oninput="inp(this)"/></div>
           <div class="field"><label>Rent Each (₹/mo)</label><input type="number" data-key="rentLongTrolley" min="0" oninput="inp(this)"/></div>
         </div>
         <div class="fcalc" id="c-long-trolleys">—</div>
@@ -373,8 +354,7 @@
       <div class="sub">
         <div class="sub-title">🌀 Balers</div>
         <div class="frow">
-          <div class="field"><label>Buyer Provides</label><input type="number" data-key="buyerBalerNum" min="0" oninput="inp(this)" placeholder="0"/><div class="hint">Cost-free</div></div>
-          <div class="field"><label>Extra Rented</label><input type="number" data-key="numBalers" min="0" oninput="inp(this)"/></div>
+          <div class="field"><label>No. Rented</label><input type="number" data-key="numBalers" min="0" oninput="inp(this)"/></div>
           <div class="field"><label>Rent Each (₹/mo)</label><input type="number" data-key="rentBaler" min="0" oninput="inp(this)"/></div>
         </div>
         <div class="fcalc" id="c-balers">—</div>
@@ -388,8 +368,7 @@
       <div class="sub">
         <div class="sub-title">🚜 Tractors</div>
         <div class="frow">
-          <div class="field"><label>Buyer Provides</label><input type="number" data-key="buyerTractorNumDay" min="0" oninput="inp(this)" placeholder="0"/><div class="hint">Cost-free</div></div>
-          <div class="field"><label>Extra Rented</label><input type="number" data-key="numTractorsDay" min="0" oninput="inp(this)"/></div>
+          <div class="field"><label>No. Rented</label><input type="number" data-key="numTractorsDay" min="0" oninput="inp(this)"/></div>
           <div class="field"><label>Rent Each (₹/day)</label><input type="number" data-key="rentTractorDay" min="0" oninput="inp(this)"/></div>
         </div>
         <div class="fcalc" id="c-tractors-day">—</div>
@@ -399,8 +378,7 @@
       <div class="sub">
         <div class="sub-title">🛒 Long Trolleys <span style="font-size:10px;color:var(--muted);text-transform:none;font-weight:400;">(2.5 T capacity)</span></div>
         <div class="frow">
-          <div class="field"><label>Buyer Provides</label><input type="number" data-key="buyerLongTrolleyNumDay" min="0" oninput="inp(this)" placeholder="0"/><div class="hint">Cost-free</div></div>
-          <div class="field"><label>Extra Rented</label><input type="number" data-key="numLongTrolleysDay" min="0" oninput="inp(this)"/></div>
+          <div class="field"><label>No. Rented</label><input type="number" data-key="numLongTrolleysDay" min="0" oninput="inp(this)"/></div>
           <div class="field"><label>Rent Each (₹/day)</label><input type="number" data-key="rentLongTrolleyDay" min="0" oninput="inp(this)"/></div>
         </div>
         <div class="fcalc" id="c-long-trolleys-day">—</div>
@@ -420,8 +398,7 @@
       <div class="sub">
         <div class="sub-title">🌀 Balers</div>
         <div class="frow">
-          <div class="field"><label>Buyer Provides</label><input type="number" data-key="buyerBalerNumDay" min="0" oninput="inp(this)" placeholder="0"/><div class="hint">Cost-free</div></div>
-          <div class="field"><label>Extra Rented</label><input type="number" data-key="numBalersDay" min="0" oninput="inp(this)"/></div>
+          <div class="field"><label>No. Rented</label><input type="number" data-key="numBalersDay" min="0" oninput="inp(this)"/></div>
           <div class="field"><label>Rent Each (₹/day)</label><input type="number" data-key="rentBalerDay" min="0" oninput="inp(this)"/></div>
         </div>
         <div class="fcalc" id="c-balers-day">—</div>
@@ -608,30 +585,6 @@
     document.getElementById('eq-daily').classList.toggle('show', !isMo);
   }
 
-  function toggleBuyer(key) {
-    // Handled via number inputs now — buyer provides count in the field
-    // This function kept for backward compat, not used
-  }
-
-  function resetTrips() {
-    store.tripsManual = false;
-    save(); calc();
-  }
-
-  // Auto-calculate trips from tons and trolley mix
-  function autoTrips() {
-    const tons = (store.acresPerDay || 0) * (store.yieldPerAcre || 0);
-    const eqMode = store.eqMode || 'daily';
-    const longCount = eqMode === 'monthly'
-      ? (store.buyerLongTrolleyNum||0) + (store.numLongTrolleys||0)
-      : (store.buyerLongTrolleyNumDay||0) + (store.numLongTrolleysDay||0);
-    const normalCount = eqMode === 'monthly'
-      ? (store.numNormalTrolleys||0)
-      : (store.numNormalTrolleysDay||0);
-    const totalCapacity = longCount * 2.5 + normalCount * 1.2;
-    if (totalCapacity <= 0) return null;
-    return Math.ceil(tons / totalCapacity);
-  }
 
   function calc() {
     const g = k => store[k] || 0;
@@ -640,23 +593,8 @@
     const litres = g('dieselLPH') * g('dieselHrs');
     const diesel = litres * g('dieselRate');
 
-    // Auto trips
-    const computed = autoTrips();
-    let trips = g('trips');
-    if (!store.tripsManual && computed !== null) {
-      trips = computed;
-      store.trips = trips;
-      const tripsEl = document.querySelector('input[data-key="trips"]');
-      if (tripsEl && parseFloat(tripsEl.value) !== trips) tripsEl.value = trips;
-      document.getElementById('auto-trips-badge').style.display = 'inline-flex';
-      document.getElementById('trips-hint').textContent = computed !== null
-        ? `Auto: ${tons.toFixed(1)}T ÷ trolley mix = ${trips} trips`
-        : 'Auto-calculated from tons ÷ trolley capacity';
-    } else {
-      document.getElementById('auto-trips-badge').style.display = store.tripsManual ? 'none' : 'inline-flex';
-    }
-
-    const trans = trips * g('costPerTrip');
+    const trans = g('trips') * g('costPerTrip');
+    const trips = g('trips');
     const farmer = g('farmerPerAcre') * g('farmerAcres');
 
     // Salaries
@@ -679,22 +617,22 @@
       const balerMo    = g('numBalers') * g('rentBaler');
       const eqTotMo    = tractorMo + longMo + normalMo + balerMo;
       eqDay            = g('workingDays') > 0 ? eqTotMo / g('workingDays') : 0;
-      $('c-tractors',     `₹${fmt2(tractorMo)}/mo (${g('numTractors')} rented × ${fmt2(g('rentTractor'))}) + ${g('buyerTractorNum')} buyer`);
-      $('c-long-trolleys',`₹${fmt2(longMo)}/mo (${g('numLongTrolleys')} rented × ${fmt2(g('rentLongTrolley'))}) + ${g('buyerLongTrolleyNum')} buyer`);
-      $('c-normal-trolleys',`₹${fmt2(normalMo)}/mo (${g('numNormalTrolleys')} × ${fmt2(g('rentNormalTrolley'))})`);
-      $('c-balers',       `₹${fmt2(balerMo)}/mo (${g('numBalers')} rented × ${fmt2(g('rentBaler'))}) + ${g('buyerBalerNum')} buyer`);
-      $('c-equip',        `₹${fmt2(eqTotMo)}/mo total · ₹${fmt2(eqDay)}/day prorated`);
+      $('c-tractors',       `₹${fmt2(tractorMo)}/mo · ${g('numTractors')} rented`);
+      $('c-long-trolleys',  `₹${fmt2(longMo)}/mo · ${g('numLongTrolleys')} rented`);
+      $('c-normal-trolleys',`₹${fmt2(normalMo)}/mo · ${g('numNormalTrolleys')} rented`);
+      $('c-balers',         `₹${fmt2(balerMo)}/mo · ${g('numBalers')} rented`);
+      $('c-equip',          `₹${fmt2(eqTotMo)}/mo total · ₹${fmt2(eqDay)}/day prorated`);
     } else {
       const tractorDy  = g('numTractorsDay') * g('rentTractorDay');
       const longDy     = g('numLongTrolleysDay') * g('rentLongTrolleyDay');
       const normalDy   = g('numNormalTrolleysDay') * g('rentNormalTrolleyDay');
       const balerDy    = g('numBalersDay') * g('rentBalerDay');
       eqDay            = tractorDy + longDy + normalDy + balerDy;
-      $('c-tractors-day',     `₹${fmt2(tractorDy)}/day (${g('numTractorsDay')} rented × ${fmt2(g('rentTractorDay'))}) + ${g('buyerTractorNumDay')} buyer`);
-      $('c-long-trolleys-day',`₹${fmt2(longDy)}/day (${g('numLongTrolleysDay')} rented × ${fmt2(g('rentLongTrolleyDay'))}) + ${g('buyerLongTrolleyNumDay')} buyer`);
-      $('c-normal-trolleys-day',`₹${fmt2(normalDy)}/day (${g('numNormalTrolleysDay')} × ${fmt2(g('rentNormalTrolleyDay'))})`);
-      $('c-balers-day',       `₹${fmt2(balerDy)}/day (${g('numBalersDay')} rented × ${fmt2(g('rentBalerDay'))}) + ${g('buyerBalerNumDay')} buyer`);
-      $('c-equip',            `₹${fmt2(eqDay)}/day total`);
+      $('c-tractors-day',      `₹${fmt2(tractorDy)}/day · ${g('numTractorsDay')} rented`);
+      $('c-long-trolleys-day', `₹${fmt2(longDy)}/day · ${g('numLongTrolleysDay')} rented`);
+      $('c-normal-trolleys-day',`₹${fmt2(normalDy)}/day · ${g('numNormalTrolleysDay')} rented`);
+      $('c-balers-day',        `₹${fmt2(balerDy)}/day · ${g('numBalersDay')} rented`);
+      $('c-equip',             `₹${fmt2(eqDay)}/day total`);
     }
 
     const bundle = g('bundleCost');
@@ -747,13 +685,20 @@
     rptr.textContent = fmt(perTrip); rptr.className = 'rv sm '+profitColor;
     $('r-per-trip-sub', `${trips} trips/day`);
 
-    // Resource summary
-    const totalTractors   = eqMode==='monthly' ? (g('buyerTractorNum')+g('numTractors')) : (g('buyerTractorNumDay')+g('numTractorsDay'));
-    const totalLong       = eqMode==='monthly' ? (g('buyerLongTrolleyNum')+g('numLongTrolleys')) : (g('buyerLongTrolleyNumDay')+g('numLongTrolleysDay'));
-    const totalNormal     = eqMode==='monthly' ? g('numNormalTrolleys') : g('numNormalTrolleysDay');
-    const totalBalers     = eqMode==='monthly' ? (g('buyerBalerNum')+g('numBalers')) : (g('buyerBalerNumDay')+g('numBalersDay'));
-    const totalDrivers    = drvMode==='monthly' ? g('numDrivers') : g('drvDayNum');
-    const totalLabour     = labMode==='monthly' ? g('numLabour') : g('labDayNum');
+    // Resource summary — buyer (from buyer card) + rented/hired
+    const buyerT      = g('buyerTractorNum');
+    const buyerL      = g('buyerLongTrolleyNum');
+    const buyerB      = g('buyerBalerNum');
+    const rentedT     = eqMode==='monthly' ? g('numTractors')        : g('numTractorsDay');
+    const rentedL     = eqMode==='monthly' ? g('numLongTrolleys')     : g('numLongTrolleysDay');
+    const rentedN     = eqMode==='monthly' ? g('numNormalTrolleys')   : g('numNormalTrolleysDay');
+    const rentedBal   = eqMode==='monthly' ? g('numBalers')           : g('numBalersDay');
+    const totalTractors     = buyerT + rentedT;
+    const totalLong         = buyerL + rentedL;
+    const totalNormal       = rentedN;
+    const totalBalers       = buyerB + rentedBal;
+    const totalDrivers      = drvMode==='monthly' ? g('numDrivers') : g('drvDayNum');
+    const totalLabour       = labMode==='monthly' ? g('numLabour')  : g('labDayNum');
 
     $('sum-tractors',      totalTractors);
     $('sum-long-trolleys', totalLong);
@@ -766,9 +711,6 @@
     $('sum-tons',          tons.toFixed(1));
 
     // Buyer badges
-    const buyerT  = eqMode==='monthly' ? g('buyerTractorNum') : g('buyerTractorNumDay');
-    const buyerL  = eqMode==='monthly' ? g('buyerLongTrolleyNum') : g('buyerLongTrolleyNumDay');
-    const buyerB  = eqMode==='monthly' ? g('buyerBalerNum') : g('buyerBalerNumDay');
     $('sum-tractors-badge',   buyerT  > 0 ? `${buyerT} by buyer` : '');
     $('sum-long-badge',       buyerL  > 0 ? `${buyerL} by buyer` : '');
     $('sum-balers-badge',     buyerB  > 0 ? `${buyerB} by buyer` : '');
