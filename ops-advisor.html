@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#0d9488"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <title>Straw Collector — Ops Advisor</title>
+  <script>
+    const _a = localStorage.getItem('agent');
+    if (!_a) { window.location.replace('login.html'); }
+    else { const _ag = JSON.parse(_a); if (_ag.role !== 'promoter' && _ag.role !== 'admin') window.location.replace('home.html'); }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+    :root{
+      --amber:#F59E0B;--amber-dim:#92610A;--amber-glow:rgba(245,158,11,0.12);
+      --green:#10B981;--green-dim:rgba(16,185,129,0.15);
+      --red:#EF4444;
+      --bg:#080808;--s1:#111;--s2:#181818;--s3:#202020;--s4:#2a2a2a;
+      --text:#F0F0F0;--t2:#777;--t3:#444;--border:#222;
+    }
+    html,body{height:100%;overflow:hidden;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
+
+    /* HEADER */
+    .header{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--s1);flex-shrink:0;flex-wrap:wrap;row-gap:6px;}
+    .logo{width:32px;height:32px;background:var(--amber);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+    .header-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;letter-spacing:-0.01em;}
+    .header-sub{font-size:10px;color:var(--t2);font-family:'DM Mono',monospace;letter-spacing:0.04em;}
+    .status-badge{display:flex;align-items:center;gap:5px;border-radius:20px;padding:4px 10px;font-size:10.5px;font-family:'DM Mono',monospace;margin-left:auto;border:1px solid;}
+    .btn-home{display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:11px;color:var(--t2);cursor:pointer;font-family:'DM Mono',monospace;text-decoration:none;}
+    .btn-new{display:none;background:transparent;border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:11px;color:var(--t2);cursor:pointer;font-family:'DM Mono',monospace;}
+    .spinner{width:8px;height:8px;border:1.5px solid #888;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
+
+    /* FALLBACK BANNER */
+    .fallback-banner{background:rgba(245,158,11,0.08);border-bottom:1px solid rgba(245,158,11,0.2);padding:7px 16px;font-size:11px;color:var(--amber);font-family:'DM Mono',monospace;text-align:center;display:none;}
+
+    /* HOME VIEW */
+    #homeView{flex:1;overflow-y:auto;padding:20px 18px 120px;display:flex;flex-direction:column;}
+    .home-tag{display:inline-flex;align-items:center;gap:6px;background:var(--amber-glow);border:1px solid rgba(245,158,11,0.22);border-radius:20px;padding:4px 12px;font-size:10.5px;color:var(--amber);font-family:'DM Mono',monospace;letter-spacing:0.06em;margin-bottom:12px;}
+    .home-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;line-height:1.2;letter-spacing:-0.02em;margin-bottom:8px;}
+    .home-title span{color:var(--amber);}
+    .home-desc{font-size:13px;color:var(--t2);line-height:1.65;max-width:320px;margin-bottom:20px;}
+    .home-desc strong{color:#aaa;}
+
+    /* Live data preview cards */
+    .data-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
+    .data-card{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;}
+    .data-card-label{font-size:9px;font-family:'DM Mono',monospace;letter-spacing:0.08em;margin-bottom:8px;}
+    .data-row{display:flex;justify-content:space-between;font-size:11px;padding:2px 0;border-bottom:1px solid #242424;}
+    .data-row:last-child{border-bottom:none;}
+    .data-key{color:var(--t3);}
+    .data-val{font-family:'DM Mono',monospace;font-weight:500;}
+    .data-val.amber{color:var(--amber);}
+    .data-val.green{color:var(--green);}
+
+    /* Quick prompts */
+    .section-label{font-size:10px;color:var(--t3);font-family:'DM Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;}
+    .quick-list{display:flex;flex-direction:column;gap:7px;}
+    .quick-btn{display:flex;align-items:flex-start;gap:10px;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;cursor:pointer;text-align:left;width:100%;transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+    .quick-btn:hover{border-color:var(--amber-dim);background:var(--s3);}
+    .quick-label{font-size:11px;font-weight:600;color:var(--amber);font-family:'DM Mono',monospace;white-space:nowrap;min-width:90px;padding-top:1px;}
+    .quick-text{font-size:12.5px;color:#666;line-height:1.45;}
+
+    /* CHAT VIEW */
+    #chatView{flex:1;overflow-y:auto;padding:20px 16px 16px;display:none;flex-direction:column;gap:16px;}
+    .msg-row{display:flex;animation:fadeUp 0.2s ease;}
+    .msg-row.user{justify-content:flex-end;}
+    .msg-row.ai{flex-direction:column;gap:5px;}
+    .ai-tag{font-size:10px;color:var(--amber-dim);font-family:'DM Mono',monospace;letter-spacing:0.08em;padding-left:2px;}
+    .bubble{border-radius:14px;padding:12px 16px;font-size:13.5px;line-height:1.65;}
+    .bubble.user{background:var(--amber);color:#0a0a0a;font-weight:500;border-bottom-right-radius:4px;max-width:85%;}
+    .bubble.ai{background:var(--s2);border:1px solid var(--border);border-bottom-left-radius:4px;color:var(--text);max-width:100%;}
+    .bubble.ai h1{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--amber);margin-bottom:10px;}
+    .bubble.ai h2{font-size:12px;font-weight:600;color:var(--amber);margin:14px 0 6px;padding-bottom:5px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.04em;}
+    .bubble.ai h3{font-size:11px;font-weight:600;color:var(--green);margin:10px 0 4px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.07em;}
+    .bubble.ai p{margin-bottom:5px;color:#ddd;}
+    .bubble.ai strong{color:var(--amber);font-weight:600;}
+    .bubble.ai ul,.bubble.ai ol{margin:6px 0 6px 18px;}
+    .bubble.ai li{margin-bottom:4px;color:#aaa;font-size:13px;}
+
+    /* Typing indicator */
+    .typing{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--s2);border:1px solid var(--border);border-radius:14px;border-bottom-left-radius:4px;width:fit-content;animation:fadeUp 0.2s ease;}
+    .typing-dots{display:flex;gap:4px;}
+    .typing-dot{width:6px;height:6px;background:var(--amber-dim);border-radius:50%;animation:typeBounce 1s infinite;}
+    .typing-label{font-size:11px;color:var(--t3);font-family:'DM Mono',monospace;letter-spacing:0.04em;}
+
+    /* INPUT BAR */
+    .input-bar{flex-shrink:0;padding:10px 14px 14px;border-top:1px solid var(--border);background:var(--s1);}
+    .voice-status{margin-bottom:8px;padding:7px 12px;border-radius:10px;font-size:11.5px;font-family:'DM Mono',monospace;text-align:center;display:none;}
+    .voice-status.listening{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--red);}
+    .voice-status.processing{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);color:var(--amber);}
+    .voice-transcript{margin-bottom:8px;padding:8px 12px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:10px;font-size:13px;color:#ccc;font-style:italic;display:none;}
+    .input-wrap{display:flex;gap:8px;align-items:flex-end;background:var(--s3);border:1px solid var(--border);border-radius:14px;padding:10px 10px 10px 12px;transition:border-color 0.15s;}
+    .input-wrap:focus-within{border-color:var(--amber-dim);}
+    #msgInput{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;resize:none;min-height:28px;max-height:130px;line-height:1.5;}
+    #msgInput::placeholder{color:var(--t3);}
+    .btn-mic{position:relative;width:36px;height:36px;border-radius:10px;border:1px solid rgba(245,158,11,0.3);background:rgba(245,158,11,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--amber);transition:all 0.15s;}
+    .btn-mic.recording{background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.4);color:var(--red);}
+    .btn-mic .pulse-ring{position:absolute;inset:0;border-radius:10px;border:2px solid rgba(239,68,68,0.5);animation:pulse-ring 1.2s infinite;display:none;}
+    .btn-mic.recording .pulse-ring{display:block;}
+    .btn-send{width:36px;height:36px;background:var(--amber);border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#000;transition:all 0.15s;}
+    .btn-send:disabled{background:var(--s4);color:var(--t3);cursor:default;}
+    .input-hint{text-align:center;font-size:10px;color:#333;font-family:'DM Mono',monospace;margin-top:7px;letter-spacing:0.04em;}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+    @keyframes typeBounce{0%,80%,100%{transform:translateY(0);opacity:0.4}40%{transform:translateY(-5px);opacity:1}}
+    @keyframes pulse-ring{0%{transform:scale(1);opacity:1}70%{transform:scale(1.4);opacity:0}100%{transform:scale(1.4);opacity:0}}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">🌾</div>
+  <div>
+    <div class="header-title">STRAW OPS ADVISOR</div>
+    <div class="header-sub">PROFIT · RESOURCES · EXECUTION</div>
+  </div>
+  <div class="status-badge" id="statusBadge" style="background:rgba(100,100,100,0.15);border-color:rgba(100,100,100,0.3);color:#888;">
+    <div class="spinner" id="statusSpinner"></div>
+    <span id="statusText">Loading...</span>
+  </div>
+  <a href="home.html" class="btn-home">← Home</a>
+  <button class="btn-new" id="btnNew" onclick="resetChat()">New Plan</button>
+</div>
+
+<!-- FALLBACK BANNER -->
+<div class="fallback-banner" id="fallbackBanner"></div>
+
+<!-- HOME VIEW -->
+<div id="homeView">
+  <div class="home-tag">⚡ RATES + LIMITS CONNECTED</div>
+  <h2 class="home-title">Tell me the deal.<br/><span>I'll plan the profit.</span></h2>
+  <p class="home-desc">Reads live rates from your <strong>expense calculator</strong> and hard limits from <strong>operational limits</strong>. Every decision respects your real constraints.</p>
+
+  <div class="data-cards" id="dataCards" style="display:none;">
+    <div class="data-card">
+      <div class="data-card-label" id="ratesLabel" style="color:#888;">⟳ LOADING RATES</div>
+      <div class="data-row"><span class="data-key">Tractor</span><span class="data-val amber" id="dc-tractor">—</span></div>
+      <div class="data-row"><span class="data-key">Driver</span><span class="data-val amber" id="dc-driver">—</span></div>
+      <div class="data-row"><span class="data-key">Sell</span><span class="data-val amber" id="dc-sell">—</span></div>
+      <div class="data-row"><span class="data-key">Trip cost</span><span class="data-val amber" id="dc-trip">—</span></div>
+    </div>
+    <div class="data-card">
+      <div class="data-card-label" id="limitsLabel" style="color:#888;">⟳ LOADING LIMITS</div>
+      <div class="data-row"><span class="data-key">Tractor max</span><span class="data-val green" id="dc-tractormax">—</span></div>
+      <div class="data-row"><span class="data-key">Speed</span><span class="data-val green" id="dc-speed">—</span></div>
+      <div class="data-row"><span class="data-key">Driver max</span><span class="data-val green" id="dc-drivermax">—</span></div>
+      <div class="data-row"><span class="data-key">Window</span><span class="data-val green" id="dc-window">—</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">Quick scenarios</div>
+  <div class="quick-list" id="quickList"></div>
+</div>
+
+<!-- CHAT VIEW -->
+<div id="chatView"></div>
+
+<!-- INPUT BAR -->
+<div class="input-bar">
+  <div class="voice-status" id="voiceStatus"></div>
+  <div class="voice-transcript" id="voiceTranscript"></div>
+  <div class="input-wrap">
+    <textarea id="msgInput" rows="1" placeholder="Type or tap 🎙 — acres, timing, trolley type, constraints..."></textarea>
+    <button class="btn-mic" id="btnMic" title="Speak your scenario">
+      <div class="pulse-ring"></div>
+      <svg id="micIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="3" width="6" height="11" rx="3"/>
+        <path d="M5 10a7 7 0 0 0 14 0"/>
+        <line x1="12" y1="19" x2="12" y2="23"/>
+        <line x1="8" y1="23" x2="16" y2="23"/>
+      </svg>
+    </button>
+    <button class="btn-send" id="btnSend" disabled>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      </svg>
+    </button>
+  </div>
+  <div class="input-hint">Live rates + limits · Type or 🎙 speak · Enter to send</div>
+</div>
+
+<script>
+const BACKEND = 'https://straw-app-production.up.railway.app';
+const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
+
+const FALLBACK_RATES = {
+  tractorRentalPerDay:1400, longTrolleyRentalPerDay:1000, normalTrolleyRentalPerDay:600,
+  balerRentalPerDay:0, driverWagePerDay:600, labourWagePerDay:500,
+  dieselCostPerTractorPerDay:2280, dieselRatePerLitre:95, dieselLPH:4, dieselHrsPerDay:6,
+  sellingPricePerTon:2200, farmerCompPerAcre:200, transportCostPerTrip:1200,
+  warehouseDistKm:17, plasticBundlePerDay:2600, yieldPerAcre:1.25,
+};
+const FALLBACK_LIMITS = {
+  tractorMaxHrs:10, tractorSpeedKmh:15, balerMaxHrs:10, balingSpeedMinPerAcre:30,
+  longTrolleyCapacity:2.5, normalTrolleyCapacity:1.2, unloadingTimeMin:20,
+  driverMaxHrs:10, driverMinBreakHrs:0.5, labourMaxHrs:10, labourMinBreakHrs:0.5,
+  balingStartTime:'07:00', fieldEndTime:'19:00', transportStartTime:'07:00', warehouseCloseTime:'19:00',
+};
+
+const QUICK_PROMPTS = [
+  { label:'Sudden deal',    text:'Just got a deal for 12 acres, execution tomorrow morning. Warehouse is 20km. What do I arrange tonight?' },
+  { label:'Max profit',     text:'18 acres confirmed, 3 days to plan. Exact resources for maximum profit?' },
+  { label:'1 driver only',  text:'Only 1 driver available tomorrow, 10 acres. Best I can do — is it even worth it?' },
+  { label:'Two fields',     text:'Two fields: 6 acres at 15km and 9 acres at 28km warehouse. Which first, how many resources each?' },
+  { label:'Wet morning',    text:'It rained last night, baling can only start at 10am. 14 acres. Adjust the full plan.' },
+  { label:'Extra tractor?', text:'8 acres tomorrow. Does renting 1 extra transport tractor increase my profit or eat the gain?' },
+];
+
+let rates       = null;
+let limits      = null;
+let ratesSource = 'loading';
+let limitsSource= 'loading';
+let chatHistory = [];
+let isRecording = false;
+let recognition = null;
+let currentView = 'home';
+
+// ── Boot ──────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  renderQuickPrompts();
+  setupInput();
+  setupMic();
+  fetchData();
+});
+
+async function fetchData() {
+  await Promise.all([fetchRates(), fetchLimits()]);
+  updateStatusBadge();
+  updateFallbackBanner();
+  updateDataCards();
+}
+
+async function fetchRates() {
+  try {
+    const res = await fetch(`${BACKEND}/api/ops-advisor-rates`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    rates = data; ratesSource = 'live';
+  } catch(e) {
+    rates = FALLBACK_RATES; ratesSource = 'fallback';
+  }
+}
+
+async function fetchLimits() {
+  try {
+    const res = await fetch(`${BACKEND}/api/operational-limits`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (!data || !data.settings) throw new Error('empty');
+    limits = data.settings; limitsSource = 'live';
+  } catch(e) {
+    limits = FALLBACK_LIMITS; limitsSource = 'fallback';
+  }
+}
+
+function updateStatusBadge() {
+  const badge = document.getElementById('statusBadge');
+  const spinner = document.getElementById('statusSpinner');
+  const text = document.getElementById('statusText');
+  spinner.style.display = 'none';
+  const bothLive = ratesSource === 'live' && limitsSource === 'live';
+  if (bothLive) {
+    badge.style.background = 'rgba(16,185,129,0.1)';
+    badge.style.borderColor = 'rgba(16,185,129,0.3)';
+    badge.style.color = '#10B981';
+    text.textContent = '✓ Rates + Limits live';
+  } else {
+    badge.style.background = 'rgba(245,158,11,0.1)';
+    badge.style.borderColor = 'rgba(245,158,11,0.3)';
+    badge.style.color = '#F59E0B';
+    text.textContent = '⚠ Some data using defaults';
+  }
+}
+
+function updateFallbackBanner() {
+  const banner = document.getElementById('fallbackBanner');
+  const parts = [];
+  if (ratesSource === 'fallback') parts.push('Expense calculator rates');
+  if (limitsSource === 'fallback') parts.push('Operational limits');
+  if (parts.length > 0) {
+    banner.textContent = '⚠ ' + parts.join(' & ') + ' using defaults — deploy backend routes first';
+    banner.style.display = 'block';
+  }
+}
+
+function updateDataCards() {
+  const r = rates || FALLBACK_RATES;
+  const l = limits || FALLBACK_LIMITS;
+  document.getElementById('dataCards').style.display = 'grid';
+  document.getElementById('ratesLabel').textContent  = ratesSource === 'live' ? '✓ LIVE RATES' : '⚠ DEFAULT RATES';
+  document.getElementById('ratesLabel').style.color  = ratesSource === 'live' ? '#10B981' : '#F59E0B';
+  document.getElementById('dc-tractor').textContent  = '₹' + r.tractorRentalPerDay + '/day';
+  document.getElementById('dc-driver').textContent   = '₹' + r.driverWagePerDay + '/day';
+  document.getElementById('dc-sell').textContent     = '₹' + r.sellingPricePerTon + '/T';
+  document.getElementById('dc-trip').textContent     = '₹' + r.transportCostPerTrip;
+  document.getElementById('limitsLabel').textContent = limitsSource === 'live' ? '✓ LIVE LIMITS' : '⚠ DEFAULT LIMITS';
+  document.getElementById('limitsLabel').style.color = limitsSource === 'live' ? '#10B981' : '#F59E0B';
+  document.getElementById('dc-tractormax').textContent = l.tractorMaxHrs + 'h/day';
+  document.getElementById('dc-speed').textContent      = l.tractorSpeedKmh + ' km/hr';
+  document.getElementById('dc-drivermax').textContent  = l.driverMaxHrs + 'h/day';
+  document.getElementById('dc-window').textContent     = l.balingStartTime + '–' + l.fieldEndTime;
+}
+
+// ── System Prompt ─────────────────────────────────────────────────────
+function buildSystemPrompt() {
+  const r = rates || FALLBACK_RATES;
+  const l = limits || FALLBACK_LIMITS;
+  const dist    = r.warehouseDistKm || 17;
+  const speed   = l.tractorSpeedKmh || 15;
+  const unload  = l.unloadingTimeMin || 20;
+  const oneWay  = speed > 0 ? Math.round((dist / speed) * 60) : null;
+  const cycle1  = oneWay !== null ? oneWay * 2 + unload : null;
+  const cycle23 = oneWay !== null ? oneWay * 2 : null;
+  const driverEffMins = ((l.driverMaxHrs || 10) - (l.driverMinBreakHrs || 0.5)) * 60;
+  const trips1day  = cycle1  ? Math.floor(driverEffMins / cycle1)  : '?';
+  const trips23day = cycle23 ? Math.floor(driverEffMins / cycle23) : '?';
+  const [bsh,bsm] = (l.balingStartTime||'07:00').split(':').map(Number);
+  const [feh,fem] = (l.fieldEndTime||'19:00').split(':').map(Number);
+  const windowMins = (feh*60+fem)-(bsh*60+bsm);
+  const maxAcres = windowMins > 0 ? Math.floor(windowMins/(l.balingSpeedMinPerAcre||30)) : '?';
+
+  return `You are a sharp, experienced operations and profit advisor for a paddy straw baling and transport business in Saraipali, Chhattisgarh, India. Maximize profit on every job while respecting all physical and human limits below.
+
+## YOUR ROLE
+Make DECISIONS. Not suggestions. Tell the operator exactly:
+- How many tractors to rent (justify the cost)
+- How many drivers to hire (with roles)
+- How many trolleys — long vs normal — and rotation plan
+- Full hour-by-hour execution schedule respecting all limits
+- Expected revenue, costs, NET PROFIT in ₹
+- Risks and contingency
+
+## LIVE RATES — Expense Calculator
+${ratesSource==='live'?'✓ Live from DB:':'⚠ Fallback defaults:'}
+- Tractor rental:        ₹${r.tractorRentalPerDay}/day
+- Long trolley rental:   ₹${r.longTrolleyRentalPerDay}/day (${l.longTrolleyCapacity}T capacity)
+- Normal trolley rental: ₹${r.normalTrolleyRentalPerDay}/day (${l.normalTrolleyCapacity}T capacity)
+- Baler rental:          ₹${r.balerRentalPerDay}/day
+- Driver wage:           ₹${r.driverWagePerDay}/day
+- Labour wage:           ₹${r.labourWagePerDay}/day
+- Diesel:                ₹${r.dieselCostPerTractorPerDay}/day per tractor
+- Plastic bundle:        ₹${r.plasticBundlePerDay}/day (fixed)
+- Selling price:         ₹${r.sellingPricePerTon}/ton
+- Farmer compensation:   ₹${r.farmerCompPerAcre}/acre
+- Transport cost:        ₹${r.transportCostPerTrip}/trip
+- Warehouse distance:    ${dist}km
+
+## OPERATIONAL LIMITS
+${limitsSource==='live'?'✓ Live from DB:':'⚠ Fallback defaults:'}
+- Tractor max hrs/day:   ${l.tractorMaxHrs}h
+- Tractor speed:         ${speed}km/hr with loaded trolley
+- Baler max hrs/day:     ${l.balerMaxHrs}h
+- Baling speed:          ${l.balingSpeedMinPerAcre} min/acre
+- Long trolley capacity: ${l.longTrolleyCapacity}T/trip
+- Normal trolley cap:    ${l.normalTrolleyCapacity}T/trip
+- Unloading time:        ${unload} min/trolley at warehouse
+- Driver max hrs/day:    ${l.driverMaxHrs}h (effective: ${((l.driverMaxHrs||10)-(l.driverMinBreakHrs||0.5)).toFixed(1)}h = ${driverEffMins}min)
+- Driver min break:      ${l.driverMinBreakHrs}h
+- Labour max hrs/day:    ${l.labourMaxHrs}h
+- Baling window:         ${l.balingStartTime} to ${l.fieldEndTime} (${(windowMins/60).toFixed(1)}h = max ~${maxAcres} acres)
+- Transport window:      ${l.transportStartTime} to ${l.warehouseCloseTime}
+- One-way travel:        ${oneWay!==null?oneWay:'?'} min at ${dist}km
+
+## TROLLEY ROTATION — CRITICAL
+- 1 trolley:   tractor WAITS ${unload}min for unloading → cycle=${cycle1!==null?cycle1:'?'}min → ${trips1day} trips/day max
+- 2 trolleys:  tractor drops and hooks immediately, NO wait → cycle=${cycle23!==null?cycle23:'?'}min → ${trips23day} trips/day max
+- 3 trolleys:  full buffer, safest option, same speed as 2 trolleys
+- NEVER recommend 1 trolley unless forced — always minimum 2
+
+## HARD RULES
+1. Never plan beyond tractor/baler/driver hour limits
+2. Never plan outside the time window (${l.balingStartTime}–${l.fieldEndTime})
+3. Use correct trip cycle based on trolley count
+4. Total tons = acres × ${r.yieldPerAcre}. Trips = tons ÷ trolley capacity
+5. Always include bundle ₹${r.plasticBundlePerDay} and farmer comp ₹${r.farmerCompPerAcre}/acre
+6. Add 2nd transport tractor ONLY if profit math supports it
+
+## PLANNING HORIZON
+- 3 days out → full optimization, pre-book everything
+- 1-2 days out → work with what's available
+- Same day → damage control
+Ask when execution is if not mentioned.
+
+## OUTPUT FORMAT
+**THE DECISION** — exact resources with one-line justification
+**THE PROFIT MATH** — revenue, itemized costs, net profit, profit/acre, profit/trip
+**HOUR-BY-HOUR SCHEDULE** — each driver from start to end
+**RISK FLAGS** — top 2-3 with contingency
+**DO THIS NOW** — immediate action steps
+
+Decisive. Direct. Use ₹. Ask only 1 critical thing if info missing, then proceed with stated assumptions.`;
+}
+
+// ── Chat ──────────────────────────────────────────────────────────────
+async function sendMessage(text) {
+  const msg = text || document.getElementById('msgInput').value.trim();
+  if (!msg) return;
+  document.getElementById('msgInput').value = '';
+  document.getElementById('msgInput').style.height = 'auto';
+  document.getElementById('btnSend').disabled = true;
+  document.getElementById('voiceTranscript').style.display = 'none';
+  switchToChat();
+
+  appendMsg('user', msg);
+  chatHistory.push({ role:'user', content:msg });
+
+  // Typing indicator
+  const typingEl = document.createElement('div');
+  typingEl.className = 'typing';
+  typingEl.id = 'typing';
+  typingEl.innerHTML = `
+    <div class="typing-dots">
+      <div class="typing-dot" style="animation-delay:0ms"></div>
+      <div class="typing-dot" style="animation-delay:160ms"></div>
+      <div class="typing-dot" style="animation-delay:320ms"></div>
+    </div>
+    <span class="typing-label">Calculating best plan...</span>`;
+  document.getElementById('chatView').appendChild(typingEl);
+  scrollBottom();
+
+  try {
+    const res = await fetch(ANTHROPIC_URL, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system: buildSystemPrompt(),
+        messages: chatHistory,
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.map(b => b.text||'').join('\n') || 'Something went wrong.';
+    typingEl.remove();
+    appendMsg('ai', reply);
+    chatHistory.push({ role:'assistant', content:reply });
+  } catch(e) {
+    typingEl.remove();
+    appendMsg('ai', 'Connection error. Please try again.');
+  }
+}
+
+function appendMsg(from, text) {
+  const chat = document.getElementById('chatView');
+  const row  = document.createElement('div');
+  row.className = 'msg-row ' + from;
+
+  if (from === 'ai') {
+    const tag = document.createElement('div');
+    tag.className = 'ai-tag';
+    tag.textContent = '⚡ OPS ADVISOR';
+    row.appendChild(tag);
+  }
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble ' + from;
+  bubble.innerHTML = from === 'ai' ? formatAI(text) : escapeHtml(text);
+  row.appendChild(bubble);
+  chat.appendChild(row);
+  scrollBottom();
+}
+
+function formatAI(text) {
+  const lines = text.split('\n');
+  let html = '', inList = false, listType = '';
+
+  const closeList = () => {
+    if (inList) { html += `</${listType}>`; inList = false; listType = ''; }
+  };
+
+  const inlineFormat = (str) => str
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+
+  lines.forEach(line => {
+    if (line.startsWith('## '))      { closeList(); html += `<h2>${inlineFormat(line.slice(3))}</h2>`; }
+    else if (line.startsWith('### ')){ closeList(); html += `<h3>${inlineFormat(line.slice(4))}</h3>`; }
+    else if (line.startsWith('# '))  { closeList(); html += `<h1>${inlineFormat(line.slice(2))}</h1>`; }
+    else if (line.match(/^[-*] /))   {
+      if (!inList || listType !== 'ul') { closeList(); html += '<ul>'; inList=true; listType='ul'; }
+      html += `<li>${inlineFormat(line.slice(2))}</li>`;
+    }
+    else if (line.match(/^\d+\. /))  {
+      if (!inList || listType !== 'ol') { closeList(); html += '<ol>'; inList=true; listType='ol'; }
+      html += `<li>${inlineFormat(line.replace(/^\d+\. /,''))}</li>`;
+    }
+    else if (!line.trim())           { closeList(); html += '<br>'; }
+    else                             { closeList(); html += `<p>${inlineFormat(line)}</p>`; }
+  });
+  closeList();
+  return html;
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function scrollBottom() {
+  const chat = document.getElementById('chatView');
+  setTimeout(() => { chat.scrollTop = chat.scrollHeight; }, 50);
+}
+
+// ── Views ─────────────────────────────────────────────────────────────
+function switchToChat() {
+  currentView = 'chat';
+  document.getElementById('homeView').style.display = 'none';
+  document.getElementById('chatView').style.display = 'flex';
+  document.getElementById('btnNew').style.display   = 'block';
+}
+
+function resetChat() {
+  currentView = 'home';
+  chatHistory = [];
+  document.getElementById('chatView').innerHTML = '';
+  document.getElementById('chatView').style.display = 'none';
+  document.getElementById('homeView').style.display = 'flex';
+  document.getElementById('btnNew').style.display   = 'none';
+  document.getElementById('voiceTranscript').style.display = 'none';
+  document.getElementById('voiceStatus').style.display = 'none';
+}
+
+// ── Quick prompts ─────────────────────────────────────────────────────
+function renderQuickPrompts() {
+  const list = document.getElementById('quickList');
+  QUICK_PROMPTS.forEach(q => {
+    const btn = document.createElement('button');
+    btn.className = 'quick-btn';
+    btn.innerHTML = `<span class="quick-label">${q.label}</span><span class="quick-text">${q.text}</span>`;
+    btn.onclick = () => sendMessage(q.text);
+    list.appendChild(btn);
+  });
+}
+
+// ── Input setup ───────────────────────────────────────────────────────
+function setupInput() {
+  const input  = document.getElementById('msgInput');
+  const btnSend = document.getElementById('btnSend');
+
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 130) + 'px';
+    btnSend.disabled = !input.value.trim();
+  });
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (!btnSend.disabled) sendMessage();
+    }
+  });
+
+  btnSend.addEventListener('click', () => sendMessage());
+}
+
+// ── Voice ─────────────────────────────────────────────────────────────
+function setupMic() {
+  const supported = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
+  const btn = document.getElementById('btnMic');
+  if (!supported) { btn.style.opacity = '0.3'; btn.title = 'Voice not supported on this browser'; return; }
+
+  btn.addEventListener('click', () => {
+    if (isRecording) { recognition && recognition.stop(); return; }
+    startRecording();
+  });
+}
+
+function startRecording() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.lang = 'en-IN';
+  recognition.continuous = false;
+  recognition.interimResults = true;
+
+  recognition.onstart = () => {
+    isRecording = true;
+    document.getElementById('btnMic').classList.add('recording');
+    showVoiceStatus('listening', '🎙 Listening... speak now');
+    document.getElementById('voiceTranscript').style.display = 'none';
+  };
+
+  recognition.onresult = (e) => {
+    let interim = '', final = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const t = e.results[i][0].transcript;
+      if (e.results[i].isFinal) final += t; else interim += t;
+    }
+    const preview = document.getElementById('voiceTranscript');
+    preview.textContent = '"' + (final || interim) + '"';
+    preview.style.display = 'block';
+    if (final) {
+      const input = document.getElementById('msgInput');
+      input.value = (input.value ? input.value + ' ' : '') + final;
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 130) + 'px';
+      document.getElementById('btnSend').disabled = false;
+      showVoiceStatus('processing', '✓ Got it — review and send');
+    }
+  };
+
+  recognition.onerror = (e) => {
+    isRecording = false;
+    document.getElementById('btnMic').classList.remove('recording');
+    const msg = e.error === 'not-allowed' ? '🔒 Mic access denied' : '⚠ Mic error — try again';
+    showVoiceStatus('processing', msg);
+    setTimeout(() => document.getElementById('voiceStatus').style.display = 'none', 3000);
+  };
+
+  recognition.onend = () => {
+    isRecording = false;
+    document.getElementById('btnMic').classList.remove('recording');
+    setTimeout(() => {
+      if (!isRecording) document.getElementById('voiceStatus').style.display = 'none';
+    }, 1500);
+  };
+
+  recognition.start();
+}
+
+function showVoiceStatus(type, msg) {
+  const el = document.getElementById('voiceStatus');
+  el.className = 'voice-status ' + type;
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{});});}</script>
+</body>
+</html>
