@@ -18,6 +18,7 @@ const locationRouter         = require('./routes/location');
 const machineryRouter        = require('./routes/machinery');
 const pickupSchedulesRouter      = require('./routes/pickup-schedules');
 const calculatorSettingsRouter   = require('./routes/calculator-settings');
+const operationalLimitsRouter    = require('./routes/operational-limits');
 
 app.use('/api/farmers',           farmersRouter);
 app.use('/api/villages',          villagesRouter);
@@ -30,6 +31,7 @@ app.use('/api/location',          locationRouter);
 app.use('/api/machinery',         machineryRouter);
 app.use('/api/pickup-schedules',      pickupSchedulesRouter);
 app.use('/api/calculator-settings',   calculatorSettingsRouter);
+app.use('/api/operational-limits',    operationalLimitsRouter);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Straw App Backend is running!' });

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#0d9488"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <title>Straw Collector — Operational Limits</title>
+  <script>
+    const _a = localStorage.getItem('agent');
+    if (!_a) { window.location.replace('login.html'); }
+    else { const _ag = JSON.parse(_a); if (_ag.role !== 'promoter' && _ag.role !== 'admin') window.location.replace('home.html'); }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--teal:#0d9488;--teal-mid:#2dd4bf;--teal-pale:#f0fdfa;--teal-dark:#134e4a;--amber:#f59e0b;--amber-pale:#fef3c7;--card:#ffffff;--bg:#f0fdfa;--dark:#1e1b3a;--muted:#6b7280;--border:#d1fae5;--radius:14px;--shadow:0 2px 16px rgba(13,148,136,0.08);}
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;padding-bottom:48px;}
+    header{background:linear-gradient(135deg,var(--teal-dark) 0%,var(--teal) 100%);color:#fff;padding:16px 20px 20px;position:relative;overflow:hidden;}
+    header::before{content:'';position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.07);}
+    header::after{content:'';position:absolute;left:20px;bottom:-60px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,0.05);}
+    .hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;position:relative;z-index:1;}
+    .hdr-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:#fff;}
+    .btn-home{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:10px;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;min-height:44px;position:relative;z-index:1;}
+    .btn-home svg{width:15px;height:15px;}
+    header h1{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;position:relative;z-index:1;}
+    header p{font-size:13px;opacity:.7;margin-top:3px;position:relative;z-index:1;}
+    .lock-banner{margin:14px 16px 0;background:var(--amber-pale);border:1.5px solid #fde68a;border-radius:12px;padding:11px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+    .lock-txt{font-size:12px;color:#92400e;font-weight:500;display:flex;align-items:center;gap:6px;flex:1;}
+    .lock-txt svg{width:14px;height:14px;flex-shrink:0;}
+    .btn-lock{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:9px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;min-height:40px;white-space:nowrap;}
+    .btn-lock.locked{background:#0d9488;color:#fff;}
+    .btn-lock.unlocked{background:#f59e0b;color:#fff;}
+    .content{padding:14px 16px;display:flex;flex-direction:column;gap:12px;}
+    @media(min-width:768px){body{max-width:960px;margin:0 auto;}.content{flex-direction:row;flex-wrap:wrap;align-items:flex-start;}.card{flex:1 1 calc(50% - 6px);}.card.full{flex:1 1 100%;}}
+    .card{background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid var(--border);box-shadow:var(--shadow);}
+    .card-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--teal-dark);margin-bottom:14px;display:flex;align-items:center;gap:6px;padding-bottom:10px;border-bottom:1.5px solid var(--border);}
+    .sub{margin-bottom:16px;}.sub:last-child{margin-bottom:0;}
+    .sub-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--teal);margin-bottom:10px;display:flex;align-items:center;gap:5px;}
+    .sub-title::after{content:'';flex:1;height:1px;background:var(--border);margin-left:6px;}
+    .field{margin-bottom:12px;}.field:last-child{margin-bottom:0;}
+    .frow{display:flex;gap:10px;}.frow .field{flex:1;margin-bottom:0;}
+    .frow3{display:flex;gap:8px;}.frow3 .field{flex:1;margin-bottom:0;}
+    label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:5px;}
+    input[type=number],input[type=time]{width:100%;padding:11px 13px;min-height:46px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--dark);background:#fff;outline:none;-webkit-appearance:none;transition:border-color .2s;}
+    input[type=number]:focus,input[type=time]:focus{border-color:var(--teal-mid);}
+    input:disabled{background:#f9fafb;color:var(--muted);cursor:not-allowed;}
+    .hint{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5;}
+    .hint.warn{color:#b45309;background:var(--amber-pale);border-radius:6px;padding:5px 8px;margin-top:6px;}
+    .hint.info{color:#0f766e;background:var(--teal-pale);border-radius:6px;padding:5px 8px;margin-top:6px;}
+    .rotation-box{background:var(--teal-pale);border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-top:10px;}
+    .rotation-title{font-size:11px;font-weight:700;color:var(--teal-dark);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;}
+    .rotation-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+    .rotation-row:last-child{border-bottom:none;padding-bottom:0;}
+    .rot-count{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;flex-shrink:0;margin-top:1px;}
+    .rot-count.red{background:#fca5a5;color:#7f1d1d;}
+    .rot-count.amber{background:#fde68a;color:#78350f;}
+    .rot-count.green{background:#a7f3d0;color:#064e3b;}
+    .rot-text{flex:1;}.rot-label{font-size:12px;font-weight:600;color:var(--dark);margin-bottom:2px;}
+    .rot-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+    .cycle-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px;}
+    .cycle-box{border-radius:10px;padding:10px;text-align:center;}
+    .cycle-box.neutral{background:var(--teal-pale);border:1px solid var(--border);}
+    .cycle-box.warn{background:#fef3c7;border:1px solid #fde68a;}
+    .cycle-box.good{background:#dcfce7;border:1px solid #86efac;}
+    .cycle-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;}
+    .cycle-label.neutral{color:var(--muted);}
+    .cycle-label.warn{color:#92400e;}
+    .cycle-label.good{color:#166534;}
+    .cycle-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;}
+    .cycle-val.neutral{color:var(--teal-dark);}
+    .cycle-val.warn{color:#92400e;}
+    .cycle-val.good{color:#166534;}
+    .cycle-unit{font-size:10px;margin-top:2px;}
+    .cycle-unit.neutral{color:var(--muted);}
+    .cycle-unit.warn{color:#92400e;}
+    .cycle-unit.good{color:#166534;}
+    .summary-card{background:linear-gradient(135deg,var(--teal-dark) 0%,var(--teal) 100%);border-radius:var(--radius);padding:20px;color:#fff;box-shadow:0 4px 24px rgba(13,148,136,0.25);}
+    .sum-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;margin-bottom:14px;}
+    .sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+    .sum-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;}
+    .si{background:rgba(255,255,255,0.12);border-radius:10px;padding:12px 14px;}
+    .si.full{grid-column:1/-1;}
+    .sl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.65;margin-bottom:3px;}
+    .sv{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#a7f3d0;}
+    .sv.amber{color:#fde68a;}.sv.white{color:#fff;}
+    .ssub{font-size:11px;opacity:.55;margin-top:2px;}
+    .last-saved{font-size:11px;opacity:.5;text-align:center;margin-top:10px;}
+    .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:#fff;padding:11px 20px;border-radius:24px;font-size:14px;font-weight:500;opacity:0;transition:all .3s;z-index:999;white-space:nowrap;pointer-events:none;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .toast.green{background:#166534;}.toast.amber{background:#92400e;}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-top">
+    <div class="hdr-badge">⚙️ Operational Limits</div>
+    <a href="home.html" class="btn-home">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      Home
+    </a>
+  </div>
+  <h1>Operational Limits</h1>
+  <p>Machine · Trolley · Human · Time Window</p>
+</header>
+
+<div class="lock-banner">
+  <div class="lock-txt" id="lockTxt">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    Values auto-saved and shared. Lock to prevent accidental changes.
+  </div>
+  <button class="btn-lock unlocked" id="lockBtn" onclick="toggleLock()">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+    Lock
+  </button>
+</div>
+
+<div class="content">
+
+  <!-- MACHINE LIMITS -->
+  <div class="card">
+    <div class="card-title">🚜 Machine Limits</div>
+
+    <div class="sub">
+      <div class="sub-title">Tractor</div>
+      <div class="frow">
+        <div class="field">
+          <label>Max Working Hrs / Day</label>
+          <input type="number" data-key="tractorMaxHrs" min="1" max="24" step="0.5" oninput="inp(this)"/>
+          <div class="hint">Beyond this, breakdown risk increases significantly</div>
+        </div>
+        <div class="field">
+          <label>Speed (km / hr)</label>
+          <input type="number" data-key="tractorSpeedKmh" min="1" max="60" oninput="inp(this)"/>
+          <div class="hint">Avg on-road speed with loaded trolley</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Baler</div>
+      <div class="frow">
+        <div class="field">
+          <label>Max Working Hrs / Day</label>
+          <input type="number" data-key="balerMaxHrs" min="1" max="24" step="0.5" oninput="inp(this)"/>
+          <div class="hint">Continuous baling limit before mechanical stress</div>
+        </div>
+        <div class="field">
+          <label>Baling Speed (min / acre)</label>
+          <input type="number" data-key="balingSpeedMinPerAcre" min="1" max="120" oninput="inp(this)"/>
+          <div class="hint">Default 30. Increases with wet or dense straw</div>
+        </div>
+      </div>
+      <div class="hint warn">⚠ Always budget 15–20 min/day for needle jams and twine issues</div>
+    </div>
+  </div>
+
+  <!-- TROLLEY LIMITS -->
+  <div class="card">
+    <div class="card-title">🛒 Trolley Limits</div>
+
+    <div class="sub">
+      <div class="sub-title">Capacity per Trip</div>
+      <div class="frow">
+        <div class="field">
+          <label>Long Trolley (tons)</label>
+          <input type="number" data-key="longTrolleyCapacity" min="0.1" max="10" step="0.1" oninput="inp(this)"/>
+          <div class="hint">Standard: 2.5 T</div>
+        </div>
+        <div class="field">
+          <label>Normal Trolley (tons)</label>
+          <input type="number" data-key="normalTrolleyCapacity" min="0.1" max="10" step="0.1" oninput="inp(this)"/>
+          <div class="hint">Standard: 1.2 T</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Unloading at Warehouse</div>
+      <div class="field">
+        <label>Unloading Time (min / trolley)</label>
+        <input type="number" data-key="unloadingTimeMin" min="1" max="120" oninput="inp(this)"/>
+        <div class="hint">Time to unload one trolley at warehouse. Critical for 1-trolley cycle — tractor waits this entire time.</div>
+      </div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Rotation Logic</div>
+      <div class="rotation-box">
+        <div class="rotation-title">How trolley count affects tractor idle time</div>
+        <div class="rotation-row">
+          <div class="rot-count red">1</div>
+          <div class="rot-text">
+            <div class="rot-label">1 Trolley — Tractor waits</div>
+            <div class="rot-desc">Delivers trolley → waits for full unloading → returns. Tractor is idle the entire unloading time.</div>
+          </div>
+        </div>
+        <div class="rotation-row">
+          <div class="rot-count amber">2</div>
+          <div class="rot-text">
+            <div class="rot-label">2 Trolleys — Tractor never waits</div>
+            <div class="rot-desc">Drops trolley 1, hooks trolley 2 immediately. By the time trolley 2 arrives, trolley 1 is unloaded and ready.</div>
+          </div>
+        </div>
+        <div class="rotation-row">
+          <div class="rot-count green">3</div>
+          <div class="rot-text">
+            <div class="rot-label">3 Trolleys — Full buffer</div>
+            <div class="rot-desc">Trolley A unloading, Trolley B in transit, Trolley C being loaded in field. Zero wait even if unloading runs slow.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Trip Cycle — Live Calculator</div>
+      <div class="hint info" id="cycle-info-msg">Set tractor speed above and warehouse distance in Expense Calculator to see trip cycles.</div>
+      <div id="cycle-results" style="display:none;">
+        <div class="cycle-grid">
+          <div class="cycle-box neutral">
+            <div class="cycle-label neutral">One Way</div>
+            <div class="cycle-val neutral" id="c-oneway">—</div>
+            <div class="cycle-unit neutral">minutes</div>
+          </div>
+          <div class="cycle-box warn">
+            <div class="cycle-label warn">1 Trolley</div>
+            <div class="cycle-val warn" id="c-1trol">—</div>
+            <div class="cycle-unit warn">min / trip</div>
+          </div>
+          <div class="cycle-box good">
+            <div class="cycle-label good">2–3 Trolleys</div>
+            <div class="cycle-val good" id="c-2trol">—</div>
+            <div class="cycle-unit good">min / trip</div>
+          </div>
+        </div>
+        <div class="hint info" style="margin-top:8px;" id="c-trips-summary">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HUMAN LIMITS -->
+  <div class="card">
+    <div class="card-title">👷 Human Limits</div>
+
+    <div class="sub">
+      <div class="sub-title">Driver</div>
+      <div class="frow">
+        <div class="field">
+          <label>Max Working Hrs / Day</label>
+          <input type="number" data-key="driverMaxHrs" min="1" max="24" step="0.5" oninput="inp(this)"/>
+          <div class="hint">Includes all drive time + waiting. Beyond this, accident risk rises sharply.</div>
+        </div>
+        <div class="field">
+          <label>Min Break (hrs)</label>
+          <input type="number" data-key="driverMinBreakHrs" min="0" max="4" step="0.25" oninput="inp(this)"/>
+          <div class="hint">Mandatory rest within the working day</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Labour</div>
+      <div class="frow">
+        <div class="field">
+          <label>Max Working Hrs / Day</label>
+          <input type="number" data-key="labourMaxHrs" min="1" max="24" step="0.5" oninput="inp(this)"/>
+          <div class="hint">Loading/unloading team. Heat and fatigue are real field constraints.</div>
+        </div>
+        <div class="field">
+          <label>Min Break (hrs)</label>
+          <input type="number" data-key="labourMinBreakHrs" min="0" max="4" step="0.25" oninput="inp(this)"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="hint warn">⚠ Aggressive schedules increase accident and breakdown risk. Always build buffer time into plans.</div>
+  </div>
+
+  <!-- TIME WINDOW -->
+  <div class="card">
+    <div class="card-title">🕐 Time Window</div>
+
+    <div class="sub">
+      <div class="sub-title">Baling Window</div>
+      <div class="frow">
+        <div class="field">
+          <label>Earliest Baling Start</label>
+          <input type="time" data-key="balingStartTime" oninput="inp(this)"/>
+          <div class="hint">Dry morning: 7:00 AM. After rain: 9:30–10:00 AM (wait for dew)</div>
+        </div>
+        <div class="field">
+          <label>Latest Field End Time</label>
+          <input type="time" data-key="fieldEndTime" oninput="inp(this)"/>
+          <div class="hint">Daylight limit. Field work after dark is hazardous.</div>
+        </div>
+      </div>
+      <div class="hint info" id="window-info">Set times above to see total working window</div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Transport Window</div>
+      <div class="frow">
+        <div class="field">
+          <label>Earliest Transport Start</label>
+          <input type="time" data-key="transportStartTime" oninput="inp(this)"/>
+          <div class="hint">Usually same as baling start or slightly after</div>
+        </div>
+        <div class="field">
+          <label>Warehouse Closes At</label>
+          <input type="time" data-key="warehouseCloseTime" oninput="inp(this)"/>
+          <div class="hint">Last delivery accepted by warehouse</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary-card full">
+    <div class="sum-title">📋 Limits Summary</div>
+    <div class="sum-grid">
+      <div class="si">
+        <div class="sl">Tractor</div>
+        <div class="sv" id="s-tractor">—</div>
+        <div class="ssub" id="s-tractor-sub">hrs max · — km/hr</div>
+      </div>
+      <div class="si">
+        <div class="sl">Baler</div>
+        <div class="sv" id="s-baler">—</div>
+        <div class="ssub" id="s-baler-sub">hrs max · — min/acre</div>
+      </div>
+      <div class="si">
+        <div class="sl">Driver</div>
+        <div class="sv" id="s-driver">—</div>
+        <div class="ssub" id="s-driver-sub">hrs max · — hr break</div>
+      </div>
+      <div class="si">
+        <div class="sl">Labour</div>
+        <div class="sv" id="s-labour">—</div>
+        <div class="ssub" id="s-labour-sub">hrs max · — hr break</div>
+      </div>
+    </div>
+    <div class="sum-grid3">
+      <div class="si">
+        <div class="sl">Long Trolley</div>
+        <div class="sv amber" id="s-long">—</div>
+        <div class="ssub">tons / trip</div>
+      </div>
+      <div class="si">
+        <div class="sl">Normal Trolley</div>
+        <div class="sv amber" id="s-normal">—</div>
+        <div class="ssub">tons / trip</div>
+      </div>
+      <div class="si">
+        <div class="sl">Unloading</div>
+        <div class="sv amber" id="s-unload">—</div>
+        <div class="ssub">min / trolley</div>
+      </div>
+    </div>
+    <div class="si full">
+      <div class="sl">Working Window</div>
+      <div class="sv white" id="s-window">—</div>
+      <div class="ssub" id="s-window-sub">Set baling start and end times above</div>
+    </div>
+    <div class="last-saved" id="last-saved">Not yet saved to server</div>
+  </div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+  const DEFAULTS = {
+    tractorMaxHrs: 10,
+    tractorSpeedKmh: 15,
+    balerMaxHrs: 10,
+    balingSpeedMinPerAcre: 30,
+    longTrolleyCapacity: 2.5,
+    normalTrolleyCapacity: 1.2,
+    unloadingTimeMin: 20,
+    driverMaxHrs: 10,
+    driverMinBreakHrs: 0.5,
+    labourMaxHrs: 10,
+    labourMinBreakHrs: 0.5,
+    balingStartTime: '07:00',
+    fieldEndTime: '19:00',
+    transportStartTime: '07:00',
+    warehouseCloseTime: '19:00',
+  };
+
+  const LS_KEY  = 'straw_op_limits_v1';
+  const API     = 'https://straw-app-production.up.railway.app/api';
+  let locked    = false;
+  let store     = {...DEFAULTS};
+  let saveTimer = null;
+
+  function save() {
+    localStorage.setItem(LS_KEY, JSON.stringify(store));
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveToDB, 800);
+  }
+
+  async function saveToDB() {
+    try {
+      await fetch(API + '/operational-limits', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({settings: store})
+      });
+      setText('last-saved', 'Last saved: ' + new Date().toLocaleString('en-IN'));
+    } catch(e) { setText('last-saved', 'Save failed — check connection'); }
+  }
+
+  async function loadStore() {
+    try {
+      const d = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+      if (d) { store = {...DEFAULTS, ...d}; locked = store.locked || false; }
+    } catch(e) {}
+    populate(); applyLock(); recalc();
+
+    try {
+      const res = await fetch(API + '/operational-limits');
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.settings) {
+          store = {...DEFAULTS, ...data.settings};
+          locked = store.locked || false;
+          localStorage.setItem(LS_KEY, JSON.stringify(store));
+          populate(); applyLock(); recalc();
+          if (data.updated_at) setText('last-saved', 'Last saved: ' + new Date(data.updated_at).toLocaleString('en-IN'));
+        }
+      }
+    } catch(e) {}
+  }
+
+  function populate() {
+    document.querySelectorAll('input[data-key]').forEach(el => {
+      const v = store[el.dataset.key];
+      if (v !== undefined) el.value = v;
+    });
+  }
+
+  function inp(el) {
+    store[el.dataset.key] = el.type === 'time' ? el.value : (parseFloat(el.value) || 0);
+    save(); recalc();
+  }
+
+  function recalc() {
+    const gn = k => parseFloat(store[k]) || 0;
+    const gs = k => store[k] || '';
+
+    // Trip cycle
+    const speed  = gn('tractorSpeedKmh');
+    const unload = gn('unloadingTimeMin');
+    let distKm   = 17;
+    try {
+      const cs = JSON.parse(localStorage.getItem('straw_calc_v3') || 'null');
+      if (cs && cs.distKm) distKm = parseFloat(cs.distKm) || 17;
+    } catch(e) {}
+
+    if (speed > 0) {
+      const oneWay  = Math.round((distKm / speed) * 60);
+      const trip1   = oneWay * 2 + unload;
+      const trip2   = oneWay * 2;
+      const effHrs  = gn('driverMaxHrs') - gn('driverMinBreakHrs');
+      const effMin  = effHrs * 60;
+      const t1day   = effMin > 0 && trip1 > 0 ? Math.floor(effMin / trip1) : 0;
+      const t2day   = effMin > 0 && trip2 > 0 ? Math.floor(effMin / trip2) : 0;
+
+      setText('c-oneway', oneWay);
+      setText('c-1trol',  trip1);
+      setText('c-2trol',  trip2);
+      setText('c-trips-summary',
+        distKm + 'km warehouse · 1 trolley: ' + t1day + ' trips/day · 2-3 trolleys: ' + t2day + ' trips/day (driver effective hrs: ' + effHrs.toFixed(1) + 'h)');
+      document.getElementById('cycle-info-msg').style.display = 'none';
+      document.getElementById('cycle-results').style.display  = 'block';
+    } else {
+      document.getElementById('cycle-info-msg').style.display = 'block';
+      document.getElementById('cycle-results').style.display  = 'none';
+    }
+
+    // Time window
+    const bs = gs('balingStartTime');
+    const fe = gs('fieldEndTime');
+    if (bs && fe) {
+      const [sh,sm] = bs.split(':').map(Number);
+      const [eh,em] = fe.split(':').map(Number);
+      const totMin  = (eh*60+em) - (sh*60+sm);
+      if (totMin > 0) {
+        const h = Math.floor(totMin/60), m = totMin%60;
+        setText('window-info', 'Total working window: ' + h + 'h' + (m?(' '+m+'m'):'') + ' (' + bs + ' to ' + fe + ')');
+      } else {
+        setText('window-info', 'End time must be after start time');
+      }
+    }
+
+    // Summary
+    setText('s-tractor',     gn('tractorMaxHrs') + ' hrs');
+    setText('s-tractor-sub', gn('tractorMaxHrs') + ' hrs max · ' + gn('tractorSpeedKmh') + ' km/hr');
+    setText('s-baler',       gn('balerMaxHrs') + ' hrs');
+    setText('s-baler-sub',   gn('balerMaxHrs') + ' hrs max · ' + gn('balingSpeedMinPerAcre') + ' min/acre');
+    setText('s-driver',      gn('driverMaxHrs') + ' hrs');
+    setText('s-driver-sub',  gn('driverMaxHrs') + ' hrs max · ' + gn('driverMinBreakHrs') + ' hr break');
+    setText('s-labour',      gn('labourMaxHrs') + ' hrs');
+    setText('s-labour-sub',  gn('labourMaxHrs') + ' hrs max · ' + gn('labourMinBreakHrs') + ' hr break');
+    setText('s-long',        gn('longTrolleyCapacity') + ' T');
+    setText('s-normal',      gn('normalTrolleyCapacity') + ' T');
+    setText('s-unload',      gn('unloadingTimeMin') + ' min');
+    if (bs && fe) {
+      setText('s-window', bs + ' → ' + fe);
+      const [sh2,sm2] = bs.split(':').map(Number);
+      const [eh2,em2] = fe.split(':').map(Number);
+      const tot2 = (eh2*60+em2)-(sh2*60+sm2);
+      if (tot2>0) { const h2=Math.floor(tot2/60),m2=tot2%60; setText('s-window-sub', h2+'h'+(m2?' '+m2+'m':'') + ' total working window'); }
+    }
+  }
+
+  function toggleLock() {
+    locked = !locked; store.locked = locked; save(); applyLock();
+    toast2(locked ? '🔒 Limits locked' : '🔓 Limits unlocked', locked ? 'green' : 'amber');
+  }
+
+  function applyLock() {
+    document.querySelectorAll('input[data-key]').forEach(el => el.disabled = locked);
+    const btn = document.getElementById('lockBtn');
+    const txt = document.getElementById('lockTxt');
+    const lockSVG   = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>';
+    const unlockSVG = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>';
+    const infoSVG   = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+    if (locked) {
+      btn.className = 'btn-lock locked'; btn.innerHTML = lockSVG + ' Unlock';
+      txt.innerHTML = lockSVG.replace('></svg>',' style="width:14px;height:14px;flex-shrink:0"></svg>') + ' Limits locked. Tap Unlock to edit.';
+    } else {
+      btn.className = 'btn-lock unlocked'; btn.innerHTML = unlockSVG + ' Lock';
+      txt.innerHTML = infoSVG + ' Values auto-saved and shared. Lock to prevent accidental changes.';
+    }
+  }
+
+  function setText(id, v) { const e = document.getElementById(id); if (e) e.textContent = v; }
+  function toast2(msg, type) { const t=document.getElementById('toast'); t.textContent=msg; t.className='toast '+(type||''); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
+
+  loadStore();
+</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{});});}</script>
+</body>
+</html>
