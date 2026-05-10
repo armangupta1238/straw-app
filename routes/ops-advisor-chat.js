@@ -10,17 +10,16 @@ router.post('/', async (req, res) => {
     console.log('ops-advisor-chat called, messages count:', messages ? messages.length : 'none');
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      console.error('Invalid messages:', messages);
       return res.status(400).json({ error: 'messages array required and must not be empty' });
     }
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
-      return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set in environment' });
+      return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set' });
     }
 
     const body = JSON.stringify({
-      model:      'claude-sonnet-4-20250514',
+      model:      'claude-sonnet-4-5',
       max_tokens: 1024,
       system:     system || '',
       messages:   messages,
@@ -43,13 +42,14 @@ router.post('/', async (req, res) => {
       let data = '';
       proxyRes.on('data', chunk => data += chunk);
       proxyRes.on('end', () => {
+        console.log('Anthropic response status:', proxyRes.statusCode);
+        if (proxyRes.statusCode !== 200) {
+          console.error('Anthropic error body:', data.slice(0, 500));
+        }
         try {
-          const parsed = JSON.parse(data);
-          console.log('Anthropic response status:', proxyRes.statusCode);
-          res.status(proxyRes.statusCode).json(parsed);
+          res.status(proxyRes.statusCode).json(JSON.parse(data));
         } catch(e) {
-          console.error('Parse error:', e.message, 'Raw:', data.slice(0, 200));
-          res.status(500).json({ error: 'Failed to parse Anthropic response' });
+          res.status(500).json({ error: 'Failed to parse Anthropic response', raw: data.slice(0, 200) });
         }
       });
     });
